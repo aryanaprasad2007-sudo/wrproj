@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from datetime import datetime
 from pathlib import Path
 from typing import Any, AsyncIterator, Protocol
@@ -28,6 +28,15 @@ class Player(Protocol):
     def write(self, pcm: bytes) -> None: ...
     def stop(self) -> str | None:
         """Finish playback; returns a note to show the user, if any."""
+        ...
+
+    def cancel(self) -> None:
+        """Stop immediately, discarding audio already queued.
+
+        Barge-in needs this: stopping the *feed* isn't enough when a second of
+        speech is already sitting in the device buffer. She has to go quiet the
+        moment you start talking, not when the buffer drains.
+        """
         ...
 
 
@@ -65,6 +74,13 @@ class SoundDevicePlayer:
             self._stream = None
         return None
 
+    def cancel(self) -> None:
+        # abort() drops the buffered audio; stop() would play it out first.
+        if self._stream is not None:
+            self._stream.abort()
+            self._stream.close()
+            self._stream = None
+
 
 class WavFilePlayer:
     """Collects audio and writes a WAV file. Used when there's no output device."""
@@ -90,6 +106,9 @@ class WavFilePlayer:
         seconds = self._fmt.duration(bytes(self._pcm))
         self._pcm = bytearray()
         return f"{path} ({seconds:.1f}s)"
+
+    def cancel(self) -> None:
+        self._pcm = bytearray()
 
 
 def default_player() -> tuple[Player, str | None]:
@@ -124,6 +143,30 @@ class VoiceClient:
                     "type": "error",
                     "message": f"server returned {response.status_code}",
                 }
+                return
+
+            async for line in response.aiter_lines():
+                if not line.startswith("data: "):
+                    continue
+                event = json.loads(line[6:])
+                if event.get("type") == "audio":
+                    event = {"type": "audio", "pcm": b64decode(event["pcm"])}
+                yield event
+
+    async def stream_converse(
+        self, client: httpx.AsyncClient, session_id: str, pcm: bytes
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Send a captured utterance; yield transcript, then the spoken reply."""
+        async with client.stream(
+            "POST",
+            f"{self.server_url}/converse",
+            headers={"Authorization": f"Bearer {self.token}"},
+            json={"session_id": session_id, "audio": b64encode(pcm).decode()},
+            timeout=httpx.Timeout(300.0, connect=10.0),
+        ) as response:
+            if response.status_code != 200:
+                await response.aread()
+                yield {"type": "error", "message": f"server returned {response.status_code}"}
                 return
 
             async for line in response.aiter_lines():

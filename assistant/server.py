@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import os
-from base64 import b64encode
+from base64 import b64decode, b64encode
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, AsyncIterator
@@ -30,6 +30,13 @@ class ChatRequest(BaseModel):
     session_id: str = Field(min_length=1, max_length=128)
     message: str = Field(min_length=1, max_length=8000)
     regenerate: bool = False
+
+
+class ConverseRequest(BaseModel):
+    session_id: str = Field(min_length=1, max_length=128)
+    # base64 16-bit mono PCM. ~30s of 16kHz speech is a little under 1.3MB
+    # encoded; the cap stops a runaway client sending unbounded audio.
+    audio: str = Field(min_length=1, max_length=8_000_000)
 
 
 def _token() -> str:
@@ -145,6 +152,35 @@ def create_app(
                 None if body.regenerate else body.message,
                 regenerate=body.regenerate,
             ):
+                if event["type"] == "audio":
+                    event = {"type": "audio", "pcm": b64encode(event["pcm"]).decode()}
+                yield f"data: {json.dumps(event)}\n\n"
+                if await request.is_disconnected():
+                    break
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+
+    @app.post("/converse", dependencies=[Depends(require_auth)])
+    async def converse(body: ConverseRequest, request: Request) -> StreamingResponse:
+        """A spoken turn: PCM up, transcript and spoken reply back on one stream.
+
+        Transcription lives here rather than in the client so the recogniser is
+        configured once, alongside the persona. Voice activity detection stays
+        client-side — it has to, since barge-in cannot afford a round trip.
+        """
+        engine: Assistant = request.app.state.engine
+
+        try:
+            pcm = b64decode(body.audio, validate=True)
+        except Exception:
+            raise HTTPException(status_code=422, detail="audio is not valid base64")
+
+        async def events() -> AsyncIterator[str]:
+            async for event in engine.converse(body.session_id, pcm):
                 if event["type"] == "audio":
                     event = {"type": "audio", "pcm": b64encode(event["pcm"]).decode()}
                 yield f"data: {json.dumps(event)}\n\n"

@@ -45,6 +45,8 @@ def test_every_mutating_route_is_guarded(client) -> None:
     for method, path, body in [
         ("post", "/chat", {"session_id": "s", "message": "hi"}),
         ("post", "/chat/stream", {"session_id": "s", "message": "hi"}),
+        ("post", "/chat/voice", {"session_id": "s", "message": "hi"}),
+        ("post", "/converse", {"session_id": "s", "audio": "AAAA"}),
         ("post", "/sessions/s/clear", None),
         ("post", "/persona/reload", None),
     ]:
@@ -150,6 +152,41 @@ def test_stream_regenerate(client, api: FakeAPI) -> None:
         ]
 
     assert events[-1]["text"] == "second"
+
+
+# ----------------------------------------------------------------- converse
+
+
+def test_converse_rejects_audio_that_is_not_base64(client) -> None:
+    resp = client.post(
+        "/converse",
+        json={"session_id": "s", "audio": "not base64 !!!"},
+        headers=AUTH,
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"session_id": "s"},
+        {"audio": "AAAA"},
+        {"session_id": "", "audio": "AAAA"},
+        {"session_id": "s", "audio": ""},
+    ],
+)
+def test_converse_validates_input(client, payload) -> None:
+    assert client.post("/converse", json=payload, headers=AUTH).status_code == 422
+
+
+def test_converse_caps_audio_size(client) -> None:
+    """An unbounded upload would be a free denial of service."""
+    resp = client.post(
+        "/converse",
+        json={"session_id": "s", "audio": "A" * 8_000_004},
+        headers=AUTH,
+    )
+    assert resp.status_code == 422
 
 
 # ------------------------------------------------------------------ session

@@ -3,22 +3,24 @@
 A personal AI assistant with a defined character — calm, level, faintly
 condescending — reachable by text on a phone and by voice on a desktop.
 
-Currently at **phase 2**: the persona, a service that holds it, a Telegram bot
-for the phone, and a desktop client that speaks.
+Currently at **phase 3**: the persona, a service that holds it, a Telegram bot
+for the phone, and a desktop client you can hold a spoken conversation with.
 
 ```
-                        ┌──────────────────────────────┐
- Telegram (phone) ────► │  service                     │
-                        │    persona · memory · tools  │ ────► Claude
- terminal (tuning) ───► │    chunker · TTS             │
-                        └──────────────────────────────┘
- desktop voice ───────► │  (mic arrives in phase 3)    │
-                        └──────────────────────────────┘
+                        ┌────────────────────────────────┐
+ Telegram (phone) ────► │  service                       │
+ terminal (tuning) ───► │    persona · memory · tools    │ ────► Claude
+ desktop voice ───────► │    STT · chunker · TTS         │
+   mic + VAD            └────────────────────────────────┘
 ```
 
 One brain, thin clients. The persona, conversation history, voice and — later —
 tools live in exactly one place, so she's the same entity whether you type at
 her or talk to her.
+
+Voice activity detection is the deliberate exception: it stays on the client,
+because barge-in is judged in tens of milliseconds and can't afford a round
+trip.
 
 ## Running it
 
@@ -38,9 +40,36 @@ Then, in separate shells:
 ```bash
 python run_server.py       # the brain, on 127.0.0.1:8000
 python run_telegram.py     # the phone client
-python run_voice.py        # the desktop client — type, and hear her answer
+python run_listen.py       # talk to her out loud
+python run_voice.py        # type, and hear her answer (no mic needed)
 python run_chat.py         # the tuning terminal (talks to Claude directly)
 ```
+
+### Talking to her
+
+```bash
+python run_listen.py
+```
+
+Then just talk. She detects when you've started and stopped, transcribes,
+answers out loud, and — if you talk over her — stops mid-sentence and listens.
+
+**Wear headphones.** Without acoustic echo cancellation the microphone hears
+her own voice through the speakers and reads it as you interrupting, so she
+cuts herself off, repeatedly, in a loop. `BARGE_IN=0` disables interruption if
+you have to use speakers, at the cost of the feature that most makes this feel
+like a conversation.
+
+Speech recognition uses faster-whisper: local, offline, free. `base.en`
+downloads once on first use; `small.en` is noticeably better and still fine on
+CPU. Change it in the `stt:` block of the persona file.
+
+Two knobs matter more than the rest, both in `.env`:
+
+| | |
+|---|---|
+| `END_SILENCE_MS` (600) | how long you have to stop talking before she answers. This is dead time on **every** turn — the single biggest latency lever in the pipeline. Too low and she cuts you off mid-sentence. |
+| `VAD_AGGRESSIVENESS` (2) | 0–3. Raise it if background noise keeps waking her. |
 
 ### Voice
 
@@ -134,6 +163,7 @@ Everything except `/health` needs `Authorization: Bearer $ASSISTANT_TOKEN`.
 | `POST /chat` | `{session_id, message}` → `{text, tag, usage}` |
 | `POST /chat/stream` | same body, SSE: `tag`, then `delta`s, then `done`/`error` |
 | `POST /chat/voice` | same body, SSE: `start`, `tag`, then interleaved `text` and base64 `audio`, then `done` |
+| `POST /converse` | `{session_id, audio}` (base64 PCM) → SSE: `transcript`, then the whole `/chat/voice` stream |
 | `POST /sessions/{id}/clear` | forget one conversation |
 | `POST /persona/reload` | re-read the persona file without a restart |
 
@@ -147,6 +177,21 @@ refuses to start without `ASSISTANT_TOKEN`. Both matter, because a reachable
 endpoint here is someone else spending your API budget.
 
 ## Design decisions worth knowing
+
+**Listening never stops.** One task reads the microphone for the whole session,
+including while she's talking. Speaking and listening aren't modes, which is
+what makes barge-in possible at all — and the utterance that interrupted her
+then arrives on the same queue as any other, so cutting her off isn't a special
+case, it's just the next thing you said.
+
+**Cancel, don't drain.** When you talk over her, stopping the *feed* isn't
+enough: a second of speech is already sitting in the device buffer. Playback is
+aborted so she goes quiet immediately.
+
+**Pre-roll, or you lose the first syllable.** Speech is only confirmed a few
+frames after it starts, so the segmenter keeps a rolling window from before that
+point. Skip it and every capture is missing its first word — which reads as a
+bad transcript rather than a bad recording.
 
 **Speak the first sentence before the last one is written.** The chunker cuts
 the model's output into speakable pieces the moment each is complete, and the
@@ -208,8 +253,8 @@ the wire.
 |---|---|
 | 0 | persona + terminal chat ✅ |
 | 1 | backend service + Telegram bot ✅ |
-| **2** | streaming TTS + desktop client that plays audio ← **you are here** |
-| 3 | mic, VAD, STT, barge-in → real conversation |
+| 2 | streaming TTS + desktop client that plays audio ✅ |
+| **3** | mic, VAD, STT, barge-in → real conversation ← **you are here** |
 | 4 | memory and tools |
 | 5 | avatar |
 
@@ -217,9 +262,9 @@ The architecture is a pipeline (STT → LLM → TTS), not a speech-to-speech mod
 because the character voice needs to be a swappable box — it hasn't been chosen
 yet. The `voice:` block in the persona file is where that plugs in.
 
-Phase 3 is where it starts feeling like a conversation. The piece that matters
-most there is barge-in: cutting the audio the instant you start talking over
-her. That single feature does more for "feels alive" than anything else left.
+The loop is complete now, so what's left is what she can actually *do*. Phase 4
+is memory and tools: calendar, reminders, timers, search. That's the difference
+between something impressive and something you'd keep running.
 
 ## Layout
 
@@ -233,7 +278,10 @@ assistant/store.py       conversation persistence
 assistant/server.py      HTTP service
 assistant/telegram.py    Telegram long-polling client
 assistant/voice_client.py desktop playback client
+assistant/conversation.py the spoken loop: listening, barge-in
 assistant/chat.py        the tuning terminal
+assistant/audio/         mic capture, VAD, utterance segmentation
 assistant/tts/           the swappable box: base.py, tone.py, piper.py
-run_server.py  run_telegram.py  run_voice.py  run_chat.py
+assistant/stt/           recognisers: base.py, whisper.py
+run_server.py  run_telegram.py  run_listen.py  run_voice.py  run_chat.py
 ```

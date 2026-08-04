@@ -18,6 +18,8 @@ from .chunker import SentenceChunker
 from .emotions import EmotionStripper
 from .persona import DEFAULT_PERSONA, Persona, load
 from .store import ConversationStore
+from .stt import STTEngine
+from .stt import from_config as stt_from_config
 from .tts import TTSEngine
 from .tts import from_config as tts_from_config
 
@@ -31,11 +33,13 @@ class Assistant:
         store: ConversationStore | None = None,
         client: anthropic.AsyncAnthropic | None = None,
         tts: TTSEngine | None = None,
+        stt: STTEngine | None = None,
     ) -> None:
         self.client = client or anthropic.AsyncAnthropic()
         self.persona: Persona = load(persona_path)
         self.store = store or ConversationStore()
         self._tts = tts
+        self._stt = stt
         # One lock per session: two messages arriving at once (easy to do from
         # a phone) would otherwise interleave writes and corrupt the history.
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
@@ -43,12 +47,14 @@ class Assistant:
     # ------------------------------------------------------------- lifecycle
 
     def reload(self, persona_path: str | Path | None = None) -> Persona:
-        previous = self.persona.voice
+        voice, stt = self.persona.voice, self.persona.stt
         self.persona = load(persona_path or self.persona.path or DEFAULT_PERSONA)
-        # Rebuild the voice only if it actually changed — loading a TTS model is
-        # slow, and a persona reload is usually just a tone tweak.
-        if self._tts is not None and self.persona.voice != previous:
+        # Rebuild an engine only if its config actually changed — loading a TTS
+        # or Whisper model is slow, and a reload is usually just a tone tweak.
+        if self._tts is not None and self.persona.voice != voice:
             self._tts = None
+        if self._stt is not None and self.persona.stt != stt:
+            self._stt = None
         return self.persona
 
     @property
@@ -57,6 +63,37 @@ class Assistant:
         if self._tts is None:
             self._tts = tts_from_config(self.persona.voice)
         return self._tts
+
+    @property
+    def stt(self) -> STTEngine:
+        if self._stt is None:
+            self._stt = stt_from_config(self.persona.stt)
+        return self._stt
+
+    async def transcribe(self, pcm: bytes) -> str:
+        return await self.stt.transcribe(pcm)
+
+    async def converse(self, session_id: str, pcm: bytes) -> AsyncIterator[Event]:
+        """One spoken turn: audio in, transcript and spoken reply out.
+
+        Transcribing and replying in a single call keeps the round trips down —
+        every one of them is silence the user sits through.
+        """
+        try:
+            transcript = await self.transcribe(pcm)
+        except Exception as exc:
+            yield {"type": "error", "message": str(exc)}
+            return
+
+        yield {"type": "transcript", "text": transcript}
+        if not transcript.strip():
+            # Silence, or a noise the recogniser couldn't make anything of.
+            # Answering it would be worse than ignoring it.
+            yield {"type": "done", "text": "", "tag": None, "usage": {}, "skipped": True}
+            return
+
+        async for event in self.speak(session_id, transcript):
+            yield event
 
     def history(self, session_id: str) -> list[dict[str, Any]]:
         return self.store.get(session_id)
@@ -68,6 +105,8 @@ class Assistant:
         await self.client.close()
         if self._tts is not None:
             await self._tts.aclose()
+        if self._stt is not None:
+            await self._stt.aclose()
 
     # ---------------------------------------------------------------- speech
 

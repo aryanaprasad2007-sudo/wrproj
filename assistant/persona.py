@@ -27,6 +27,7 @@ class Persona:
     effort: str
     thinking: str
     voice: dict[str, Any] = field(default_factory=dict)
+    stt: dict[str, Any] = field(default_factory=dict)
     path: Path | None = None
 
     @property
@@ -51,6 +52,7 @@ def load(path: str | Path = DEFAULT_PERSONA) -> Persona:
         effort=model.get("effort", "low"),
         thinking=model.get("thinking", "adaptive"),
         voice=raw.get("voice") or {},
+        stt=raw.get("stt") or {},
         path=path,
     )
 

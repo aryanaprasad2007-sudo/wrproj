@@ -5,6 +5,6 @@ __pycache__/
 venv/
 transcripts/*
 !transcripts/.gitkeep
-data/
-audio/
-voices/
+/data/
+/audio/
+/voices/

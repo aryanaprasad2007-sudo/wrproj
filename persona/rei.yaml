@@ -36,6 +36,16 @@ voice:
   speed: 1.0
   style: "calm, low-energy, unhurried. Falling intonation. Never upspeak."
 
+# Speech recognition. Unlike the voice there is no useful placeholder here — a
+# recogniser that ignores you is indistinguishable from one that is just wrong —
+# so the default is the real thing. `base.en` downloads once on first use;
+# `small.en` is noticeably better and still runs fine on CPU.
+stt:
+  engine: whisper
+  model: base.en
+  language: en
+  # model_dir: models          # set to use a pre-downloaded model
+
 # Every response opens with one of these in square brackets. Phase 5 maps them
 # to avatar expressions; for now they're a free readout of whether the tone is
 # landing where you think it is.
