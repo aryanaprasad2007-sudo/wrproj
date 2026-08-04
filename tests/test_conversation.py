@@ -98,11 +98,16 @@ async def app(api: FakeAPI, store):
         yield application
 
 
-async def drive(app, mic, segmenter, player, events, barge_in=True):
+async def drive(app, mic, segmenter, player, events, barge_in=True, avatar=None):
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as http:
         convo = Conversation(
-            VoiceClient("http://test", TOKEN), mic, segmenter, player, barge_in=barge_in
+            VoiceClient("http://test", TOKEN),
+            mic,
+            segmenter,
+            player,
+            barge_in=barge_in,
+            avatar=avatar,
         )
         await convo.run(http, on_event=events.append)
 
@@ -207,6 +212,49 @@ async def test_speaking_over_her_cuts_the_audio_immediately(app, api: FakeAPI) -
     assert any(e["type"] == "interrupted" for e in events)
     # Cancelling has to beat a normal finish, or she talked over the user.
     assert "stop" not in player.calls[: player.calls.index("cancel")]
+
+
+async def test_cutting_her_off_shuts_the_face_too(app, api: FakeAPI) -> None:
+    """Otherwise she goes silent while her mouth keeps moving."""
+
+    class FakeLink:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+        def start(self, fmt) -> None:
+            self.calls.append("start")
+
+        def feed(self, pcm: bytes) -> None:
+            self.calls.append("feed")
+
+        def stop(self) -> None:
+            self.calls.append("stop")
+
+        def cancel(self) -> None:
+            self.calls.append("cancel")
+
+    api.queue_reply(["[bored] " + "A long reply that keeps going. " * 6])
+    api.queue_reply(["[flat] Fine."])
+    mic, events, link = FakeMic(), [], FakeLink()
+    player = RecordingPlayer(block=True)
+    segmenter = Segmenter(
+        ScriptedVAD("..SSSSSS" + "." * 12 + "SSSSSSSSSS" + "." * 12), CFG
+    )
+
+    mic.push(20)
+
+    async def interrupt() -> None:
+        await asyncio.to_thread(player.first_write.wait, 5)
+        mic.push(22)
+        await asyncio.sleep(0.3)
+        mic.stop()
+
+    task = asyncio.create_task(interrupt())
+    await drive(app, mic, segmenter, player, events, avatar=link)
+    await task
+
+    assert "cancel" in link.calls
+    assert "stop" not in link.calls[: link.calls.index("cancel")]
 
 
 async def test_barge_in_can_be_switched_off(app, api: FakeAPI) -> None:

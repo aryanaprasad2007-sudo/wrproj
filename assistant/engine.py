@@ -15,6 +15,7 @@ from typing import Any, AsyncIterator
 
 import anthropic
 
+from .avatar import AvatarBus
 from .chunker import SentenceChunker
 from .emotions import EmotionStripper
 from .memory import MemoryStore
@@ -41,12 +42,17 @@ class Assistant:
         stt: STTEngine | None = None,
         memory: MemoryStore | None = None,
         reminders: ReminderStore | None = None,
+        avatar: AvatarBus | None = None,
     ) -> None:
         self.client = client or anthropic.AsyncAnthropic()
         self.persona: Persona = load(persona_path)
         self.store = store or ConversationStore()
         self.memory = memory or MemoryStore()
         self.reminders = reminders or ReminderStore()
+        # Always present, and free when nobody is watching. Every surface drives
+        # this class, so a face wired here animates whether she's being talked
+        # to at a terminal, over Telegram or through a microphone.
+        self.avatar = avatar or AvatarBus()
         self._tts = tts
         self._stt = stt
         self._toolbox: Toolbox | None = None
@@ -148,13 +154,20 @@ class Assistant:
         yield {"type": "start", "engine": engine.name, "format": engine.format.as_dict()}
 
         chunker = SentenceChunker()
+        # `avatar=False` below: this turn ends in audio, and the client playing
+        # it owns the transition to speaking and back to idle. Letting stream()
+        # announce idle here would shut her mouth before a word came out.
+        self.avatar.publish({"type": "state", "state": "thinking"})
 
         async def voice(chunk: str) -> AsyncIterator[Event]:
             yield {"type": "text", "text": chunk}
+            self.avatar.publish({"type": "say", "text": chunk})
             async for pcm in engine.synthesize(chunk):
                 yield {"type": "audio", "pcm": pcm}
 
-        async for event in self.stream(session_id, text, regenerate=regenerate):
+        async for event in self.stream(
+            session_id, text, regenerate=regenerate, avatar=False
+        ):
             if event["type"] == "delta":
                 for chunk in chunker.feed(event["text"]):
                     async for out in voice(chunk):
@@ -169,19 +182,50 @@ class Assistant:
                 # `tag`, `tool_use`, `tool_result` pass through; `error` ends it.
                 yield event
                 if event["type"] == "error":
+                    # Nothing will play, so nobody else will clear the state.
+                    self.avatar.publish({"type": "state", "state": "idle"})
                     return
 
     # ----------------------------------------------------------------- turns
 
     async def stream(
-        self, session_id: str, text: str | None, regenerate: bool = False
+        self,
+        session_id: str,
+        text: str | None,
+        regenerate: bool = False,
+        avatar: bool = True,
     ) -> AsyncIterator[Event]:
         """Drive one turn, including any tool rounds it needs.
 
         Yields `delta` text as it arrives, `tool_use`/`tool_result` around each
         call, and exactly one `done` or `error`. Pass `regenerate=True` with no
         text to re-roll the previous reply.
+
+        `avatar=False` says a caller further down is presenting this turn to the
+        face itself — see `speak`, where the client playing the audio owns the
+        state. The expression tag is published from `_turn` either way, since
+        that's the only place it can be announced and it's never duplicated.
         """
+        if not avatar:
+            async for event in self._turn(session_id, text, regenerate):
+                yield event
+            return
+
+        self.avatar.publish({"type": "state", "state": "thinking"})
+        try:
+            async for event in self._turn(session_id, text, regenerate):
+                if event["type"] == "done" and event["text"]:
+                    self.avatar.publish({"type": "say", "text": event["text"]})
+                yield event
+        finally:
+            # Every exit — finished, failed, or the reader hanging up part way
+            # through — has to put her face back, or she sits mid-thought until
+            # somebody talks to her again.
+            self.avatar.publish({"type": "state", "state": "idle"})
+
+    async def _turn(
+        self, session_id: str, text: str | None, regenerate: bool = False
+    ) -> AsyncIterator[Event]:
         async with self._locks[session_id]:
             history = self.store.get(session_id)
 
@@ -212,6 +256,7 @@ class Assistant:
                             # voice client wants it while she is still speaking.
                             if stripper.tag and not announced_tag:
                                 announced_tag = True
+                                self.avatar.publish({"type": "tag", "tag": stripper.tag})
                                 yield {"type": "tag", "tag": stripper.tag}
                             if visible:
                                 parts.append(visible)

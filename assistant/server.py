@@ -7,17 +7,21 @@ tools live here and nowhere else, so she's the same entity on every surface.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
+import secrets
+import time
 from base64 import b64decode, b64encode
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import Any, AsyncIterator, Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+from .avatar import AvatarBus
 from .engine import Assistant
 from .memory import MemoryStore
 from .persona import DEFAULT_PERSONA
@@ -26,12 +30,32 @@ from .store import ConversationStore
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_STORE = ROOT / "data" / "conversations.json"
+AVATAR_PAGE = Path(__file__).resolve().parent / "web" / "avatar.html"
+
+# Long enough to open a socket, short enough that a leaked one is worthless.
+TICKET_TTL = 60.0
 
 
 class ChatRequest(BaseModel):
     session_id: str = Field(min_length=1, max_length=128)
     message: str = Field(min_length=1, max_length=8000)
     regenerate: bool = False
+
+
+class AvatarEvent(BaseModel):
+    """What a playing client is allowed to put on the bus.
+
+    Only the two things it actually knows: whether sound is coming out of the
+    speakers right now, and how far open her mouth should be while it does.
+    Expression and dialogue come from the engine, which is the only thing that
+    knows them.
+    """
+
+    type: Literal["mouth", "state"]
+    state: Literal["idle", "thinking", "speaking"] | None = None
+    frame_ms: int | None = Field(default=None, ge=10, le=250)
+    # A cap, not a budget: ~80s of frames, far more than one chunk of speech.
+    open: list[float] | None = Field(default=None, max_length=2000)
 
 
 class ConverseRequest(BaseModel):
@@ -68,6 +92,43 @@ def _constant_time_eq(a: str, b: str) -> bool:
     return hmac.compare_digest(a.encode(), b.encode())
 
 
+def _bearer(header: str) -> str:
+    return header[7:] if header.lower().startswith("bearer ") else ""
+
+
+def _issue_ticket(app: FastAPI) -> str:
+    """A single-use, short-lived stand-in for the token, for the avatar socket.
+
+    Browsers can't set headers on a WebSocket, and the usual answer — putting
+    the token in the query string — writes your long-lived secret into the URL
+    bar, the history, and every access log that sees the request. This is the
+    cheap fix: exchange the token for something that expires in a minute and
+    only works once.
+    """
+    now = time.monotonic()
+    tickets: dict[str, float] = app.state.tickets
+    for issued, expiry in list(tickets.items()):
+        if expiry <= now:
+            del tickets[issued]
+    ticket = secrets.token_urlsafe(24)
+    tickets[ticket] = now + TICKET_TTL
+    return ticket
+
+
+def _redeem_ticket(app: FastAPI, ticket: str) -> bool:
+    expiry = app.state.tickets.pop(ticket, None)
+    return expiry is not None and expiry > time.monotonic()
+
+
+def _websocket_authorized(websocket: WebSocket) -> bool:
+    app = websocket.app
+    supplied = _bearer(websocket.headers.get("authorization", ""))
+    if supplied:
+        return _constant_time_eq(supplied, app.state.token)
+    ticket = websocket.query_params.get("ticket", "")
+    return bool(ticket) and _redeem_ticket(app, ticket)
+
+
 def create_app(
     persona_path: str | Path | None = None,
     store_path: str | Path | None = None,
@@ -100,6 +161,7 @@ def create_app(
 
     app = FastAPI(title="assistant", lifespan=lifespan)
     app.state.token = resolved_token
+    app.state.tickets = {}
 
     @app.get("/health")
     async def health(request: Request) -> dict[str, Any]:
@@ -228,6 +290,70 @@ def create_app(
             raise HTTPException(status_code=404, detail="no such memory")
         return {"removed": removed}
 
+    # ------------------------------------------------------------------ face
+
+    @app.get("/avatar")
+    async def avatar_page() -> FileResponse:
+        """The viewer. Unauthenticated because it holds no secret — it reads the
+        token from the URL fragment, which browsers never send to a server."""
+        if not AVATAR_PAGE.exists():  # pragma: no cover - shipped with the package
+            raise HTTPException(status_code=404, detail="avatar page not installed")
+        return FileResponse(AVATAR_PAGE, media_type="text/html")
+
+    @app.post("/avatar/ticket", dependencies=[Depends(require_auth)])
+    async def avatar_ticket(request: Request) -> dict[str, Any]:
+        return {"ticket": _issue_ticket(request.app), "expires_in": int(TICKET_TTL)}
+
+    @app.post("/avatar/publish", dependencies=[Depends(require_auth)])
+    async def avatar_publish(body: AvatarEvent, request: Request) -> dict[str, Any]:
+        """Where the client playing the audio reports what the speakers are doing.
+
+        The mouth has to be driven from playback, not from synthesis: audio is
+        generated far faster than it plays, so animating at the source would put
+        her face seconds ahead of her voice.
+        """
+        bus: AvatarBus = request.app.state.engine.avatar
+        bus.publish(body.model_dump(exclude_none=True))
+        # Returned so a client with nobody watching can skip the analysis.
+        return {"listeners": bus.listeners}
+
+    @app.websocket("/avatar/events")
+    async def avatar_events(websocket: WebSocket) -> None:
+        if not _websocket_authorized(websocket):
+            await websocket.close(code=1008)
+            return
+        await websocket.accept()
+
+        engine: Assistant = websocket.app.state.engine
+        await websocket.send_json(
+            {
+                "type": "hello",
+                "persona": engine.persona.name,
+                "emotions": list(engine.persona.emotions),
+            }
+        )
+
+        with engine.avatar.subscribe() as queue:
+            # The face never sends us anything; this task exists only so a
+            # closed socket is noticed while we're blocked waiting on the bus.
+            reader = asyncio.create_task(_until_closed(websocket))
+            getter: asyncio.Task[dict[str, Any]] | None = None
+            try:
+                while not reader.done():
+                    getter = asyncio.create_task(queue.get())
+                    done, _ = await asyncio.wait(
+                        {getter, reader}, return_when=asyncio.FIRST_COMPLETED
+                    )
+                    if getter not in done:
+                        break
+                    await websocket.send_json(getter.result())
+            except WebSocketDisconnect:
+                pass
+            finally:
+                reader.cancel()
+                if getter is not None:
+                    getter.cancel()
+
     @app.post("/sessions/{session_id}/clear", dependencies=[Depends(require_auth)])
     async def clear(session_id: str, request: Request) -> dict[str, str]:
         request.app.state.engine.clear(session_id)
@@ -242,3 +368,14 @@ def create_app(
         return {"status": "reloaded", "persona": persona.name}
 
     return app
+
+
+async def _until_closed(websocket: WebSocket) -> None:
+    """Return when the socket closes. Anything the client sends is ignored."""
+    try:
+        while True:
+            message = await websocket.receive()
+            if message["type"] == "websocket.disconnect":
+                return
+    except (WebSocketDisconnect, RuntimeError):
+        return

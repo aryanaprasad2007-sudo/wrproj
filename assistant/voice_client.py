@@ -20,6 +20,7 @@ from typing import Any, AsyncIterator, Protocol
 
 import httpx
 
+from .avatar import AvatarLink
 from .tts.base import AudioFormat, wav_header
 
 
@@ -185,6 +186,7 @@ class VoiceClient:
         player: Player,
         on_text: Any = None,
         regenerate: bool = False,
+        avatar: AvatarLink | None = None,
     ) -> dict[str, Any]:
         """Run one turn: play the audio, surface the text. Returns the last event."""
         started = False
@@ -194,9 +196,17 @@ class VoiceClient:
             async for event in self.stream_turn(client, session_id, message, regenerate):
                 kind = event["type"]
                 if kind == "start":
-                    player.start(AudioFormat(**event["format"]))
+                    fmt = AudioFormat(**event["format"])
+                    player.start(fmt)
+                    if avatar:
+                        avatar.start(fmt)
                     started = True
                 elif kind == "audio":
+                    # Analysed before the write, not after: the write blocks for
+                    # the chunk's own duration, so this is the moment its
+                    # playback begins and the face should start moving.
+                    if avatar:
+                        avatar.feed(event["pcm"])
                     # Blocking write — off the loop so events keep arriving.
                     await asyncio.to_thread(player.write, event["pcm"])
                 elif kind == "text" and on_text:
@@ -206,6 +216,8 @@ class VoiceClient:
         finally:
             if started:
                 note = await asyncio.to_thread(player.stop)
+                if avatar:
+                    avatar.stop()
                 if note:
                     last = {**last, "audio_note": note}
         return last

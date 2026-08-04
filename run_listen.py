@@ -15,6 +15,7 @@ if you have to use speakers.
 import asyncio
 import os
 import sys
+from contextlib import AsyncExitStack
 
 try:
     from dotenv import load_dotenv
@@ -26,6 +27,7 @@ except ImportError:
 import httpx
 
 from assistant.audio import Microphone, Segmenter, SegmenterConfig, WebrtcVAD
+from assistant.avatar import AvatarLink
 from assistant.conversation import Conversation
 from assistant.voice_client import VoiceClient, default_player
 
@@ -92,10 +94,20 @@ async def run(url: str, token: str) -> None:
             elif kind == "done" and state["labelled"]:
                 print("\n")
 
-        conversation = Conversation(
-            VoiceClient(url, token), mic, segmenter, player, barge_in=barge_in
-        )
-        await conversation.run(http, on_event=show)
+        async with AsyncExitStack() as stack:
+            avatar = None
+            if os.environ.get("AVATAR", "1") != "0":
+                avatar = await stack.enter_async_context(AvatarLink(url, token, http))
+
+            conversation = Conversation(
+                VoiceClient(url, token),
+                mic,
+                segmenter,
+                player,
+                barge_in=barge_in,
+                avatar=avatar,
+            )
+            await conversation.run(http, on_event=show)
 
 
 def main() -> int:

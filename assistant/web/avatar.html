@@ -1,0 +1,360 @@
+<!doctype html>
+<!--
+  The face harness.
+
+  This is NOT the character. The placeholder below is drawn out of four shapes
+  on purpose: it exists to prove the feed is live and in sync, and to be thrown
+  away the moment there's a real rig to put here.
+
+  To attach one, replace `window.rig` with an object implementing the same four
+  methods. Everything above it — socket, auth, reconnect, mouth scheduling —
+  stays exactly as it is:
+
+      window.rig = {
+        setMouth(open)        // 0..1, ~25 times a second while she speaks
+        setExpression(tag)    // one of the persona's emotion tags
+        setState(state)       // "idle" | "thinking" | "speaking"
+        setSubtitle(text)     // what she just said, or "" to clear
+      };
+
+  Live2D wants setMouth on ParamMouthOpenY, VRM on the `A` blendshape, VTube
+  Studio on MouthOpen over its plugin API. All three take the same 0..1 curve.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>face</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='7' fill='%23b9a6ff'/></svg>">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0e0f13;
+    --ink: #e7e7ea;
+    --dim: #7c7f8a;
+    --line: #2a2c34;
+    --warm: #b9a6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: grid; grid-template-rows: 1fr auto; gap: 1rem; padding: 1.5rem;
+  }
+  main { display: grid; place-items: center; }
+  figure { margin: 0; display: grid; justify-items: center; gap: 1.25rem; }
+  svg { width: min(46vh, 320px); height: auto; }
+  #subtitle {
+    min-height: 3.2em; max-width: 34ch; text-align: center; font-size: 1.05rem;
+    color: var(--ink); transition: opacity .2s;
+  }
+  #subtitle:empty { opacity: 0; }
+  footer {
+    display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; align-items: center;
+    justify-content: center; padding-top: 1rem; border-top: 1px solid var(--line);
+    color: var(--dim); font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  footer b { color: var(--ink); font-weight: 500; }
+  #meter {
+    width: 92px; height: 6px; background: var(--line); border-radius: 3px;
+    overflow: hidden;
+  }
+  #meter i { display: block; height: 100%; width: 0; background: var(--warm); }
+  #status::before {
+    content: ""; display: inline-block; width: 7px; height: 7px; margin-right: .5em;
+    border-radius: 50%; background: #d0454c; vertical-align: middle;
+  }
+  #status.live::before { background: #4ac07a; }
+  form {
+    position: fixed; inset: 0; display: grid; place-items: center;
+    background: rgba(14,15,19,.96);
+  }
+  form[hidden] { display: none; }
+  form div { display: grid; gap: .75rem; width: min(90vw, 30rem); }
+  form p { margin: 0; color: var(--dim); }
+  input, button {
+    font: inherit; padding: .6rem .8rem; border-radius: 6px;
+    border: 1px solid var(--line); background: #16181e; color: var(--ink);
+  }
+  button { background: var(--warm); color: #14131c; border: 0; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<main>
+  <figure>
+    <svg viewBox="0 0 200 220" aria-hidden="true">
+      <g id="body">
+        <ellipse id="head" cx="100" cy="105" rx="66" ry="76"
+                 fill="#191b22" stroke="#2f3240" stroke-width="2"/>
+        <g id="brows" stroke="#8f94a6" stroke-width="4" stroke-linecap="round">
+          <line id="browL" x1="60"  y1="80" x2="86"  y2="80"/>
+          <line id="browR" x1="114" y1="80" x2="140" y2="80"/>
+        </g>
+        <g fill="#e7e7ea">
+          <ellipse id="eyeL" cx="73"  cy="100" rx="9" ry="11"/>
+          <ellipse id="eyeR" cx="127" cy="100" rx="9" ry="11"/>
+        </g>
+        <path id="mouth" fill="#c85f6b" stroke="#c85f6b" stroke-width="4"
+              stroke-linecap="round" d="M 80 145 Q 100 145 120 145"/>
+      </g>
+    </svg>
+    <div id="subtitle"></div>
+  </figure>
+</main>
+
+<footer>
+  <span id="status">connecting</span>
+  <span>state <b id="v-state">idle</b></span>
+  <span>tag <b id="v-tag">—</b></span>
+  <span>mouth <div id="meter"><i></i></div></span>
+  <span id="v-name">placeholder rig</span>
+</footer>
+
+<form hidden>
+  <div>
+    <p>Paste the service token (<code>ASSISTANT_TOKEN</code>). It stays in this
+       tab and is exchanged for a one-minute ticket to open the socket.</p>
+    <input type="password" autocomplete="off" placeholder="token">
+    <button type="submit">connect</button>
+  </div>
+</form>
+
+<script>
+(() => {
+  "use strict";
+
+  const el = (id) => document.getElementById(id);
+  const ui = {
+    status: el("status"), state: el("v-state"), tag: el("v-tag"),
+    meter: el("meter").firstElementChild, name: el("v-name"),
+    subtitle: el("subtitle"), body: el("body"),
+    browL: el("browL"), browR: el("browR"),
+    eyeL: el("eyeL"), eyeR: el("eyeR"), mouth: el("mouth"),
+  };
+
+  // ---------------------------------------------------------- placeholder rig
+
+  // brow: degrees of tilt, inner end down is negative. lid: how far the eyes
+  // are hooded, 0..1. curve: mouth corners, negative is down. skew: one-sided.
+  const EXPRESSIONS = {
+    neutral:   { brow:  0, lid: 0.00, curve:  0.00, skew: 0 },
+    flat:      { brow:  0, lid: 0.15, curve: -0.05, skew: 0 },
+    bored:     { brow: -4, lid: 0.38, curve: -0.15, skew: 0 },
+    smug:      { brow: -6, lid: 0.30, curve:  0.30, skew: 1 },
+    amused:    { brow:  2, lid: 0.12, curve:  0.40, skew: 0 },
+    approving: { brow:  3, lid: 0.00, curve:  0.25, skew: 0 },
+    concerned: { brow:  9, lid: 0.00, curve: -0.30, skew: 0 },
+  };
+
+  let face = { ...EXPRESSIONS.neutral };
+  let mouthOpen = 0;
+  let blink = 1;
+
+  function drawMouth() {
+    const w = 20, y = 145;
+    // Two arcs sharing corners: the upper lip carries the expression, the lower
+    // one carries the opening. A single arc would work until she opened her
+    // mouth, at which point every expression turned into a grin.
+    const drop = mouthOpen * 26;
+    const lift = -face.curve * 14;
+    const left = y + lift, right = y + lift * (face.skew ? 2.2 : 1);
+    // Control points are placed so the *midpoints* land where they should:
+    // corners `lift` off the baseline, lower lip `drop` below it.
+    const upper = y - lift, lower = y - lift + drop * 2;
+    ui.mouth.setAttribute(
+      "d",
+      `M ${100 - w} ${left} Q 100 ${upper} ${100 + w} ${right}` +
+      ` Q 100 ${lower} ${100 - w} ${left} Z`
+    );
+    ui.mouth.setAttribute("fill", mouthOpen > 0.08 ? "#3a1f26" : "none");
+  }
+
+  function drawFace() {
+    const open = (1 - face.lid) * blink;
+    for (const eye of [ui.eyeL, ui.eyeR]) {
+      eye.setAttribute("ry", Math.max(0.6, 11 * open).toFixed(2));
+    }
+    ui.browL.setAttribute("transform", `rotate(${face.brow} 86 80)`);
+    ui.browR.setAttribute("transform", `rotate(${-face.brow} 114 80)`);
+    drawMouth();
+  }
+
+  window.rig = {
+    setMouth(open) { mouthOpen = open; drawMouth(); },
+    setExpression(tag) {
+      face = { ...(EXPRESSIONS[tag] || EXPRESSIONS.neutral) };
+      ui.tag.textContent = tag || "—";
+      drawFace();
+    },
+    setState(state) {
+      ui.state.textContent = state;
+      // Thinking reads as alive; without it a still face looks disconnected.
+      ui.body.style.opacity = state === "thinking" ? 0.72 : 1;
+    },
+    setSubtitle(text) { ui.subtitle.textContent = text; },
+  };
+
+  // Blinking and a slow drift. Cheap, and the difference between a picture and
+  // somebody in the room. A real rig usually does its own; drop this then.
+  (function idle() {
+    const t = performance.now() / 1000;
+    ui.body.setAttribute(
+      "transform",
+      `translate(${Math.sin(t * 0.6) * 2.5} ${Math.sin(t * 0.9) * 1.8})`
+    );
+    if (Math.random() < 0.0022 && blink === 1) {
+      blink = 0;
+      setTimeout(() => { blink = 1; drawFace(); }, 110);
+      drawFace();
+    }
+    ui.body.style.transformOrigin = "center";
+    requestAnimationFrame(idle);
+  })();
+
+  // ------------------------------------------------------------- mouth timing
+
+  // Frames arrive one chunk at a time, at the moment that chunk starts playing.
+  // They're played out here against the render clock; a newer batch always
+  // wins, because it means playback has moved on.
+  let schedule = null;
+
+  function playMouth(frames, frameMs) {
+    if (!frames || !frames.length) {
+      schedule = null;
+      setMouth(0);
+      return;
+    }
+    schedule = { frames, frameMs, start: performance.now() };
+  }
+
+  function setMouth(v) {
+    window.rig.setMouth(v);
+    ui.meter.style.width = `${Math.round(v * 100)}%`;
+  }
+
+  (function pump() {
+    if (schedule) {
+      const i = Math.floor((performance.now() - schedule.start) / schedule.frameMs);
+      if (i >= schedule.frames.length) {
+        schedule = null;
+        setMouth(0);
+      } else {
+        setMouth(schedule.frames[i]);
+      }
+    }
+    requestAnimationFrame(pump);
+  })();
+
+  // If she's marked speaking but no mouth frames arrive, nothing is playing her
+  // audio — a phone-only turn, say. Don't leave her stuck mid-word.
+  let lastMouth = 0;
+  setInterval(() => {
+    if (ui.state.textContent === "speaking" && performance.now() - lastMouth > 2500) {
+      window.rig.setState("idle");
+    }
+  }, 500);
+
+  // -------------------------------------------------------------- the socket
+
+  function handle(event) {
+    switch (event.type) {
+      case "hello":
+        ui.name.textContent = `${event.persona} · placeholder rig`;
+        document.title = event.persona.toLowerCase();
+        break;
+      case "tag":
+        window.rig.setExpression(event.tag);
+        break;
+      case "say":
+        window.rig.setSubtitle(event.text);
+        break;
+      case "state":
+        window.rig.setState(event.state);
+        if (event.state === "idle") { schedule = null; setMouth(0); }
+        if (event.state === "speaking") { lastMouth = performance.now(); }
+        break;
+      case "mouth":
+        lastMouth = performance.now();
+        playMouth(event.open, event.frame_ms || 40);
+        break;
+    }
+  }
+
+  // The token is read from the URL fragment, which browsers never send to a
+  // server, then swapped for a single-use ticket so the long-lived secret never
+  // appears in a query string, an access log, or the history.
+  const form = document.querySelector("form");
+  const input = form.querySelector("input");
+
+  function token() {
+    const hash = new URLSearchParams(location.hash.slice(1)).get("token");
+    if (hash) {
+      sessionStorage.setItem("assistant_token", hash);
+      history.replaceState(null, "", location.pathname);
+    }
+    return sessionStorage.getItem("assistant_token") || "";
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!input.value.trim()) return;
+    sessionStorage.setItem("assistant_token", input.value.trim());
+    input.value = "";
+    form.hidden = true;
+    connect(0);
+  });
+
+  function offline(note) {
+    ui.status.classList.remove("live");
+    ui.status.textContent = note;
+  }
+
+  async function connect(attempt) {
+    const secret = token();
+    if (!secret) { offline("no token"); form.hidden = false; return; }
+
+    let ticket;
+    try {
+      const response = await fetch("avatar/ticket", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${secret}` },
+      });
+      if (response.status === 401) {
+        sessionStorage.removeItem("assistant_token");
+        offline("token rejected");
+        form.hidden = false;
+        return;
+      }
+      if (!response.ok) throw new Error(String(response.status));
+      ticket = (await response.json()).ticket;
+    } catch {
+      offline("service unreachable");
+      return retry(attempt);
+    }
+
+    const url = new URL("avatar/events", location.href);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    url.search = `ticket=${encodeURIComponent(ticket)}`;
+    const socket = new WebSocket(url);
+
+    socket.onopen = () => {
+      ui.status.classList.add("live");
+      ui.status.textContent = "listening";
+    };
+    socket.onmessage = (message) => handle(JSON.parse(message.data));
+    socket.onclose = () => { offline("disconnected"); retry(attempt); };
+    socket.onerror = () => socket.close();
+  }
+
+  function retry(attempt) {
+    const wait = Math.min(500 * 2 ** attempt, 10000);
+    setTimeout(() => connect(attempt + 1), wait);
+  }
+
+  drawFace();
+  connect(0);
+})();
+</script>
+</body>
+</html>

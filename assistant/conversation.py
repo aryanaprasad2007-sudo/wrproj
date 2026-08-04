@@ -21,6 +21,7 @@ from typing import Any, AsyncIterator, Callable, Protocol
 import httpx
 
 from .audio.vad import Segmenter
+from .avatar import AvatarLink
 from .tts.base import AudioFormat
 from .voice_client import Player, VoiceClient
 
@@ -45,6 +46,7 @@ class Conversation:
         player: Player,
         session_id: str = "voice",
         barge_in: bool = True,
+        avatar: AvatarLink | None = None,
     ) -> None:
         self.client = client
         self.source = source
@@ -52,6 +54,7 @@ class Conversation:
         self.player = player
         self.session_id = session_id
         self.barge_in = barge_in
+        self.avatar = avatar
 
         self._events: asyncio.Queue[Event] = asyncio.Queue()
         self._interrupted = asyncio.Event()
@@ -91,15 +94,22 @@ class Conversation:
                     on_event(event)
                 kind = event["type"]
                 if kind == "start":
-                    self.player.start(AudioFormat(**event["format"]))
+                    fmt = AudioFormat(**event["format"])
+                    self.player.start(fmt)
+                    if self.avatar:
+                        self.avatar.start(fmt)
                     started = True
                 elif kind == "audio":
+                    if self.avatar:
+                        self.avatar.feed(event["pcm"])
                     await asyncio.to_thread(self.player.write, event["pcm"])
                 elif kind in ("done", "error"):
                     last = event
         finally:
             if started and not self._interrupted.is_set():
                 note = await asyncio.to_thread(self.player.stop)
+                if self.avatar:
+                    self.avatar.stop()
                 if note:
                     last = {**last, "audio_note": note}
         return last
@@ -118,6 +128,8 @@ class Conversation:
                 # Kill the audio first — the user is already talking over her,
                 # and draining the device buffer would keep her going.
                 await asyncio.to_thread(self.player.cancel)
+                if self.avatar:
+                    self.avatar.cancel()
                 reply.cancel()
                 try:
                     await reply

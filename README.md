@@ -46,6 +46,9 @@ python run_voice.py        # type, and hear her answer (no mic needed)
 python run_chat.py         # the tuning terminal (talks to Claude directly)
 ```
 
+Then open `http://127.0.0.1:8000/avatar#token=$ASSISTANT_TOKEN` to watch her
+face while you talk to her.
+
 ### Talking to her
 
 ```bash
@@ -216,6 +219,10 @@ Everything except `/health` needs `Authorization: Bearer $ASSISTANT_TOKEN`.
 | `GET /memory`, `DELETE /memory/{id}` | read and prune what she remembers |
 | `POST /sessions/{id}/clear` | forget one conversation |
 | `POST /persona/reload` | re-read the persona file without a restart |
+| `GET /avatar` | the face viewer. Unauthenticated — it holds no secret, it asks for one |
+| `POST /avatar/ticket` | swap the token for a single-use, one-minute ticket |
+| `POST /avatar/publish` | where a playing client reports `mouth` and `state` |
+| `WS /avatar/events` | the face feed: `hello`, `tag`, `say`, `state`, `mouth` |
 
 Turns that use tools emit `tool_use` and `tool_result` events on the streaming
 endpoints, so a client can show what she's doing rather than going quiet.
@@ -228,6 +235,53 @@ loopback and keeps the client trivial.
 Two things guard this service: it binds to `127.0.0.1` by default, and it
 refuses to start without `ASSISTANT_TOKEN`. Both matter, because a reachable
 endpoint here is someone else spending your API budget.
+
+## The face
+
+Not the character — that's still open. This is the feed a character subscribes
+to, so that whichever rig gets chosen is a rendering job and nothing more.
+
+```
+python run_server.py
+open http://127.0.0.1:8000/avatar#token=...
+```
+
+What arrives on the socket:
+
+| | |
+|---|---|
+| `hello` | her name and the emotion tags this persona uses |
+| `tag` | the expression, sent the moment it's parsed — while she's still speaking |
+| `say` | what she's saying, chunk by chunk. Subtitles |
+| `state` | `thinking`, `speaking`, `idle` |
+| `mouth` | `{frame_ms, open: [0..1]}` — the mouth curve for the audio starting now |
+
+To attach a real rig, replace `window.rig` in `assistant/web/avatar.html` with
+something implementing the same four methods — `setMouth`, `setExpression`,
+`setState`, `setSubtitle`. The socket, the auth, the reconnect and the mouth
+timing stay as they are. The placeholder drawn there now is four shapes on
+purpose: it exists to prove the feed is live and in sync, and to be deleted.
+
+**Amplitude, not visemes.** Phoneme-accurate mouth shapes need forced alignment
+and a phoneme set that depends on both the TTS engine and the rig — neither of
+which is chosen. An openness curve drives the one parameter every rig already
+has (Live2D's `ParamMouthOpenY`, VRM's `A` blendshape, VTube Studio's
+`MouthOpen`), so any of them can be wired up now and upgraded later without
+touching the transport.
+
+**The mouth is published by whoever plays the audio**, never by whoever
+synthesises it. Synthesis runs far ahead of playback — that's the point of
+streaming it — so animating at the source would put her face seconds ahead of
+her voice. Expression and dialogue come from the engine instead, where being a
+few hundred milliseconds early is invisible. That's also why a *typed* turn on
+Telegram still drives her expression and subtitles: it's the same brain.
+
+**Auth, because browsers can't set headers on a WebSocket.** The usual answer —
+token in the query string — writes your long-lived secret into the URL bar, the
+history and every access log on the way. Instead the page reads it from the URL
+*fragment*, which browsers never send anywhere, and swaps it for a ticket that
+expires in a minute and works once. `AVATAR=0` turns the client-side reporting
+off entirely.
 
 ## Design decisions worth knowing
 
@@ -316,17 +370,17 @@ the wire.
 | 1 | backend service + Telegram bot ✅ |
 | 2 | streaming TTS + desktop client that plays audio ✅ |
 | 3 | mic, VAD, STT, barge-in → real conversation ✅ |
-| **4** | memory and tools ← **you are here** |
-| 5 | avatar |
+| 4 | memory and tools ✅ |
+| **5** | avatar — the feed ✅, the character ← **you are here** |
 
 The architecture is a pipeline (STT → LLM → TTS), not a speech-to-speech model,
 because the character voice needs to be a swappable box — it hasn't been chosen
 yet. The `voice:` block in the persona file is where that plugs in.
 
-What's left is the face. Phase 5 is the avatar — Live2D or VRM — and the hooks
-for it are already in place: every reply carries an emotion tag, emitted as its
-own event while she's still speaking, and the TTS layer hands back raw PCM you
-can take an amplitude envelope from for lipsync.
+What's left is the character itself. Everything a face needs is now published
+and in sync — expression, dialogue, state, and a mouth curve measured off the
+audio as it plays — so picking a rig is a rendering job against four methods,
+not a change to any of this.
 
 ## Layout
 
@@ -345,6 +399,8 @@ assistant/telegram.py    Telegram long-polling client
 assistant/voice_client.py desktop playback client
 assistant/conversation.py the spoken loop: listening, barge-in
 assistant/chat.py        the tuning terminal
+assistant/avatar.py      the face feed: mouth envelope, event bus, client link
+assistant/web/avatar.html the viewer, and the seam a real rig plugs into
 assistant/audio/         mic capture, VAD, utterance segmentation
 assistant/tts/           the swappable box: base.py, tone.py, piper.py
 assistant/stt/           recognisers: base.py, whisper.py
