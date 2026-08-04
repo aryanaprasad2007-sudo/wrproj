@@ -6,3 +6,5 @@ venv/
 transcripts/*
 !transcripts/.gitkeep
 data/
+audio/
+voices/

@@ -17,7 +17,10 @@ async def test_streams_deltas_then_done(engine: Assistant, api: FakeAPI) -> None
     api.queue_reply(["[", "bo", "red", "]", " The", " dentist."])
     events = await collect(engine, "s", "what was that")
 
-    assert [e["type"] for e in events] == ["delta"] * 2 + ["done"]
+    # The tag must land before any text — the voice client and the avatar both
+    # need the expression while she is still speaking, not after.
+    assert [e["type"] for e in events] == ["tag", "delta", "delta", "done"]
+    assert events[0] == {"type": "tag", "tag": "bored"}
     assert "".join(e["text"] for e in events if e["type"] == "delta") == "The dentist."
 
     done = events[-1]

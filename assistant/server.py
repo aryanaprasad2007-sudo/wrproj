@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+from base64 import b64encode
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, AsyncIterator
@@ -117,6 +118,35 @@ def create_app(
                 None if body.regenerate else body.message,
                 regenerate=body.regenerate,
             ):
+                yield f"data: {json.dumps(event)}\n\n"
+                if await request.is_disconnected():
+                    break
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+
+    @app.post("/chat/voice", dependencies=[Depends(require_auth)])
+    async def chat_voice(body: ChatRequest, request: Request) -> StreamingResponse:
+        """Text and audio for one turn, interleaved on a single stream.
+
+        One stream rather than a text call plus a speech call: it keeps the two
+        in sync for display, and avoids paying for the model turn twice. PCM is
+        base64'd to ride inside SSE — a third of overhead, which costs nothing
+        over loopback and keeps the client trivial.
+        """
+        engine: Assistant = request.app.state.engine
+
+        async def events() -> AsyncIterator[str]:
+            async for event in engine.speak(
+                body.session_id,
+                None if body.regenerate else body.message,
+                regenerate=body.regenerate,
+            ):
+                if event["type"] == "audio":
+                    event = {"type": "audio", "pcm": b64encode(event["pcm"]).decode()}
                 yield f"data: {json.dumps(event)}\n\n"
                 if await request.is_disconnected():
                     break

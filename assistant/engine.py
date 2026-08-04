@@ -14,9 +14,12 @@ from typing import Any, AsyncIterator
 
 import anthropic
 
+from .chunker import SentenceChunker
 from .emotions import EmotionStripper
 from .persona import DEFAULT_PERSONA, Persona, load
 from .store import ConversationStore
+from .tts import TTSEngine
+from .tts import from_config as tts_from_config
 
 Event = dict[str, Any]
 
@@ -27,10 +30,12 @@ class Assistant:
         persona_path: str | Path = DEFAULT_PERSONA,
         store: ConversationStore | None = None,
         client: anthropic.AsyncAnthropic | None = None,
+        tts: TTSEngine | None = None,
     ) -> None:
         self.client = client or anthropic.AsyncAnthropic()
         self.persona: Persona = load(persona_path)
         self.store = store or ConversationStore()
+        self._tts = tts
         # One lock per session: two messages arriving at once (easy to do from
         # a phone) would otherwise interleave writes and corrupt the history.
         self._locks: dict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
@@ -38,8 +43,20 @@ class Assistant:
     # ------------------------------------------------------------- lifecycle
 
     def reload(self, persona_path: str | Path | None = None) -> Persona:
+        previous = self.persona.voice
         self.persona = load(persona_path or self.persona.path or DEFAULT_PERSONA)
+        # Rebuild the voice only if it actually changed — loading a TTS model is
+        # slow, and a persona reload is usually just a tone tweak.
+        if self._tts is not None and self.persona.voice != previous:
+            self._tts = None
         return self.persona
+
+    @property
+    def tts(self) -> TTSEngine:
+        """Built on first use so a text-only deployment never loads an engine."""
+        if self._tts is None:
+            self._tts = tts_from_config(self.persona.voice)
+        return self._tts
 
     def history(self, session_id: str) -> list[dict[str, Any]]:
         return self.store.get(session_id)
@@ -49,6 +66,8 @@ class Assistant:
 
     async def aclose(self) -> None:
         await self.client.close()
+        if self._tts is not None:
+            await self._tts.aclose()
 
     # ---------------------------------------------------------------- speech
 
@@ -59,6 +78,45 @@ class Assistant:
             if event["type"] in ("done", "error"):
                 final = event
         return final
+
+    async def speak(
+        self, session_id: str, text: str | None, regenerate: bool = False
+    ) -> AsyncIterator[Event]:
+        """Drive one turn and synthesise it as she goes.
+
+        Text is cut into speakable chunks the moment each one is complete and
+        synthesised immediately, so the first sound arrives while the model is
+        still writing the rest of the reply. Waiting for the full response first
+        would add a second or more of silence to every single turn.
+
+        Emits `start`, then interleaved `text` and `audio`, then `done`/`error`.
+        """
+        engine = self.tts
+        yield {"type": "start", "engine": engine.name, "format": engine.format.as_dict()}
+
+        chunker = SentenceChunker()
+
+        async def voice(chunk: str) -> AsyncIterator[Event]:
+            yield {"type": "text", "text": chunk}
+            async for pcm in engine.synthesize(chunk):
+                yield {"type": "audio", "pcm": pcm}
+
+        async for event in self.stream(session_id, text, regenerate=regenerate):
+            if event["type"] == "delta":
+                for chunk in chunker.feed(event["text"]):
+                    async for out in voice(chunk):
+                        yield out
+            elif event["type"] == "done":
+                tail = chunker.flush()
+                if tail:
+                    async for out in voice(tail):
+                        yield out
+                yield event
+            else:
+                # `tag` passes straight through; `error` ends the turn.
+                yield event
+                if event["type"] == "error":
+                    return
 
     async def stream(
         self, session_id: str, text: str | None, regenerate: bool = False
@@ -86,6 +144,7 @@ class Assistant:
 
             stripper = EmotionStripper()
             parts: list[str] = []
+            announced_tag = False
 
             try:
                 async with self.client.messages.stream(
@@ -98,6 +157,12 @@ class Assistant:
                 ) as stream:
                     async for delta in stream.text_stream:
                         visible = stripper.feed(delta)
+                        # Announce the emotion as soon as it's parsed rather than
+                        # at the end: the voice client wants it while she is still
+                        # speaking, and phase 5's avatar will want it sooner still.
+                        if stripper.tag and not announced_tag:
+                            announced_tag = True
+                            yield {"type": "tag", "tag": stripper.tag}
                         if visible:
                             parts.append(visible)
                             yield {"type": "delta", "text": visible}

@@ -128,7 +128,8 @@ def test_stream_emits_sse_deltas_then_done(client, api: FakeAPI) -> None:
             if line.startswith("data: ")
         ]
 
-    assert [e["type"] for e in events] == ["delta", "delta", "done"]
+    assert [e["type"] for e in events] == ["tag", "delta", "delta", "done"]
+    assert events[0] == {"type": "tag", "tag": "neutral"}
     assert "".join(e["text"] for e in events if e["type"] == "delta") == "Sixty-one."
     assert events[-1]["tag"] == "neutral"
 

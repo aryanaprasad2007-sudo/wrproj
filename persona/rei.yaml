@@ -20,11 +20,19 @@ model:
   # is the correct way to cut cost and latency instead.
   thinking: adaptive
 
-# Phase 2. Deliberately null until the character voice is chosen — the TTS
-# adapter reads this block and nothing else needs to change when it's filled in.
+# The swappable box. Only this block changes when the character voice is chosen.
+#
+#   tone   audible placeholder — no download, no key. Not speech; it exists so
+#          the pipeline runs and you can hear that the plumbing works.
+#   piper  local neural TTS, offline, free. Download a voice once with:
+#            python -m piper.download_voices en_US-lessac-medium --download-dir voices
+#
+# A hosted cloning engine (ElevenLabs, Cartesia) goes here the same way once the
+# character voice exists — write one adapter, change `engine`, nothing else moves.
 voice:
-  engine: null          # elevenlabs | cartesia | xtts | fish | kokoro
-  voice_id: null
+  engine: tone
+  model: en_US-lessac-medium   # piper only
+  model_dir: voices            # piper only
   speed: 1.0
   style: "calm, low-energy, unhurried. Falling intonation. Never upspeak."
 
