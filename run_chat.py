@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Entry point for the phase-0 terminal chat.
+"""Entry point for the persona tuning chat.
 
     python run_chat.py                    # persona/rei.yaml
     python run_chat.py persona/other.yaml
 """
 
+import asyncio
 import os
 import sys
 from pathlib import Path
@@ -30,7 +31,7 @@ def main() -> int:
         print(f"No persona file at {path}")
         return 1
 
-    Chat(path).run()
+    asyncio.run(Chat(path).run())
     return 0
 
 

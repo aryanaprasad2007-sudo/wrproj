@@ -3,23 +3,63 @@
 A personal AI assistant with a defined character — calm, level, faintly
 condescending — reachable by text on a phone and by voice on a desktop.
 
-This is **phase 0**: the persona and a terminal chat loop. Getting the tone right
-is the hard part and it costs almost nothing to iterate on, so it comes first.
-Everything after this is plumbing.
+Currently at **phase 1**: the persona, a service that holds it, and a Telegram
+bot so she's reachable from a phone.
+
+```
+                        ┌──────────────────────────────┐
+ Telegram (phone) ────► │  service                     │
+                        │    persona · memory · tools  │ ────► Claude
+ terminal (tuning) ───► │                              │
+                        └──────────────────────────────┘
+ desktop voice ──┐              ▲
+   (phase 2/3)   └──────────────┘
+```
+
+One brain, thin clients. The persona, conversation history and — later — tools
+live in exactly one place, so she's the same entity whether you type at her or
+talk to her.
 
 ## Running it
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env        # add your ANTHROPIC_API_KEY
-python run_chat.py
+cp .env.example .env
 ```
 
-Point it at a different character with `python run_chat.py persona/other.yaml`.
+Fill in `ANTHROPIC_API_KEY` and generate a service token:
+
+```bash
+python -c 'import secrets; print(secrets.token_urlsafe(32))'
+```
+
+Then, in separate shells:
+
+```bash
+python run_server.py       # the brain, on 127.0.0.1:8000
+python run_telegram.py     # the phone client
+python run_chat.py         # the tuning terminal (talks to Claude directly)
+```
+
+### Telegram setup
+
+1. Message [@BotFather](https://t.me/botfather), `/newbot`, copy the token into
+   `TELEGRAM_BOT_TOKEN`.
+2. Start `run_telegram.py` and message your bot once. It will refuse to answer
+   and log the chat id it saw.
+3. Put that id in `TELEGRAM_ALLOWED_CHAT_IDS` and restart.
+
+The allowlist is not optional in practice — anyone who finds the bot's username
+can message it, and without the allowlist she answers nobody. The bot uses long
+polling, so no public URL, HTTPS certificate or port forwarding is needed.
+
+In Telegram: `/clear` forgets the conversation, `/reload` re-reads the persona
+file, anything else is just talking to her.
 
 ## The tuning loop
 
-Open `persona/rei.yaml` in one pane and the chat in another:
+`run_chat.py` is the tool for getting the character right. Open
+`persona/rei.yaml` in one pane and the chat in another:
 
 | command | |
 |---|---|
@@ -33,6 +73,10 @@ Open `persona/rei.yaml` in one pane and the chat in another:
 Edit the YAML, `/reload`, `/regen`, compare. When she gets a situation wrong,
 **add an example** — the `examples:` block does more work than every adjective
 above it. Adjectives give you a caricature; examples give you a register.
+
+Terminal history is in-memory on purpose: a tuning session should start clean.
+Telegram conversations persist to `data/conversations.json` and survive a
+restart.
 
 ## How the character is defined
 
@@ -50,6 +94,25 @@ Everything lives in `persona/rei.yaml`. No character text exists anywhere else.
   repeated questions, bad ideas, ambiguity, praise, pushback, real distress.
 - **`format`** — plain spoken sentences, no markdown. That's a real constraint
   once TTS is in front of it, so it's enforced from day one.
+
+## API
+
+Everything except `/health` needs `Authorization: Bearer $ASSISTANT_TOKEN`.
+
+| | |
+|---|---|
+| `GET /health` | persona name, model, effort. Unauthenticated — leaks nothing |
+| `POST /chat` | `{session_id, message}` → `{text, tag, usage}` |
+| `POST /chat/stream` | same body, SSE of `delta` events then one `done`/`error` |
+| `POST /sessions/{id}/clear` | forget one conversation |
+| `POST /persona/reload` | re-read the persona file without a restart |
+
+`/chat/stream` is what the desktop voice client will use in phase 2 — deltas
+arrive sentence by sentence, which is what streaming TTS needs.
+
+Two things guard this service: it binds to `127.0.0.1` by default, and it
+refuses to start without `ASSISTANT_TOKEN`. Both matter, because a reachable
+endpoint here is someone else spending your API budget.
 
 ## Design decisions worth knowing
 
@@ -73,12 +136,30 @@ leading few characters — enough to decide whether a tag is present — then pa
 everything through. The tag can be split across any number of stream deltas,
 including `]` landing exactly on a chunk boundary.
 
+**A failed turn keeps what you typed.** If the model call errors, the user
+message stays in history so `/regen` retries it instead of losing it.
+
+**One lock per session.** Two messages fired off from a phone in quick
+succession would otherwise interleave and corrupt the history.
+
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The model is mocked at the HTTP layer rather than by patching the SDK, so the
+tests exercise real request construction — cache breakpoint placement, message
+alternation and parameter shape are checked against what would actually go on
+the wire.
+
 ## Where this is going
 
 | | |
 |---|---|
-| **0** | persona + terminal chat ← **you are here** |
-| 1 | wrap in a backend service, Telegram bot for phone |
+| 0 | persona + terminal chat ✅ |
+| **1** | backend service + Telegram bot ← **you are here** |
 | 2 | streaming TTS in the backend, desktop client that plays audio |
 | 3 | mic, VAD, STT, barge-in → real conversation |
 | 4 | memory and tools |
@@ -86,8 +167,7 @@ including `]` landing exactly on a chunk boundary.
 
 The architecture is a pipeline (STT → LLM → TTS), not a speech-to-speech model,
 because the character voice needs to be a swappable box — it hasn't been chosen
-yet. One backend holds persona, memory and tools; the phone and desktop clients
-are both thin.
+yet. The `voice:` block in the persona file is where that plugs in.
 
 ## Layout
 
@@ -95,6 +175,10 @@ are both thin.
 persona/rei.yaml       the character — the only file with character text in it
 assistant/persona.py   loads the YAML, compiles system prompt + few-shot turns
 assistant/emotions.py  emotion tag parsing, streaming and whole-string
-assistant/chat.py      the terminal loop
-run_chat.py            entry point
+assistant/engine.py    the brain: history, caching, streaming, error handling
+assistant/store.py     conversation persistence
+assistant/server.py    HTTP service
+assistant/telegram.py  Telegram long-polling client
+assistant/chat.py      the tuning terminal
+run_server.py  run_telegram.py  run_chat.py
 ```
