@@ -19,7 +19,9 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from .engine import Assistant
+from .memory import MemoryStore
 from .persona import DEFAULT_PERSONA
+from .reminders import ReminderStore
 from .store import ConversationStore
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -81,12 +83,15 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        data = Path(os.environ.get("ASSISTANT_DATA") or ROOT / "data")
         app.state.engine = engine or Assistant(
             persona_path or os.environ.get("PERSONA_PATH") or DEFAULT_PERSONA,
             store=ConversationStore(
                 Path(store_path or os.environ.get("ASSISTANT_STORE") or DEFAULT_STORE),
                 max_turns=int(os.environ.get("ASSISTANT_MAX_TURNS", "40")),
             ),
+            memory=MemoryStore(data / "memory.json"),
+            reminders=ReminderStore(data / "reminders.json"),
         )
         try:
             yield
@@ -192,6 +197,36 @@ def create_app(
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )
+
+    @app.get("/reminders/due", dependencies=[Depends(require_auth)])
+    async def reminders_due(request: Request, session_id: str | None = None) -> dict[str, Any]:
+        """Reminders that have come due and not yet been delivered.
+
+        Polled by whichever client can reach the user. There is no scheduler:
+        a client already sitting in a loop can just ask, which removes a thread,
+        a restart-recovery story, and a way to lose reminders across a crash.
+        """
+        engine: Assistant = request.app.state.engine
+        return {"reminders": engine.reminders.due(session_id)}
+
+    @app.post("/reminders/{reminder_id}/delivered", dependencies=[Depends(require_auth)])
+    async def reminder_delivered(reminder_id: int, request: Request) -> dict[str, Any]:
+        """Claim a reminder. Idempotent, so two pollers can't double-deliver."""
+        engine: Assistant = request.app.state.engine
+        return {"delivered": engine.reminders.mark_delivered(reminder_id)}
+
+    @app.get("/memory", dependencies=[Depends(require_auth)])
+    async def memory_list(request: Request) -> dict[str, Any]:
+        engine: Assistant = request.app.state.engine
+        return {"facts": engine.memory.all()}
+
+    @app.delete("/memory/{fact_id}", dependencies=[Depends(require_auth)])
+    async def memory_forget(fact_id: int, request: Request) -> dict[str, Any]:
+        engine: Assistant = request.app.state.engine
+        removed = engine.memory.remove(fact_id)
+        if removed is None:
+            raise HTTPException(status_code=404, detail="no such memory")
+        return {"removed": removed}
 
     @app.post("/sessions/{session_id}/clear", dependencies=[Depends(require_auth)])
     async def clear(session_id: str, request: Request) -> dict[str, str]:

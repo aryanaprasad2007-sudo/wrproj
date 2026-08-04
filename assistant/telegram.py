@@ -150,6 +150,34 @@ class TelegramBot:
         except asyncio.CancelledError:
             pass
 
+    async def _deliver_reminders(self, tg: httpx.AsyncClient, api: httpx.AsyncClient) -> None:
+        """Push anything that has come due.
+
+        Claim each one before sending: `mark_delivered` is idempotent, so if a
+        second poller is running only one of them delivers. Better to lose a
+        reminder to a failed send than to fire the same one repeatedly.
+        """
+        for chat_id in self.allowed:
+            session = f"telegram:{chat_id}"
+            try:
+                resp = await api.get(
+                    f"{self.server_url}/reminders/due",
+                    headers={"Authorization": f"Bearer {self.server_token}"},
+                    params={"session_id": session},
+                    timeout=15.0,
+                )
+                if resp.status_code != 200:
+                    return
+                due = resp.json().get("reminders", [])
+            except httpx.HTTPError as exc:
+                log.debug("reminder poll failed: %s", exc)
+                return
+
+            for reminder in due:
+                claimed = await self._post(api, f"/reminders/{reminder['id']}/delivered")
+                if claimed:
+                    await self._send(tg, chat_id, reminder["text"])
+
     async def _drop_backlog(self, tg: httpx.AsyncClient) -> None:
         """Skip messages sent while the bot was down.
 
@@ -193,6 +221,14 @@ class TelegramBot:
                             await self._handle(tg, api, message)
                         except Exception:
                             log.exception("failed handling update %s", update["update_id"])
+
+                    # The long poll returns at least every POLL_TIMEOUT seconds
+                    # even with no messages, which is a fine reminder cadence
+                    # and needs no timer of its own.
+                    try:
+                        await self._deliver_reminders(tg, api)
+                    except Exception:
+                        log.exception("reminder delivery failed")
 
 
 def _split(text: str, limit: int = TELEGRAM_LIMIT) -> list[str]:

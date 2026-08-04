@@ -3,8 +3,9 @@
 A personal AI assistant with a defined character — calm, level, faintly
 condescending — reachable by text on a phone and by voice on a desktop.
 
-Currently at **phase 3**: the persona, a service that holds it, a Telegram bot
-for the phone, and a desktop client you can hold a spoken conversation with.
+Currently at **phase 4**: the persona, a service that holds it, a Telegram bot
+for the phone, a desktop client you can hold a spoken conversation with, and
+memory and tools so she can actually do things.
 
 ```
                         ┌────────────────────────────────┐
@@ -136,6 +137,52 @@ Terminal history is in-memory on purpose: a tuning session should start clean.
 Telegram conversations persist to `data/conversations.json` and survive a
 restart.
 
+## Memory
+
+She writes her own memories, through a `remember` tool, rather than having them
+extracted from transcripts by a summariser. The model is good at judging what's
+worth keeping, and the result is a short file you can read and correct:
+
+```bash
+curl -H "Authorization: Bearer $ASSISTANT_TOKEN" localhost:8000/memory
+curl -X DELETE -H "Authorization: Bearer $ASSISTANT_TOKEN" localhost:8000/memory/3
+```
+
+It's `data/memory.json` — plain text, editable by hand.
+
+Deliberately not a vector store. At personal scale the whole set fits in the
+prompt, and injecting all of it beats retrieving some of it: no embedding model,
+no similarity threshold to tune, no relevant fact quietly missed. If it ever
+outgrows that, `assistant/memory.py` is the only file that changes.
+
+## Reminders
+
+Ask her to remind you and she works out the absolute time and stores it.
+Delivery is a client asking "anything due?" — the Telegram bot is already
+sitting in a polling loop, so it costs nothing to ask.
+
+There's no scheduler on purpose. A background timer would add a thread, a
+restart-recovery story, and a way to lose reminders silently across a crash.
+Asking a store is none of those. Claiming is idempotent, so two clients polling
+can't double-fire.
+
+## Tools
+
+Configured in the `tools:` block of the persona file:
+
+| | |
+|---|---|
+| `memory` | `remember`, `forget` |
+| `reminders` | `set_reminder`, `list_reminders`, `cancel_reminder` |
+| `web_search` | Anthropic's server-side search. Off by default — it's billed per search. |
+
+Tool descriptions say *when* to call, not just what the tool does. That wording
+is load-bearing: recent models are conservative about reaching for custom tools,
+and a description that only states a capability gets noticeably fewer calls.
+
+Tools render at the very front of the prompt, so toggling any of these
+invalidates the entire cache. Set them and leave them.
+
 ## How the character is defined
 
 Everything lives in `persona/rei.yaml`. No character text exists anywhere else.
@@ -164,8 +211,14 @@ Everything except `/health` needs `Authorization: Bearer $ASSISTANT_TOKEN`.
 | `POST /chat/stream` | same body, SSE: `tag`, then `delta`s, then `done`/`error` |
 | `POST /chat/voice` | same body, SSE: `start`, `tag`, then interleaved `text` and base64 `audio`, then `done` |
 | `POST /converse` | `{session_id, audio}` (base64 PCM) → SSE: `transcript`, then the whole `/chat/voice` stream |
+| `GET /reminders/due` | what's come due and not been delivered |
+| `POST /reminders/{id}/delivered` | claim one; idempotent, so pollers can't double-fire |
+| `GET /memory`, `DELETE /memory/{id}` | read and prune what she remembers |
 | `POST /sessions/{id}/clear` | forget one conversation |
 | `POST /persona/reload` | re-read the persona file without a restart |
+
+Turns that use tools emit `tool_use` and `tool_result` events on the streaming
+endpoints, so a client can show what she's doing rather than going quiet.
 
 `/chat/voice` is one stream rather than a text call plus a speech call: it keeps
 text and audio in sync for display, and avoids paying for the model turn twice.
@@ -224,6 +277,14 @@ correct way to cut latency and cost.
 so a cache breakpoint sits at the end of the examples and a second rides the
 last turn. The examples are effectively free after the first request.
 
+**Volatile context goes last, not in the system prompt.** She needs to know the
+time, and the clock changes on every single request. Put that in the system
+prompt and every request reprocesses the persona, the examples *and* the entire
+conversation history — the cache never hits. So the time and her memories ride
+in a trailing `role: "system"` message, after both breakpoints, where changing
+them costs nothing. Models that don't accept that role get it moved into the
+system prompt automatically, once, on the first rejection.
+
 **Streaming with a buffered tag parser.** `EmotionStripper` holds back only the
 leading few characters — enough to decide whether a tag is present — then passes
 everything through. The tag can be split across any number of stream deltas,
@@ -254,17 +315,18 @@ the wire.
 | 0 | persona + terminal chat ✅ |
 | 1 | backend service + Telegram bot ✅ |
 | 2 | streaming TTS + desktop client that plays audio ✅ |
-| **3** | mic, VAD, STT, barge-in → real conversation ← **you are here** |
-| 4 | memory and tools |
+| 3 | mic, VAD, STT, barge-in → real conversation ✅ |
+| **4** | memory and tools ← **you are here** |
 | 5 | avatar |
 
 The architecture is a pipeline (STT → LLM → TTS), not a speech-to-speech model,
 because the character voice needs to be a swappable box — it hasn't been chosen
 yet. The `voice:` block in the persona file is where that plugs in.
 
-The loop is complete now, so what's left is what she can actually *do*. Phase 4
-is memory and tools: calendar, reminders, timers, search. That's the difference
-between something impressive and something you'd keep running.
+What's left is the face. Phase 5 is the avatar — Live2D or VRM — and the hooks
+for it are already in place: every reply carries an emotion tag, emitted as its
+own event while she's still speaking, and the TTS layer hands back raw PCM you
+can take an amplitude envelope from for lipsync.
 
 ## Layout
 
@@ -273,7 +335,10 @@ persona/rei.yaml         the character — the only file with character text in 
 assistant/persona.py     loads the YAML, compiles system prompt + few-shot turns
 assistant/emotions.py    emotion tag parsing, streaming and whole-string
 assistant/chunker.py     splits streamed text into speakable chunks
-assistant/engine.py      the brain: history, caching, streaming, speech
+assistant/engine.py      the brain: history, caching, streaming, speech, tools
+assistant/tools.py       tool definitions and dispatch
+assistant/memory.py      what she remembers between conversations
+assistant/reminders.py   scheduled nudges, delivered by whoever can reach you
 assistant/store.py       conversation persistence
 assistant/server.py      HTTP service
 assistant/telegram.py    Telegram long-polling client

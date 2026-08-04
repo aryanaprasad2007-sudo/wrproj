@@ -36,10 +36,12 @@ async def test_history_keeps_the_tag_but_output_strips_it(
     done = (await collect(engine, "s", "hi"))[-1]
 
     assert done["text"] == "What."
+    # Assistant turns are stored as blocks, not text: thinking and tool_use
+    # blocks have to survive the round trip or the next request is rejected.
     history = engine.history("s")
     assert history == [
         {"role": "user", "content": "hi"},
-        {"role": "assistant", "content": "[flat] What."},
+        {"role": "assistant", "content": [{"type": "text", "text": "[flat] What."}]},
     ]
 
 
@@ -73,9 +75,12 @@ async def test_messages_alternate_and_end_on_user(
     await collect(engine, "s", "two")
 
     roles = [m["role"] for m in api.last["messages"]]
-    assert roles[0] == "user"
-    assert roles[-1] == "user"
-    assert all(a != b for a, b in zip(roles, roles[1:])), roles
+    # Volatile context rides last, after everything cached.
+    assert roles[-1] == "system"
+    conversation = roles[:-1]
+    assert conversation[0] == "user"
+    assert conversation[-1] == "user"
+    assert all(a != b for a, b in zip(conversation, conversation[1:])), roles
 
 
 async def test_two_cache_breakpoints_in_the_right_places(
@@ -90,7 +95,11 @@ async def test_two_cache_breakpoints_in_the_right_places(
         for i, m in enumerate(msgs)
         if isinstance(m["content"], list) and any("cache_control" in b for b in m["content"])
     ]
-    assert marks == [len(engine.persona.few_shot) - 1, len(msgs) - 1]
+    few_shot = len(engine.persona.few_shot)
+    # End of the stable prefix, then the last conversation turn. The trailing
+    # context message sits after both, so changing it invalidates neither.
+    assert marks == [few_shot - 1, few_shot]
+    assert msgs[-1]["role"] == "system"
     # The API caps breakpoints at 4; we must stay well under.
     assert len(marks) <= 4
     # System carries no breakpoint while examples exist — it'd be redundant.
@@ -126,7 +135,7 @@ async def test_regenerate_drops_only_the_assistant_turn(
     assert done["text"] == "second"
     assert engine.history("s") == [
         {"role": "user", "content": "hi"},
-        {"role": "assistant", "content": "[bored] second"},
+        {"role": "assistant", "content": [{"type": "text", "text": "[bored] second"}]},
     ]
 
 
@@ -180,6 +189,69 @@ async def test_concurrent_sends_do_not_corrupt_history(
 
     roles = [m["role"] for m in engine.history("s")]
     assert roles == ["user", "assistant", "user", "assistant"]
+
+
+# ------------------------------------------------------------------ context
+
+
+async def test_volatile_context_rides_last(engine: Assistant, api: FakeAPI) -> None:
+    """The clock changes every request. In the cached prefix it would void the
+    persona, the examples and the whole history, every single turn."""
+    api.queue_reply(["[neutral] ok"])
+    await collect(engine, "s", "hello")
+
+    context = api.last["messages"][-1]
+    assert context["role"] == "system"
+    assert "The time is" in context["content"]
+    assert len(api.last["system"]) == 1
+    assert "The time is" not in api.last["system"][0]["text"]
+
+
+SYSTEM_ROLE_400 = (
+    '{"type":"error","error":{"type":"invalid_request_error",'
+    "\"message\":\"role 'system' is not supported on this model\"}}"
+)
+
+
+async def test_falls_back_when_the_model_rejects_a_system_message(
+    engine: Assistant, api: FakeAPI
+) -> None:
+    """Not every model takes a mid-conversation system role. Rather than fail
+    the turn, move the context into the system prompt and retry."""
+    api.queue_status(400, SYSTEM_ROLE_400)
+    api.queue_reply(["[neutral] recovered"])
+
+    events = await collect(engine, "s", "hello")
+
+    assert events[-1]["type"] == "done"
+    assert events[-1]["text"] == "recovered"
+    assert len(api.last["system"]) == 2, "context moved into the system prompt"
+    assert "The time is" in api.last["system"][1]["text"]
+    assert api.last["messages"][-1]["role"] == "user"
+
+
+async def test_the_fallback_is_remembered(engine: Assistant, api: FakeAPI) -> None:
+    """One probe per process, not one per turn."""
+    api.queue_status(400, SYSTEM_ROLE_400)
+    api.queue_reply(["[neutral] one"])
+    await collect(engine, "s", "first")
+
+    api.queue_reply(["[neutral] two"])
+    await collect(engine, "s", "second")
+
+    assert len(api.requests) == 3, "must not re-probe the rejected channel"
+    assert len(api.last["system"]) == 2
+
+
+async def test_other_400s_are_not_swallowed(engine: Assistant, api: FakeAPI) -> None:
+    api.queue_status(
+        400,
+        '{"type":"error","error":{"type":"invalid_request_error",'
+        '"message":"max_tokens is too large"}}',
+    )
+    events = await collect(engine, "s", "hello")
+    assert events[-1]["type"] == "error"
+    assert "max_tokens" in events[-1]["message"]
 
 
 # ------------------------------------------------------------------ persona

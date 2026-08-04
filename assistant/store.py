@@ -16,6 +16,36 @@ from typing import Any
 Message = dict[str, Any]
 
 
+def read_json(path: Path | None, default: Any) -> Any:
+    """Load JSON, tolerating a missing or corrupt file.
+
+    A damaged store costs one lost conversation; refusing to start costs the
+    assistant entirely. The former is the better failure.
+    """
+    if not path or not path.exists():
+        return default
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return default
+    return loaded if isinstance(loaded, type(default)) else default
+
+
+def write_json(path: Path | None, data: Any) -> None:
+    """Write via a temp file in the same directory, so a crash can't truncate."""
+    if not path:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(data, fh, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+    except OSError:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+
+
 class ConversationStore:
     def __init__(self, path: Path | None = None, max_turns: int = 40) -> None:
         """`max_turns` counts messages, not exchanges — 40 is 20 back-and-forths."""

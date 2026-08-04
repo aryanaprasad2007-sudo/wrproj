@@ -79,6 +79,95 @@ def reply_stream(deltas: list[str], stop_reason: str = "end_turn") -> str:
     )
 
 
+def tool_use_stream(
+    calls: list[tuple[str, dict[str, Any]]], text: str = ""
+) -> str:
+    """A response that asks for one or more tools, optionally after some text."""
+    message = {
+        "id": "msg_tool",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-opus-5",
+        "content": [],
+        "stop_reason": None,
+        "stop_sequence": None,
+        "usage": {
+            "input_tokens": 900,
+            "output_tokens": 0,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 800,
+        },
+    }
+    events: list[tuple[str, dict[str, Any]]] = [
+        ("message_start", {"type": "message_start", "message": message})
+    ]
+    index = 0
+    if text:
+        events += [
+            (
+                "content_block_start",
+                {
+                    "type": "content_block_start",
+                    "index": index,
+                    "content_block": {"type": "text", "text": ""},
+                },
+            ),
+            (
+                "content_block_delta",
+                {
+                    "type": "content_block_delta",
+                    "index": index,
+                    "delta": {"type": "text_delta", "text": text},
+                },
+            ),
+            ("content_block_stop", {"type": "content_block_stop", "index": index}),
+        ]
+        index += 1
+
+    for n, (name, arguments) in enumerate(calls):
+        events += [
+            (
+                "content_block_start",
+                {
+                    "type": "content_block_start",
+                    "index": index,
+                    "content_block": {
+                        "type": "tool_use",
+                        "id": f"toolu_{n + 1}",
+                        "name": name,
+                        "input": {},
+                    },
+                },
+            ),
+            (
+                "content_block_delta",
+                {
+                    "type": "content_block_delta",
+                    "index": index,
+                    "delta": {
+                        "type": "input_json_delta",
+                        "partial_json": json.dumps(arguments),
+                    },
+                },
+            ),
+            ("content_block_stop", {"type": "content_block_stop", "index": index}),
+        ]
+        index += 1
+
+    events += [
+        (
+            "message_delta",
+            {
+                "type": "message_delta",
+                "delta": {"stop_reason": "tool_use", "stop_sequence": None},
+                "usage": {"output_tokens": 20},
+            },
+        ),
+        ("message_stop", {"type": "message_stop"}),
+    ]
+    return sse(events)
+
+
 class FakeAPI:
     """Scriptable stand-in for the Messages API. Records every request body."""
 
@@ -91,6 +180,17 @@ class FakeAPI:
             httpx.Response(
                 200,
                 content=reply_stream(deltas, stop_reason),
+                headers={"content-type": "text/event-stream"},
+            )
+        )
+
+    def queue_tool_use(
+        self, calls: list[tuple[str, dict[str, Any]]], text: str = ""
+    ) -> None:
+        self.responses.append(
+            httpx.Response(
+                200,
+                content=tool_use_stream(calls, text),
                 headers={"content-type": "text/event-stream"},
             )
         )
