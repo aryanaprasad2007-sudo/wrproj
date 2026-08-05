@@ -3,16 +3,19 @@
 A personal AI assistant with a defined character — calm, level, faintly
 condescending — reachable by text on a phone and by voice on a desktop.
 
-Currently at **phase 4**: the persona, a service that holds it, a Telegram bot
-for the phone, a desktop client you can hold a spoken conversation with, and
-memory and tools so she can actually do things.
+Currently at **phase 5**: the persona, a service that holds it, a Telegram bot
+for the phone, a desktop client you can hold a spoken conversation with, memory
+and tools so she can actually do things, and a live feed for a face.
 
 ```
                         ┌────────────────────────────────┐
  Telegram (phone) ────► │  service                       │
  terminal (tuning) ───► │    persona · memory · tools    │ ────► Claude
  desktop voice ───────► │    STT · chunker · TTS         │
-   mic + VAD            └────────────────────────────────┘
+   mic + VAD            └───────────────┬────────────────┘
+                                        │ tag · say · state · mouth
+                                        ▼
+                                    a face
 ```
 
 One brain, thin clients. The persona, conversation history, voice and — later —
@@ -27,16 +30,21 @@ trip.
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env
+python run_setup.py
+python run_all.py
 ```
 
-Fill in `ANTHROPIC_API_KEY` and generate a service token:
+`run_setup.py` writes a `.env`, generates the service token, asks for your API
+key, downloads a Piper voice so she speaks in words rather than tones, and then
+checks the machine and tells you what's missing. It's safe to re-run, and it's
+also the answer to "something's broken, what?" — `python run_setup.py --check`
+reports without changing anything.
 
-```bash
-python -c 'import secrets; print(secrets.token_urlsafe(32))'
-```
+`run_all.py` runs the service and a client in one terminal, picking the spoken
+client if you have a microphone and the typed one if you don't. It prints a URL
+for her face; open it in a browser and watch while you talk to her.
 
-Then, in separate shells:
+To run the pieces separately, in their own shells:
 
 ```bash
 python run_server.py       # the brain, on 127.0.0.1:8000
@@ -46,8 +54,18 @@ python run_voice.py        # type, and hear her answer (no mic needed)
 python run_chat.py         # the tuning terminal (talks to Claude directly)
 ```
 
-Then open `http://127.0.0.1:8000/avatar#token=$ASSISTANT_TOKEN` to watch her
-face while you talk to her.
+### If something doesn't work
+
+`python run_setup.py --check` first. Almost everything that goes wrong here
+goes wrong outside Python and surfaces three layers from the cause:
+
+| | |
+|---|---|
+| no sound, `audio/*.wav` files appearing instead | no output device. PortAudio: `brew install portaudio` / `apt install libportaudio2`, then `pip install sounddevice` |
+| she bleeps instead of speaking | still on the `tone` placeholder — `python run_setup.py` downloads a real voice |
+| a long pause before she answers the first time you speak | Whisper is downloading. `python run_setup.py --whisper` gets it over with |
+| she cuts herself off mid-sentence, repeatedly | she's hearing herself through your speakers. Headphones, or `BARGE_IN=0` |
+| the face says "service unreachable" | the server isn't up, or it's on a different port than the page |
 
 ### Talking to her
 
@@ -399,10 +417,13 @@ assistant/telegram.py    Telegram long-polling client
 assistant/voice_client.py desktop playback client
 assistant/conversation.py the spoken loop: listening, barge-in
 assistant/chat.py        the tuning terminal
+assistant/preflight.py   what this machine is missing, and what to type
 assistant/avatar.py      the face feed: mouth envelope, event bus, client link
 assistant/web/avatar.html the viewer, and the seam a real rig plugs into
 assistant/audio/         mic capture, VAD, utterance segmentation
 assistant/tts/           the swappable box: base.py, tone.py, piper.py
 assistant/stt/           recognisers: base.py, whisper.py
+run_setup.py   get a fresh clone ready, and say what's still missing
+run_all.py     service + a client + her face, in one terminal
 run_server.py  run_telegram.py  run_listen.py  run_voice.py  run_chat.py
 ```
