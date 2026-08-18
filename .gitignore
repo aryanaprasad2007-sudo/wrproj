@@ -39,3 +39,6 @@ Pine-Trading-Scripts/
 Swing-Pro-Trading/
 trading-hub.pdf
 trading-hub-2026-06-original.pdf
+*.bak
+*.bak2
+docket_data.json.bak*
