@@ -1,5 +1,0 @@
-# Live Alpaca streaming tool (alpaca_stream.py) needs exactly one package:
-websocket-client>=1.6
-
-# The delayed Polygon tool (darkpool_orderbook.py) needs NOTHING — pure stdlib.
-# The self-test (python3 alpaca_stream.py --selftest) also needs NOTHING.
