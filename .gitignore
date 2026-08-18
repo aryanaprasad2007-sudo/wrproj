@@ -42,3 +42,7 @@ trading-hub-2026-06-original.pdf
 *.bak
 *.bak2
 docket_data.json.bak*
+
+# Personal identity / working-instructions files -- kept local, not pushed
+WHOAMI.md
+CLAUDE.md

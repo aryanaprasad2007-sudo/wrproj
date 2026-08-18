@@ -57,7 +57,7 @@ moved, find its old event by searching for its marker, not its old title.
 
 3. **Scan Calendar for free blocks over the next 7 days.** Use
    `list_events`/`search_events` on the primary calendar
-   (`aryanaprasad2007@gmail.com` — see [[google-calendars]], **not** the
+   (your primary Google account — see [[google-calendars]], **not** the
    abandoned "Daily Routine" calendar) to get every existing event, then
    compute the gaps. A usable slot is:
    - **At least 30 minutes**, between existing events
