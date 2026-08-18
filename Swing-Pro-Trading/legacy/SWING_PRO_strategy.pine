@@ -1,0 +1,448 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © @Apeaverage & @SXDXST_FB6 (Impulse MACD)  •  Refined by Akash (SMA/RSI/MACD)
+// STRATEGY conversion of "SWING1_PRO (adaptive)". Pine v6.
+//
+// WHY A STRATEGY (vs the original indicator):
+//   The indicator version printed BUY/SELL/exit labels and tracked a fake `pos` variable,
+//   but produced NO backtestable P&L — you could not verify win rate, expectancy, R:R, or
+//   whether the ATR stop/target logic actually nets positive. This version routes every
+//   entry/exit through the broker emulator (strategy.entry / strategy.close / strategy.exit)
+//   so the Strategy Tester reports real performance, with commission + slippage modelled.
+//
+// WHAT CHANGED FROM THE INDICATOR (logic preserved, engine swapped):
+//   • Manual `pos` / `var` state machine  ->  native position handling. Opposite-direction
+//     entries reverse the position automatically (same behaviour the old code emulated).
+//   • ATR stop/target  ->  strategy.exit(stop=, limit=). The emulator handles intrabar
+//     fills and the stop-vs-target "both hit in one bar" case CONSERVATIVELY (assumes the
+//     stop), instead of the indicator's optimistic `low<=sl or high>=tp` check.
+//   • Same-bar Long+Short conflict (the indicator silently let Long win by code order) is
+//     now resolved EXPLICITLY: a bar that signals both directions takes NO trade (skip),
+//     so a contradictory bar can't thrash the position. Toggle `longWinsOnConflict` to
+//     restore the old "long wins" behaviour.
+//   • Condition exits (MACD flip / trend-MA cross / RSI-50 cross) -> strategy.close.
+//
+// All signal logic (adaptive HTF trend, ATR-normalised slope, Impulse MACD, RSI band,
+// ADX/volume/session/volatility filters, pullback & reversal entries, cooldown, re-entry
+// rule, anti-chase guards) is unchanged from the indicator. See the original header for the
+// rationale behind each filter.
+//
+//   HONEST NOTE: backtest results from ANY discretionary-style script are easy to curve-fit.
+//   This script has ~50 inputs tuned to one symbol/timeframe — treat the Strategy Tester
+//   output as a hypothesis to falsify (walk-forward, other symbols/TFs), not as proof.
+//   Not financial advice.
+//@version=6
+strategy("Swing Buy/Sell — PRO (adaptive) [Strategy]", shorttitle="SWING_PRO_S", overlay=true,
+     max_labels_count=500, pyramiding=0, calc_on_every_tick=false,
+     initial_capital=100000, default_qty_type=strategy.percent_of_equity, default_qty_value=10,
+     commission_type=strategy.commission.percent, commission_value=0.01, slippage=1)
+
+// ── Backtest costs (so results aren't fantasy) ────────────────────────────────────────
+// NOTE: commission_value / slippage above are the strategy defaults; change them in the
+// "Properties" tab of the Strategy Tester to match your broker.
+
+// ── 1) Overall trend ──────────────────────────────────────────────────────────────────
+gT = "1) Overall trend — which way the market is leaning"
+useTrend     = input.bool(true,  "Only trade with the trend", group=gT, tooltip="On: buy only when the market is leaning up, sell only when it's leaning down. Off: ignore the trend entirely.")
+useHTFTrend  = input.bool(true,  "Judge the trend from a bigger-picture timeframe", group=gT, tooltip="Looks at a slower timeframe to decide the overall direction, so quick wiggles on your chart don't flip the trend.")
+useAutoHTF   = input.bool(true,  "Pick that bigger timeframe automatically (recommended)", group=gT, tooltip="On: the bigger timeframe = your chart's timeframe times the number below. On a 5-min chart × 15 = a 75-min trend view. Off: choose it yourself below.")
+autoHtfMult  = input.int(15, "How much bigger? (× your chart's timeframe)", minval=2, maxval=60, step=1, group=gT, tooltip="5-min × 15 = 75-min. Bigger number = slower, looser trend. To test a range, try 6 to 36 in steps of 6.")
+htfTfManual  = input.timeframe("60", "Bigger-picture timeframe (if automatic is off)", group=gT)
+trendType    = input.string("EMA", "Trend line style", options=["EMA", "SMA"], group=gT, tooltip="EMA reacts faster to recent price; SMA is smoother and slower.")
+trendLen     = input.int(50, "Trend line length (number of bars)", minval=10, maxval=200, step=5, group=gT, tooltip="Longer = smoother, slower trend. To test a range, try 20 to 100 in steps of 10.")
+useSlope     = input.bool(true,  "Skip flat, sideways markets", group=gT, tooltip="Only trade when the trend line is actually tilting up or down — stand aside when it's flat and choppy.")
+slopeLen     = input.int(3, "How far back to measure the tilt (bars)", minval=1, group=gT)
+slopeMinATR  = input.float(0.20, "How steep the trend must be to count", minval=0.0, maxval=1.0, step=0.05, group=gT, tooltip="Higher = the trend must be clearly moving before trading (fewer trades). 0 = any tilt counts. To test a range, try 0.0 to 0.5 in steps of 0.05.")
+useBuffer    = input.bool(false, "Require price to clear the trend line by a margin", group=gT, tooltip="Avoids trading right on top of the trend line, where price flips back and forth.")
+bufferATR    = input.float(0.5, "Size of that margin", minval=0.0, step=0.1, group=gT, tooltip="Measured in volatility units — bigger means price must break further past the trend line.")
+showTrend    = input.bool(true, "Show the trend line on the chart", group=gT)
+
+// ── 2) Momentum: MACD ─────────────────────────────────────────────────────────────────
+gM = "2) Momentum strength (MACD) — standard settings, leave as-is unless you know these"
+fastLength   = input.int(12, "MACD fast setting", minval=1, group=gM)
+slowLength   = input.int(26, "MACD slow setting", minval=1, group=gM)
+signalLength = input.int(9,  "MACD signal setting", minval=1, group=gM)
+
+// ── 3) Momentum: RSI ──────────────────────────────────────────────────────────────────
+gR = "3) Buying/selling pressure (RSI)"
+rsiLength     = input.int(14, "RSI lookback (bars)", minval=1, group=gR)
+rsiLongLevel  = input.int(52, "Buys need RSI above this (upward pressure)", group=gR, tooltip="Higher = demand momentum present before buying. 50 is neutral.")
+rsiShortLevel = input.int(48, "Sells need RSI below this (downward pressure)", group=gR, tooltip="Lower = selling pressure present before shorting. 50 is neutral.")
+
+// ── 4) Extra momentum check ───────────────────────────────────────────────────────────
+gI = "4) Extra momentum confirmation (Impulse)"
+useImpulse   = input.bool(true, "Require this extra momentum confirmation", group=gI, tooltip="A second momentum check that must agree before a trade is allowed. Turn off for more trades.")
+lengthMA     = input.int(34, "Smoothing length", minval=1, group=gI)
+lengthSignal = input.int(9,  "Signal length", minval=1, group=gI)
+
+// ── 5) Trade-quality filters ──────────────────────────────────────────────────────────
+gF = "5) Trade-quality filters"
+useADX  = input.bool(true,  "Only trade when the trend is strong", group=gF, tooltip="Skips weak, directionless moves. (Uses the ADX strength gauge under the hood.)")
+adxLen  = input.int(14, "Trend-strength lookback (bars)", minval=1, group=gF)
+adxMin  = input.int(20, "Minimum trend strength (higher = pickier)", minval=1, maxval=50, step=1, group=gF, tooltip="Around 20 is normal for intraday, 25+ is stricter. To test a range, try 15 to 30 in steps of 5.")
+useVol  = input.bool(true,  "Require above-average volume", group=gF, tooltip="Only trade when more shares than usual are changing hands — a sign of real interest.")
+volLen  = input.int(20, "Volume average lookback (bars)", minval=1, group=gF)
+volMult = input.float(1.5, "Volume must beat its average by this much", minval=0.0, maxval=4.0, step=0.1, group=gF, tooltip="1.5 = 50% above average. To test a range, try 1.0 to 2.5 in steps of 0.25.")
+useSess = input.bool(false, "Only trade during set hours", group=gF)
+sess    = input.session("0930-1600", "Trading hours (exchange time)", group=gF)
+
+// ── 5b) Market-index alignment ────────────────────────────────────────────────────────
+gX = "5b) Follow the broader market"
+useMarketFilter = input.bool(true, "Only trade with the overall market", group=gX, tooltip="Take buys only when the broad market index is also trending up, and sells only when it's trending down. Trading a single stock against the whole market is a common source of losers. (Does not apply to reversal trades, which are counter-trend by design.)")
+marketSym       = input.symbol("SPY", "Market index to follow", group=gX, tooltip="SPY (S&P 500) or QQQ (Nasdaq 100) are typical. Use the one your stock tracks most closely.")
+marketMaLen     = input.int(50, "Market trend length (bars)", minval=5, maxval=200, step=5, group=gX)
+
+// ── 6) Don't-chase rules ──────────────────────────────────────────────────────────────
+gQ = "6) Anti-chase & spacing rules"
+minBarsBetween = input.int(1, "Wait this many bars between trades", minval=0, group=gQ, tooltip="Stops back-to-back over-trading. 0 = no wait.")
+useCandle      = input.bool(true, "Entry bar must match (green to buy, red to sell)", group=gQ, tooltip="Avoids buying on a down bar or selling on an up bar.")
+useAvoidExt    = input.bool(true, "Don't chase moves that already ran too far", group=gQ, tooltip="Skips late entries when price is already stretched (overbought to buy / oversold to sell). Applies ONLY to counter-trend reversal entries — with-trend entries are not vetoed, so a strong move can still be traded in its own direction.")
+obLevel        = input.int(72, "Skip late buys when RSI is above this (overbought)", group=gQ)
+osLevel        = input.int(28, "Skip late sells when RSI is below this (oversold)", group=gQ)
+useVolRegime   = input.bool(false, "Skip very quiet, barely-moving periods", group=gQ, tooltip="Avoids dead, sideways tape where price just grinds. Leave off unless you see trades firing in flat markets.")
+minAtrPct      = input.float(0.03, "How much the market must be moving (% of price)", minval=0.0, step=0.01, group=gQ)
+
+// ── 7) Stop-loss & profit target ──────────────────────────────────────────────────────
+gA = "7) Stop-loss & profit target"
+atrLen      = input.int(14, "Volatility lookback for sizing (bars)", minval=1, group=gA, tooltip="Used to size the stop and target to how much the market is currently moving.")
+atrStopMult = input.float(1.5, "Stop-loss distance (volatility units)", minval=0.1, maxval=5.0, step=0.1, group=gA, tooltip="Used when the stop is based on volatility. Bigger = wider stop. To test a range, try 1.0 to 3.0 in steps of 0.5.")
+rrRatio     = input.float(2.0, "Profit target vs. risk", minval=0.1, maxval=6.0, step=0.1, group=gA, tooltip="2 = aim to make twice what you risk. To test a range, try 1.0 to 3.0 in steps of 0.5.")
+// Structure-based stop: put the stop where the trade is actually wrong (past the recent swing)
+useStructStop = input.bool(true, "Put the stop just past the recent swing high/low", group=gA, tooltip="Instead of a flat volatility distance, place the stop beyond the last meaningful swing — where the trade idea is genuinely wrong. Tends to get 'wicked out' less often. Falls back to the volatility stop if the swing is too close.")
+structLookback = input.int(10, "How many bars back to find that swing", minval=2, maxval=50, step=1, group=gA)
+structBufATR  = input.float(0.25, "Extra cushion past the swing", minval=0.0, maxval=2.0, step=0.05, group=gA, tooltip="Small breathing room beyond the swing so normal wicks don't stop you out. Measured in volatility units.")
+// Partial profit + breakeven: bank some gains early and protect the rest
+usePartial   = input.bool(true, "Take partial profit at a first target", group=gA, tooltip="Closes part of the position at a near target, banking a gain and converting many 'almost worked' trades into winners. Raises % of profitable trades.")
+partialPct   = input.int(50, "How much to close at the first target (%)", minval=1, maxval=99, step=5, group=gA)
+partialR     = input.float(1.0, "First target distance (× your risk)", minval=0.2, maxval=4.0, step=0.1, group=gA, tooltip="1 = first target is the same distance as your stop. To test a range, try 0.5 to 1.5 in steps of 0.25.")
+useBreakeven = input.bool(true, "Move stop to breakeven once in profit", group=gA, tooltip="After the trade earns a set amount, slide the stop up to your entry price so a winner can't turn into a loser.")
+beTriggerR   = input.float(1.0, "Move to breakeven once profit reaches (× risk)", minval=0.2, maxval=4.0, step=0.1, group=gA)
+showRiskLbl = input.bool(false, "Show stop & target labels on the chart", group=gA)
+
+// ── 8) Signal timing ──────────────────────────────────────────────────────────────────
+gS = "8) Signal timing"
+confirmClose = input.bool(true, "Only act after the bar closes (no repainting)", group=gS, tooltip="Recommended. Waits for the bar to finish so signals don't appear then disappear.")
+
+// ── 9) When to enter & exit ───────────────────────────────────────────────────────────
+gE = "9) When to enter & exit"
+// Direction: this build is set to SELL (short) signals only. Switch here to re-enable buys.
+tradeDir = input.string("Sells only (short)", "Which signals to take", options=["Sells only (short)", "Buys only (long)", "Both"], group=gE, tooltip="Sells only: take short entries and their exits, ignore all buy signals. Buys only: the reverse. Both: trade either direction.")
+allowLongs  = tradeDir != "Sells only (short)"
+allowShorts = tradeDir != "Buys only (long)"
+// Three entry styles — flip each on/off to see which actually makes money (A/B testing):
+useStateEntry = input.bool(true, "Entry style A: Trend (everything lines up)", group=gE, tooltip="The main setup: enter when the trend, momentum, and all filters agree. Turn off to test the other two styles on their own.")
+allowReentry = input.bool(true,  "Allow trading the same direction again", group=gE, tooltip="On: after an exit you can re-enter the same way (more trades). Off: must alternate buy, then sell, then buy.")
+usePullback  = input.bool(true,  "Entry style B: Buy the dip / sell the bounce", group=gE, tooltip="In an established trend, enter when price pulls back and then resumes the trend.")
+pullbackEMA  = input.int(9, "Fast line used for dips, bounces & reversals", minval=1, group=gE, tooltip="A quick-reacting average. Price crossing it signals the dip/bounce and reversal entries.")
+exitOnMACD   = input.bool(true,  "Exit when momentum flips against you", group=gE)
+exitOnTrend  = input.bool(true,  "Exit when price closes back across the trend line", group=gE)
+exitOnRSI    = input.bool(false, "Exit when pressure (RSI) crosses back through the middle", group=gE)
+exitOnTarget = input.bool(true,  "Exit at the stop-loss or profit target", group=gE)
+showExits    = input.bool(true,  "Show exit markers on the chart", group=gE)
+longWinsOnConflict = input.bool(false, "If buy and sell trigger on the same bar, take the buy", group=gE, tooltip="Off (recommended): skip bars that signal both ways, so the position doesn't whipsaw. On: always prefer the buy.")
+
+// ── 10) Reversal trades ───────────────────────────────────────────────────────────────
+gV = "10) Reversal trades — bet on the trend turning"
+useReversals = input.bool(false, "Entry style C: Trade against the trend on a turn", group=gV, tooltip="OFF by default — this is the riskiest, lowest-win-rate style (it ignores the trend AND market filters). Turn it on only if your backtest shows it actually adds profit. A/B test it against having it off.")
+revExitFast  = input.bool(true, "Exit reversal trades on the fast line", group=gV, tooltip="A reversal trade sits far from the main trend line, so it exits on the fast line instead — otherwise it would close almost immediately.")
+revRsiFloor  = input.int(40, "Reversal needs pressure (RSI) rising and above this", minval=1, maxval=60, group=gV, tooltip="Lower = catches turns earlier but with more false starts.")
+revVolMult   = input.float(1.0, "Reversal volume must beat average by this much", minval=0.0, step=0.1, group=gV, tooltip="A gentler volume requirement than normal trades, so the actual turning bar isn't filtered out.")
+
+// ── 11) Test date range ───────────────────────────────────────────────────────────────
+gW = "11) Backtest date range"
+useDateFilter = input.bool(false, "Only test between two dates", group=gW)
+startDate     = input.time(timestamp("01 Jan 2024 00:00 +0000"), "From", group=gW)
+endDate       = input.time(timestamp("01 Jan 2027 00:00 +0000"), "To", group=gW)
+inWindow      = not useDateFilter or (time >= startDate and time <= endDate)
+
+// ── 12) Chart display (when stacking with other indicators) ───────────────────────────
+gD = "12) Chart display — for stacking with your other indicators"
+cleanOverlay = input.bool(true, "Compact mode: hide lines other indicators already draw", group=gD, tooltip="On (recommended when stacked): hides this script's trend line and fast EMA so they don't double up with the same lines from your other indicators. Turn off to show them.")
+sellTag      = input.string("▼ SELL", "Text on the sell marker", group=gD, tooltip="Give this script's sell signal its own label so you can tell it apart from sells coming from your other indicators. e.g. ▼ SELL, S2, SHORT.")
+sellMarkerCol = input.color(#e53935, "Sell marker colour", group=gD, tooltip="Pick a colour that's distinct from your other indicators' markers.")
+exitMarkerCol = input.color(color.orange, "Exit marker colour", group=gD)
+markerSize   = input.string("Small", "Marker size", options=["Tiny", "Small", "Normal"], group=gD)
+sizeOpt      = markerSize == "Tiny" ? size.tiny : markerSize == "Normal" ? size.normal : size.small
+
+// ── 13) Coordinate with your other indicators ─────────────────────────────────────────
+// HOW THIS WORKS: a script can't read another indicator directly — you WIRE it in. In each
+// source box below, click the dropdown and pick the other indicator's plotted line (this is
+// TradingView's "indicator on indicator" feature). The other indicator must plot a value:
+// 0 (or below the level) when its signal is off, above the level when it's on.
+gC = "13) Coordinate with your other indicators (wire their lines in)"
+useExtConfirm = input.bool(false, "Only sell when another indicator agrees", group=gC, tooltip="The SELL fires only when the connected line is active (above the level). Use this to require a second indicator to confirm the short before taking it.")
+srcConfirm    = input.source(close, "   ↳ Connect: that indicator's bearish/sell line", group=gC, tooltip="Pick the confirming indicator's plot from the dropdown.")
+confirmLevel  = input.float(0.0, "   ↳ ...counts as 'agree' when above this", step=0.1, group=gC)
+useExtVeto    = input.bool(false, "Skip the sell when another indicator says BUY", group=gC, tooltip="While the connected line is active (above the level), this script will NOT sell — so it won't fight an indicator that's flashing a buy. IMPORTANT: connect a real signal line before turning this on. If left on the default 'close', it will block every sell.")
+srcVeto       = input.source(close, "   ↳ Connect: that indicator's buy/bullish line", group=gC)
+vetoLevel     = input.float(0.0, "   ↳ ...blocks the sell when above this", step=0.1, group=gC)
+
+// Coordination outcomes (series). Confirm must agree; veto must NOT be active.
+extConfirmOK  = not useExtConfirm or (srcConfirm > confirmLevel)
+extVetoActive = useExtVeto and (srcVeto > vetoLevel)
+
+// ── Functions ───────────────────────────────────────────────────────────────────────
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    ema1 + (ema1 - ema2)
+
+atr = ta.atr(atrLen)
+
+// ── Resolve the higher timeframe (auto-scaled or fixed) ───────────────────────────────
+chartSec = timeframe.in_seconds(timeframe.period)
+autoSec  = chartSec * autoHtfMult
+htfAuto  = autoSec % 60 == 0 ? str.tostring(int(autoSec / 60)) : str.tostring(int(autoSec)) + "S"
+htfTf    = useAutoHTF ? htfAuto : htfTfManual
+
+// ── Trend value + ATR-NORMALIZED SLOPE (non-repainting via prior HTF bar) ─────────────
+localMA = trendType == "EMA" ? ta.ema(close, trendLen) : ta.sma(close, trendLen)
+[htfMA, htfMAprev, htfATR] = request.security(syminfo.tickerid, htfTf, [localMA[1], localMA[1 + slopeLen], ta.atr(atrLen)[1]], lookahead=barmerge.lookahead_off)
+
+trendMA = useHTFTrend ? htfMA : localMA
+slopeATRval = useHTFTrend ? (htfATR > 0 ? (htfMA - htfMAprev) / htfATR : 0.0) : (atr > 0 ? (localMA - localMA[slopeLen]) / atr : 0.0)
+slopeUp = slopeATRval >=  slopeMinATR
+slopeDn = slopeATRval <= -slopeMinATR
+slopeFlat = useSlope and not slopeUp and not slopeDn
+slopeLongOK  = not useSlope or slopeUp
+slopeShortOK = not useSlope or slopeDn
+
+buf  = useBuffer ? bufferATR * atr : 0.0
+bull = not useTrend or close > trendMA + buf
+bear = not useTrend or close < trendMA - buf
+
+// ── Market-index alignment (broad-market trend, same chart timeframe) ─────────────────
+// Same-timeframe request.security does not repaint. Compares the index to its own moving
+// average so we only trade a single name in the direction the whole market is leaning.
+[mktClose, mktMA] = request.security(marketSym, timeframe.period, [close, ta.ema(close, marketMaLen)])
+mktBull = mktClose > mktMA
+mktBear = mktClose < mktMA
+mktLongOK  = not useMarketFilter or mktBull
+mktShortOK = not useMarketFilter or mktBear
+
+// ── Swing levels for structure-based stops (recent low/high incl. current bar) ────────
+swingLow  = ta.lowest(low,  structLookback)
+swingHigh = ta.highest(high, structLookback)
+
+// ── Impulse MACD ────────────────────────────────────────────────────────────────────
+src = hlc3
+hi  = calc_smma(high, lengthMA)
+lo  = calc_smma(low,  lengthMA)
+mi  = calc_zlema(src, lengthMA)
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)
+impBull = not useImpulse or md > sb
+impBear = not useImpulse or md < sb
+
+// ── MACD + RSI ──────────────────────────────────────────────────────────────────────
+[macdValue, signalValue, macdHist] = ta.macd(close, fastLength, slowLength, signalLength)
+macdBull = macdValue > signalValue
+macdBear = macdValue < signalValue
+rsiValue   = ta.rsi(close, rsiLength)
+rsiLongOK  = rsiValue > rsiLongLevel
+rsiShortOK = rsiValue < rsiShortLevel
+
+// ── Filters ───────────────────────────────────────────────────────────────────────────
+[diPlus, diMinus, adxValue] = ta.dmi(adxLen, adxLen)
+adxOK = not useADX or adxValue >= adxMin
+volAvg = ta.sma(volume, volLen)
+volOK  = not useVol or na(volume) or volume >= volMult * volAvg
+inSess = not useSess or not na(time(timeframe.period, sess))
+atrPctOK = not useVolRegime or (close > 0 and (atr / close * 100.0) >= minAtrPct)
+filtersOK = adxOK and volOK and inSess and atrPctOK
+
+// ── Quality guards: entry-candle agreement + anti-chase ───────────────────────────────
+candleBuyOK     = not useCandle or close > open
+candleSellOK    = not useCandle or close < open
+notExtremeLong  = not useAvoidExt or rsiValue < obLevel
+notExtremeShort = not useAvoidExt or rsiValue > osLevel
+
+// ── STATE-BASED confluence + SLOPE ─────────────────────────────────────────────────────
+longState  = bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK
+shortState = bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK
+longTrig   = longState  and not longState[1]
+shortTrig  = shortState and not shortState[1]
+
+// ── Cooldown ──────────────────────────────────────────────────────────────────────────
+confirmed = not confirmClose or barstate.isconfirmed
+var int lastSigBar = na
+cooled = na(lastSigBar) or (bar_index - lastSigBar) >= minBarsBetween
+
+// ── Pullback / continuation triggers ──────────────────────────────────────────────────
+emaFast   = ta.ema(close, pullbackEMA)
+pullLong  = usePullback and bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK and ta.crossover(close, emaFast)
+pullShort = usePullback and bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK and ta.crossunder(close, emaFast)
+
+// ── Reversal / counter-trend triggers ─────────────────────────────────────────────────
+priceAbove = close > trendMA + buf
+priceBelow = close < trendMA - buf
+macdRevUp = macdHist > macdHist[1]
+macdRevDn = macdHist < macdHist[1]
+rsiTurnUp = rsiValue > rsiValue[1] and rsiValue > revRsiFloor
+rsiTurnDn = rsiValue < rsiValue[1] and rsiValue < (100 - revRsiFloor)
+revVolOK  = not useVol or na(volume) or volume >= revVolMult * volAvg
+revFiltersOK = revVolOK and inSess and atrPctOK
+revLong  = useReversals and priceBelow and ta.crossover(close, emaFast)  and macdRevUp and rsiTurnUp and rsiValue < obLevel and revFiltersOK
+revShort = useReversals and priceAbove and ta.crossunder(close, emaFast) and macdRevDn and rsiTurnDn and rsiValue > osLevel and revFiltersOK
+
+// ── Per-type entry intents (each gated by its own A/B switch) ─────────────────────────
+// pullLong/pullShort already carry usePullback; revLong/revShort already carry useReversals.
+stLong = useStateEntry and longTrig
+stShort = useStateEntry and shortTrig
+
+// Trend & pullback entries must align with the broader market; reversals are exempt
+// (they're deliberately counter-trend, so a market filter would cancel their whole purpose).
+trendBuy  = (stLong  or pullLong)  and mktLongOK
+trendSell = (stShort or pullShort) and mktShortOK
+
+// Anti-chase ("don't enter at an RSI extreme") applies ONLY to the counter-trend reversal
+// entries — that's where buying a spike or shorting a wash-out is the real risk. It must
+// NOT veto WITH-TREND entries: in a fast decline RSI drops below the oversold level, and the
+// old code applied this guard to every short, so it blocked EVERY with-trend short during
+// exactly the down-move you want to catch. THAT was the "no SELLs in a downtrend" bug.
+revBuy  = revLong  and notExtremeLong
+revSell = revShort and notExtremeShort
+
+// ── Combined entry intents (quality guards still applied) ─────────────────────────────
+// goShort also honours coordination with your other indicators: a connected confirm line
+// must agree, and a connected opposing-buy line must NOT be active.
+goLong  = allowLongs  and (trendBuy  or revBuy)  and cooled and candleBuyOK  and inWindow
+goShort = allowShorts and (trendSell or revSell) and cooled and candleSellOK and inWindow and extConfirmOK and not extVetoActive
+
+// ── Position bookkeeping ──────────────────────────────────────────────────────────────
+var int   lastDir  = 0      // last ENTRY direction (for the re-entry / alternation rule)
+var bool  posRev   = false  // is the OPEN position a counter-trend (reversal) trade?
+var float slLong   = na
+var float tpLong   = na
+var float slShort  = na
+var float tpShort  = na
+var float riskLong = na     // per-share risk (entry → stop) locked in at entry, for R-multiples
+var float riskShort = na
+var float entryPx  = na     // entry reference price (signal close) for partial/breakeven math
+var bool  beDone   = false  // has the stop been moved to breakeven on the open trade?
+
+isLong  = strategy.position_size > 0
+isShort = strategy.position_size < 0
+
+// Reversal trades exit on the FAST EMA (a counter-trend trade sits on the far side of the
+// slow trend line, so a "close back across the trend" exit would fire on the entry bar).
+exitRef = (revExitFast and posRev) ? emaFast : trendMA
+exitLongCond  = (exitOnMACD and macdBear) or (exitOnTrend and close < exitRef) or (exitOnRSI and ta.crossunder(rsiValue, 50))
+exitShortCond = (exitOnMACD and macdBull) or (exitOnTrend and close > exitRef) or (exitOnRSI and ta.crossover(rsiValue, 50))
+
+// Re-entry / alternation gate
+canLong  = goLong  and (allowReentry or lastDir != 1)
+canShort = goShort and (allowReentry or lastDir != -1)
+
+// Same-bar conflict resolution (replaces the indicator's silent code-order "long wins")
+doLong  = longWinsOnConflict ? canLong : (canLong  and not canShort)
+doShort = longWinsOnConflict ? (canShort and not canLong) : (canShort and not canLong)
+
+// Markers (for plotting / alerts)
+buy       = false
+sell      = false
+exitLong  = false
+exitShort = false
+
+if confirmed
+    // 1) Condition-based exits (MACD/trend/RSI). Opposite-direction entries below reverse
+    //    the position natively, so we only need to handle the "exit without flip" case here.
+    if isLong and exitLongCond and not doShort
+        strategy.close("Long", comment="exitL")
+        exitLong := true
+    if isShort and exitShortCond and not doLong
+        strategy.close("Short", comment="exitS")
+        exitShort := true
+
+    // 2) Entries (a fresh opposite signal reverses the position automatically)
+    if doLong
+        strategy.entry("Long", strategy.long)
+        buy := true
+        posRev := revLong and not (stLong or pullLong)
+        lastDir := 1
+        lastSigBar := bar_index
+        // Risk = distance to stop. Structure stop sits just below the recent swing low;
+        // fall back to the volatility stop if that swing is closer than half the ATR stop.
+        rawRiskL = close - (swingLow - structBufATR * atr)
+        rL = (useStructStop and rawRiskL > 0) ? math.max(rawRiskL, atrStopMult * atr * 0.5) : atrStopMult * atr
+        riskLong := rL
+        slLong := close - rL
+        tpLong := close + rrRatio * rL
+        entryPx := close
+        beDone := false
+    if doShort
+        strategy.entry("Short", strategy.short)
+        sell := true
+        posRev := revShort and not (stShort or pullShort)
+        lastDir := -1
+        lastSigBar := bar_index
+        rawRiskS = (swingHigh + structBufATR * atr) - close
+        rS = (useStructStop and rawRiskS > 0) ? math.max(rawRiskS, atrStopMult * atr * 0.5) : atrStopMult * atr
+        riskShort := rS
+        slShort := close + rS
+        tpShort := close - rrRatio * rS
+        entryPx := close
+        beDone := false
+
+// 3) Stops, partial profit & breakeven — handled by the broker emulator (intrabar fills,
+//    conservative when stop & target land in the same bar).
+// Move the stop up to breakeven once the trade is far enough in profit.
+if useBreakeven and isLong  and not na(entryPx) and high >= entryPx + beTriggerR * riskLong
+    beDone := true
+if useBreakeven and isShort and not na(entryPx) and low  <= entryPx - beTriggerR * riskShort
+    beDone := true
+
+if exitOnTarget and isLong and not na(slLong)
+    stopL = (useBreakeven and beDone) ? entryPx : slLong
+    // Bank part of the position at the near (partial) target, run the rest to the full target.
+    if usePartial
+        strategy.exit("L-TP1", from_entry="Long", qty_percent=partialPct, limit=entryPx + partialR * riskLong, stop=stopL)
+    strategy.exit("L-Exit", from_entry="Long", limit=tpLong, stop=stopL)
+if exitOnTarget and isShort and not na(slShort)
+    stopS = (useBreakeven and beDone) ? entryPx : slShort
+    if usePartial
+        strategy.exit("S-TP1", from_entry="Short", qty_percent=partialPct, limit=entryPx - partialR * riskShort, stop=stopS)
+    strategy.exit("S-Exit", from_entry="Short", limit=tpShort, stop=stopS)
+
+// ── Optional SL/TP labels on entries ──────────────────────────────────────────────────
+if showRiskLbl and buy
+    label.new(bar_index, low,  "SL " + str.tostring(slLong,  format.mintick) + "  TP " + str.tostring(tpLong,  format.mintick), style=label.style_label_up,   color=color.new(color.green, 60), textcolor=color.white, size=size.small)
+if showRiskLbl and sell
+    label.new(bar_index, high, "SL " + str.tostring(slShort, format.mintick) + "  TP " + str.tostring(tpShort, format.mintick), style=label.style_label_down, color=color.new(color.red, 60),   textcolor=color.white, size=size.small)
+
+// ── Plots ─────────────────────────────────────────────────────────────────────────────
+// Compact mode hides the shared lines so they don't double up with other indicators.
+showLines = showTrend and useTrend and not cleanOverlay
+trendCol = slopeFlat ? color.new(color.gray, 0) : (bull ? color.new(color.teal, 0) : color.new(color.red, 0))
+plot(showLines ? trendMA : na, "Trend MA", color=trendCol, linewidth=2)
+plot((not cleanOverlay and (usePullback or useReversals)) ? emaFast : na, "Fast EMA", color=color.new(color.blue, 40))
+
+// BUY visuals only render if longs are actually enabled (off in sell-only mode → no clutter).
+plotshape(allowLongs and buy, "Buy", shape.labelup, location.belowbar, color.new(color.green, 0), text="BUY", textcolor=color.white, size=sizeOpt)
+// SELL marker: its own tag + colour so it's distinguishable from other indicators' sells.
+plotshape(sell, "Sell", shape.labeldown, location.abovebar, sellMarkerCol, text=sellTag, textcolor=color.white, size=sizeOpt)
+plotshape(showExits and allowLongs and exitLong, "Exit Long",  shape.xcross, location.abovebar, exitMarkerCol, text="exit", textcolor=exitMarkerCol, size=size.tiny)
+plotshape(showExits and exitShort, "Exit Short", shape.xcross, location.belowbar, exitMarkerCol, text="cover", textcolor=exitMarkerCol, size=size.tiny)
+
+// ── Alerts ────────────────────────────────────────────────────────────────────────────
+// Tagged with [SWING_PRO_S] + ticker/price so you can tell these apart from alerts fired by
+// your other indicators when several are armed on the same chart.
+alertcondition(buy,       "Swing Buy",    "[SWING_PRO_S] BUY {{ticker}} @ {{close}}")
+alertcondition(sell,      "Swing Sell",   "[SWING_PRO_S] SELL {{ticker}} @ {{close}}")
+alertcondition(exitLong,  "Exit Long",    "[SWING_PRO_S] EXIT LONG {{ticker}} @ {{close}}")
+alertcondition(exitShort, "Exit Short",   "[SWING_PRO_S] COVER SHORT {{ticker}} @ {{close}}")
+alertcondition(buy or sell or exitLong or exitShort, "Any signal", "[SWING_PRO_S] signal {{ticker}} @ {{close}}")
+
+// ── Connector outputs ─────────────────────────────────────────────────────────────────
+// These are hidden plots (display.none) that publish this script's state as numeric lines.
+// In ANOTHER indicator's source dropdown they'll appear as "SWING_PRO_S: Sell signal" etc.,
+// so other scripts can coordinate with THIS one the same way it coordinates with them.
+// Convention: 1 = active/on, 0 = off — matches the confirm/veto level of 0 used above.
+plot(sell      ? 1 : 0, "→ Sell signal",        color=color.new(color.red,   100), display=display.none)
+plot(buy       ? 1 : 0, "→ Buy signal",         color=color.new(color.green, 100), display=display.none)
+plot(exitShort ? 1 : 0, "→ Cover (exit short)", color=color.new(color.orange,100), display=display.none)
+plot(strategy.position_size < 0 ? 1 : 0, "→ In short position", color=color.new(color.gray, 100), display=display.none)

@@ -1,0 +1,284 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Perfect Ari — deviation</title>
+<style>
+  /* Light, not dark: dark dashboards cost him focus, and this one is meant to
+     sit open all day. Purple carries the accent instead of the background. */
+  :root{
+    /* Brave (and Chrome) auto-invert pages that don't declare a scheme, which
+       turned this deliberately-light dashboard into unreadable black-on-black.
+       Declaring `light` tells the engine the page already handles its own
+       colours and to leave them alone. Dark UIs cost him focus, so this page
+       commits to light rather than offering both. */
+    color-scheme:light;
+    --bg:#faf7ff; --card:#fff; --ink:#1e1730; --muted:#6b6280;
+    --line:#e7e0f5; --purple:#7c3aed; --purple-soft:#f3ecff;
+    --ok:#16a34a; --ok-soft:#eafaf0;
+    --drift:#d97706; --drift-soft:#fff6e6;
+    --off:#dc2626; --off-soft:#feeceb;
+    --unknown:#64748b; --unknown-soft:#eef2f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 ui-sans-serif,-apple-system,"Segoe UI",system-ui,sans-serif}
+  .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);
+    gap:18px;padding:18px;max-width:1600px;margin:0 auto;min-height:100vh}
+  @media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+
+  /* min-width:0 so a wide child (the strip) can never widen the card itself */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 1px 3px rgba(60,40,110,.05);min-width:0}
+  .card h2{margin:0;padding:13px 16px;font-size:12px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+
+  /* left column: live on top, moments underneath */
+  /* grid-template-COLUMNS matters here, even though this only stacks two rows.
+     A grid container's implicit column is `auto` = max-content, and the
+     max-content of this column is the moments strip: 15 tiles x 176px is
+     ~4700px, which propagated up and blew the card out to 4672 wide. The
+     aspect-ratio on .live then made it 2634 tall and it painted straight over
+     the right-hand column.
+
+     min-width:0 on .left does NOT fix that -- it governs how small the grid
+     ITEM may shrink, not how its internal track is sized. And .strip's
+     overflow-x:auto cannot scroll until something above it is actually
+     constrained. minmax(0,1fr) is what caps the track. */
+  .left{display:grid;grid-template-rows:auto auto;
+    grid-template-columns:minmax(0,1fr);gap:18px;min-width:0}
+  /* The camera's aspect ratio is NOT a constant. 640x480 is 4:3 and 4K is
+     16:9, and on a phone sensor that is a different crop, not a scale -- so
+     hardcoding either one letterboxes the live pane the moment the capture
+     resolution changes. --ar is set from the actual capture size at runtime;
+     the 16/9 here is only what to draw before the first poll returns. */
+  .live{position:relative;background:#100c1c;border-radius:0 0 16px 16px;
+    overflow:hidden;aspect-ratio:var(--ar,16/9)}
+  .live img{width:100%;height:100%;object-fit:contain;display:block}
+  .res{position:absolute;bottom:12px;right:12px;background:rgba(16,12,28,.82);
+    color:#cfc4e8;padding:5px 10px;border-radius:999px;font-size:11px;
+    font-weight:600;letter-spacing:.03em;backdrop-filter:blur(6px)}
+  .badge{position:absolute;top:12px;left:12px;background:rgba(16,12,28,.82);
+    color:#fff;padding:6px 11px;border-radius:999px;font-size:12px;
+    font-weight:600;letter-spacing:.02em;backdrop-filter:blur(6px)}
+  .lost{position:absolute;inset:0;display:none;place-items:center;
+    background:rgba(120,20,20,.9);color:#fff;text-align:center;padding:24px}
+  .lost b{display:block;font-size:19px;margin-bottom:6px}
+
+  .strip{display:flex;gap:10px;overflow-x:auto;padding:14px 16px 16px;
+    min-width:0;max-width:100%}
+  .strip::-webkit-scrollbar{height:8px}
+  .strip::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+  .moment{flex:0 0 176px;border:2px solid var(--line);border-radius:12px;
+    overflow:hidden;background:#fff}
+  /* Same reason as .live: a fixed 132px height cover-crops the sides off a
+     16:9 thumbnail, and the sides are where "he got up and left" lives. */
+  .moment img{width:100%;aspect-ratio:var(--ar,16/9);object-fit:cover;
+    display:block;background:#eee}
+  .moment .m{padding:7px 9px;font-size:11.5px;line-height:1.35}
+  .moment .t{font-weight:700}
+  .moment .s{color:var(--muted)}
+  .moment .cap{margin-top:4px;padding-top:4px;border-top:1px dashed var(--line);
+    color:var(--muted);font-style:italic}
+  .moment .cap span{font-style:normal;font-size:9.5px;text-transform:uppercase;
+    letter-spacing:.06em;color:#b09fd0;display:block}
+  .moment.ok{border-color:#bbe7cb} .moment.on_plan{border-color:#bbe7cb}
+  .moment.drifting{border-color:#f3d9a6}
+  .moment.off_plan{border-color:#f5bdb8}
+  .moment.unknown{border-color:#d6dde5}
+
+  /* right column */
+  .verdict{padding:18px 16px;border-radius:0 0 16px 16px}
+  .verdict .label{font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+    font-weight:700;opacity:.75}
+  .verdict .big{font-size:27px;font-weight:800;letter-spacing:-.02em;margin:3px 0 8px}
+  .verdict .sub{font-size:14px;opacity:.9}
+  .v-on_plan{background:var(--ok-soft);color:#14532d}
+  .v-drifting{background:var(--drift-soft);color:#7c3a02}
+  .v-off_plan{background:var(--off-soft);color:#7f1d1d}
+  .v-unknown{background:var(--unknown-soft);color:#334155}
+
+  .block{padding:15px 16px;border-bottom:1px solid var(--line)}
+  .block .name{font-size:19px;font-weight:700}
+  .block .win{color:var(--muted);font-size:13px;margin-top:1px}
+  .block .note{color:var(--muted);font-size:13px;margin-top:7px;font-style:italic}
+  .bar{height:7px;background:var(--purple-soft);border-radius:99px;
+    margin-top:11px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--purple);border-radius:99px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  td{padding:8px 16px;border-bottom:1px solid var(--line)}
+  td:first-child{color:var(--muted);width:44%}
+  td:last-child{font-weight:600;text-align:right}
+  tr:last-child td{border-bottom:0}
+
+  .aria{padding:15px 16px}
+  .aria .who{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .aria .dot{width:8px;height:8px;border-radius:99px;background:var(--purple)}
+  .aria .nm{font-weight:700}
+  .aria .tag{font-size:11px;background:var(--purple-soft);color:var(--purple);
+    padding:2px 8px;border-radius:99px;font-weight:700}
+  .aria .said{font-size:15px;line-height:1.55}
+  .aria .off{color:var(--muted);font-size:13.5px;font-style:italic}
+  .foot{padding:11px 16px;color:var(--muted);font-size:11.5px;
+    border-top:1px solid var(--line)}
+</style>
+
+<div class="wrap">
+  <div class="left">
+    <div class="card">
+      <h2>Live · what the detector sees</h2>
+      <div class="live">
+        <img src="/stream" alt="live camera">
+        <div class="badge" id="badge">connecting…</div>
+        <div class="res" id="res"></div>
+        <div class="lost" id="lost">
+          <div><b>Camera feed is down</b>
+          Iriun is serving a placeholder, not your room.<br>
+          No claim is being made about where you are.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Moments · one per mode change</h2>
+      <div class="strip" id="strip"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card" style="margin-bottom:18px">
+      <h2>Deviation from Perfect Ari · right now</h2>
+      <div class="block">
+        <div class="name" id="bname">—</div>
+        <div class="win" id="bwin"></div>
+        <div class="note" id="bnote"></div>
+        <div class="bar"><i id="bbar" style="width:0"></i></div>
+      </div>
+      <div class="verdict v-unknown" id="verdict">
+        <div class="label">status</div>
+        <div class="big" id="vbig">starting…</div>
+        <div class="sub" id="vsub"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <h2>Observed</h2>
+      <table><tbody id="facts"></tbody></table>
+    </div>
+
+    <div class="card">
+      <h2>Aria</h2>
+      <div class="aria" id="aria">
+        <div class="off">Waiting for her first read…</div>
+      </div>
+      <div class="foot" id="foot"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const NICE = {on_plan:"On plan", drifting:"Drifting", off_plan:"Off plan",
+              unknown:"Can't tell"};
+
+function esc(s){ return String(s??"").replace(/[<>&]/g, c =>
+  ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c])); }
+
+async function tick(){
+  let s;
+  try { s = await (await fetch("/api/state")).json(); }
+  catch { $("badge").textContent = "tracker offline"; return; }
+  if(!s.ready){ $("badge").textContent = "warming up…"; return; }
+
+  const f = s.facts, d = f.deviation || {};
+
+  $("badge").textContent = `${f.clock} · ${f.observed_mode} · ${f.camera_sees}`;
+  $("lost").style.display = s.camera_ok ? "none" : "grid";
+
+  // Drive the live pane and the thumbnails from the REAL capture size, so
+  // switching Iriun between 4:3 and 16:9 reframes the page instead of
+  // letterboxing it. Set on :root because the moment tiles need it too.
+  if (Array.isArray(s.capture_size) && s.capture_size[0] && s.capture_size[1]) {
+    const [cw, ch] = s.capture_size;
+    document.documentElement.style.setProperty("--ar", `${cw}/${ch}`);
+    // Capture, then what each consumer is actually fed -- the gap between
+    // "4K" and "detected at 1280" is the sort of thing worth not hiding.
+    $("res").textContent =
+      `${cw}×${ch} · stream ${s.stream_width} · detect ${s.detect_width}`;
+  }
+
+  $("bname").textContent = `${f.block_emoji||""} ${f.block_name||"No block"}`.trim();
+  $("bwin").textContent  = f.block_window
+    ? `${f.block_window} · ${f.minutes_into_block}m in, ${f.minutes_left_in_block}m left`
+    : "";
+  $("bnote").textContent = f.block_note || "";
+  const total = (f.minutes_into_block||0) + (f.minutes_left_in_block||0);
+  $("bbar").style.width = total ? Math.min(100, 100*f.minutes_into_block/total)+"%" : "0";
+
+  const v = $("verdict");
+  v.className = "verdict v-" + (d.status||"unknown");
+  $("vbig").textContent = NICE[d.status] || d.status || "—";
+  // Every word here comes from the facts dict. Nothing is generated.
+  $("vsub").textContent =
+      d.status === "unknown"  ? d.reason
+    : d.status === "on_plan"  ? (d.free ? "This block is yours — nothing expected."
+                                        : `${f.observed_mode} matches the plan.`)
+    : `Plan expects ${(d.expected||[]).join(" or ")} — you're ${f.observed_mode}`
+      + ` (${d.minutes}m).`;
+
+  const rows = [
+    ["Mode",        f.observed_mode],
+    ["For",         f.minutes_in_this_mode + " min"],
+    ["Camera sees", f.camera_sees],
+    ["Posture",     (f.posture||"unknown")
+                    + (f.torso_angle!=null ? `  ${f.torso_angle>0?"+":""}${f.torso_angle}°` : "")],
+    ["Screen",      (f.screen_app||"—") + (f.screen_category ? ` (${f.screen_category})` : "")],
+    ["Input",       f.screen_idle ? `idle ${f.screen_idle_seconds}s` : "active"],
+    ["Block wants", (f.block_expects||[]).join(", ")],
+    ["Away is ok",  f.being_away_is_fine_here ? "yes" : "no"],
+    ["Why",         f.why_the_tracker_says_so],
+  ];
+  $("facts").innerHTML = rows.map(([k,val]) =>
+    `<tr><td>${esc(k)}</td><td>${esc(val)}</td></tr>`).join("");
+
+  const a = s.aria;
+  // She is asked at most every couple of minutes, so her line can lag the
+  // verdict. Unmarked, "back on track!" sitting under a DRIFTING banner reads
+  // as her being wrong rather than her being two minutes behind.
+  const stale = a && a.about && a.about !== d.status;
+  $("aria").innerHTML = a
+    ? `<div class="who"><span class="dot"></span><span class="nm">Aria</span>`
+      + (a.emotion ? `<span class="tag">${esc(a.emotion)}</span>` : "")
+      + `<span style="margin-left:auto;color:#9c93b5;font-size:12px">${esc(a.at)}</span></div>`
+      + `<div class="said">${esc(a.text)}</div>`
+      + (stale ? `<div class="off" style="margin-top:8px">Said when you were
+         <b>${esc(NICE[a.about]||a.about)}</b> — she hasn't been asked about
+         this change yet.</div>` : "")
+    : `<div class="off">Her server isn't running — showing facts only rather
+       than putting words in her mouth. Start it with
+       <code>py -3.12 run_server.py</code> in aria-assistant/.</div>`;
+
+  $("foot").textContent = a
+    ? `${a.model} · local · she is given the table above, never the image.`
+    : "qwen2.5:7b via aria-assistant · offline";
+}
+
+async function moments(){
+  let list;
+  try { list = await (await fetch("/api/moments")).json(); } catch { return; }
+  $("strip").innerHTML = list.map(m => `
+    <div class="moment ${esc(m.status)}">
+      <img src="/moments/${esc(m.file)}" loading="lazy" alt="">
+      <div class="m">
+        <div class="t">${esc(m.time)} · ${esc(m.mode)}</div>
+        <div class="s">${esc(m.emoji||"")} ${esc(m.block||"")}</div>
+        <div class="s">${esc(m.place)}${m.screen ? " · " + esc(m.screen) : ""}</div>
+        ${m.caption ? `<div class="cap"><span>vision · unverified</span>${esc(m.caption)}</div>` : ""}
+      </div>
+    </div>`).join("") || `<div style="color:#6b6280;font-size:13px;padding:6px">
+      No mode changes yet — the first one lands here.</div>`;
+}
+
+tick(); moments();
+setInterval(tick, 4000);
+setInterval(moments, 20000);
+</script>

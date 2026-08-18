@@ -1,0 +1,152 @@
+# EXAMPLE SHOT LIST -- a 10-shot household short.
+#
+#   py -m animstudio render shots/example.yaml --dry-run
+#   py -m animstudio render shots/example.yaml --preset draft
+#
+# Every key is optional except `id` and `prompt`.
+#
+#   id                 folder name; also the seed source. Renaming re-rolls the shot.
+#   prompt             what happens. Describe ACTION and SETTING, not the character
+#                      design -- that comes from the character file.
+#   characters         names from characters/*/character.yaml
+#   camera             appended to the prompt; also passed to the video stage
+#   duration           seconds. The backend rounds to a legal frame count.
+#   seed               omit for a stable seed derived from `id`
+#   ref_image          path (relative to this file) to start from instead of noise
+#   control            {pose|depth|canny: path} -- ControlNet for the keyframe
+#   control_scale      0.4 loose, 0.65 default, 0.9 rigid
+#   carry_from         an EARLIER shot id; its carry frame seeds this keyframe
+#   carry_strength     img2img denoise on that frame. 0.35 = very similar,
+#                      0.75 = only the palette survives
+#   transition         how this shot ENTERS: cut | crossfade
+#   transition_seconds crossfade length
+#   preset             per-shot override, e.g. `high` for a hero shot
+#   notes              ignored by the renderer
+
+title: kettle-and-mira
+
+audio:
+  music: ../assets/music/theme.mp3      # relative to this file
+  music_gain: 0.55
+  music_fade: 2.0
+  sfx:
+    - { path: ../assets/sfx/kettle_whistle.wav, at: 14.0, gain: 0.9 }
+    - { path: ../assets/sfx/door_creak.wav,     at: 27.5, gain: 0.7 }
+
+shots:
+  # ---- opening: establish the room, no characters yet -------------------
+  - id: s01_kitchen_wide
+    prompt: >-
+      empty kitchen at dawn, low warm light through a window over the sink,
+      dust in the air, dishes stacked, a copper kettle on the stove
+    camera: wide establishing shot, slow push in
+    duration: 4.0
+    transition: cut
+    notes: no characters -- pure establishing. Sets the palette for everything after.
+
+  # ---- POV: hands only --------------------------------------------------
+  - id: s02_pov_reach
+    prompt: >-
+      reaching toward the copper kettle on the stove, kitchen counter below,
+      morning light
+    characters: [pov]
+    camera: first person point of view, hands entering frame from below
+    duration: 3.0
+    transition: cut
+    notes: >-
+      POV shots fail when a face appears. The `pov` character injects a
+      negative for that. If a head still creeps in, raise control_scale with a
+      pose reference or lower the shot duration.
+
+  # ---- Mira arrives -----------------------------------------------------
+  - id: s03_mira_enters
+    prompt: >-
+      peering around the doorframe into the kitchen, curious, ears forward,
+      morning light on the floorboards
+    characters: [mira]
+    camera: medium shot, eye level, static
+    duration: 3.5
+    transition: crossfade
+    transition_seconds: 0.6
+
+  - id: s04_mira_closeup
+    prompt: eyes widening, whiskers twitching, looking up at something off frame
+    characters: [mira]
+    camera: close up on the face, shallow depth of field
+    duration: 2.5
+    # Carrying from s03 keeps the same lighting and fur rendering across the
+    # cut. Low strength because a close-up should look like the SAME character
+    # a moment later, not a reinterpretation of them.
+    carry_from: s03_mira_enters
+    carry_strength: 0.45
+    transition: cut
+    preset: high        # hero shot: render this one properly even in a draft pass
+
+  # ---- Kettle wakes up --------------------------------------------------
+  - id: s05_kettle_wakes
+    prompt: >-
+      brass automaton on the stovetop shuddering awake, steam venting from the
+      shoulder, porthole eye flickering on
+    characters: [kettle]
+    camera: low angle, close, slight handheld drift
+    duration: 3.0
+    transition: cut
+
+  - id: s06_both_react
+    prompt: >-
+      the fox spirit and the brass automaton facing each other across the
+      kitchen counter, both startled, steam drifting between them
+    characters: [mira, kettle]
+    camera: two shot, static, eye level
+    duration: 4.0
+    transition: crossfade
+    transition_seconds: 0.4
+    notes: >-
+      Two characters in one frame is where consistency breaks worst -- the
+      model averages them into one design. If that happens: train both LoRAs,
+      keep each at ~0.6 (the pipeline auto-scales stacked LoRAs), and use a
+      pose ControlNet so each body is placed rather than invented.
+
+  # ---- ControlNet-driven staging ---------------------------------------
+  - id: s07_chase_start
+    prompt: >-
+      fox spirit bolting across the kitchen floor, automaton lurching after,
+      pans clattering
+    characters: [mira, kettle]
+    camera: wide shot, whip pan left to right
+    duration: 3.0
+    # A pose reference is how you get a SPECIFIC arrangement instead of a
+    # plausible one. Any openpose skeleton PNG works; you can also pose a
+    # figure, screenshot it, and use canny.
+    control:
+      pose: ../assets/control/s07_pose.png
+    control_scale: 0.7
+    transition: cut
+
+  - id: s08_pov_grab
+    prompt: hands lunging to catch the falling copper kettle mid air, blurred motion
+    characters: [pov]
+    camera: first person point of view, fast motion, motion blur
+    duration: 2.0
+    transition: cut
+
+  # ---- resolution -------------------------------------------------------
+  - id: s09_quiet
+    prompt: >-
+      fox spirit and brass automaton sitting side by side on the kitchen floor
+      among scattered pans, late morning light, calm
+    characters: [mira, kettle]
+    camera: wide shot, static, slightly high angle
+    duration: 4.5
+    transition: crossfade
+    transition_seconds: 0.8
+
+  - id: s10_close_kettle
+    prompt: porthole eye dimming slowly, last wisp of steam, warm light
+    characters: [kettle]
+    camera: extreme close up, static
+    duration: 3.0
+    carry_from: s09_quiet
+    carry_strength: 0.5
+    transition: crossfade
+    transition_seconds: 1.0

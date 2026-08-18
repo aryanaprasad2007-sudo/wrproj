@@ -1,0 +1,28 @@
+//@version=6
+// SWING_PRO — SELL SIGNAL  •  the visible TRIGGER layer for the SELL engine.
+// HOW TO USE: 1) add "SWING_PRO — SELL [RTH]" (engine).  2) add this.
+//   3) settings -> set "Connect to" = SWING_SELL: Sell signal.
+// Draws the SELL arrow, tints the bar, fires the alert when that line = 1.
+// Until wired, source = close and it fires every bar. Not financial advice.
+indicator("SWING_PRO — SELL SIGNAL", shorttitle="SELL SIGNAL", overlay=true)
+
+// ── Wiring ──
+gW  = "Connection"
+src = input.source(close, "Connect to: SWING_SELL → Sell signal", group=gW, tooltip="Click and pick the SELL engine's '→ Sell signal' output. Required — leaving it on 'close' makes it fire every bar.")
+lvl = input.float(0.5, "Active when the connected line is above", step=0.1, group=gW, tooltip="The engine outputs 1 when a sell is active and 0 otherwise, so 0.5 is correct. Leave as-is.")
+sellOn = src > lvl
+
+// ── Display ──
+gD     = "Display"
+col    = input.color(#e53935, "Sell marker colour", group=gD)
+showBg = input.bool(true, "Tint the signal bar", group=gD)
+
+// Price-anchored arrow: plots on every bar, stays pinned to the candle, scales with the chart.
+// NOTE: plotshape's size= must be a constant — change size.normal below to size.small / size.large
+// / size.huge if you want a different size (it can't be a dropdown input).
+plotshape(sellOn, title="SELL", style=shape.labeldown, location=location.abovebar, color=col, text="SELL", textcolor=color.white, size=size.normal)
+bgcolor(showBg and sellOn ? color.new(col, 85) : na, title="Sell tint")
+
+// ── Alert + pass-through output (so you can chain this further if you want) ──
+alertcondition(sellOn, "Sell signal", "[SELL SIGNAL] SELL {{ticker}} @ {{close}}")
+plot(sellOn ? 1 : 0, "→ Sell trigger", color=color.new(color.red, 100), display=display.none)

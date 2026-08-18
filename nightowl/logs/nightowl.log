@@ -1,0 +1,1681 @@
+﻿2026-08-04 11:18:16  focus session logged: 30m
+2026-08-04 11:18:16  expsync: System Bridge complete.
+2026-08-04 11:18:16  expsync:   log rows read:        0
+2026-08-04 11:18:16  expsync:   days of coach focus:  0
+2026-08-04 11:18:16  expsync:   total coach focus:    0 min
+2026-08-04 11:18:16  expsync:   NightOwl focus:       30.0 min across 1 day(s)
+2026-08-04 11:18:16  expsync:   clean wind-down nights: 0
+2026-08-04 11:18:16  expsync:   feed written:         C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_feed.json
+2026-08-04 11:18:16  expsync:   live dashboard:       C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\solo_leveling_live.html
+2026-08-04 11:21:41  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-04 11:21:41  sync:   73 upcoming episodes, 2 tracked, 14 seasonal, stale=False
+2026-08-04 11:31:02  uri: nightowl://anime/track/178789 -> anime 'track' '178789'
+2026-08-04 11:31:02  anime: tracking 178789
+2026-08-04 11:31:02  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-04 11:31:02  sync:   73 upcoming episodes, 3 tracked, 14 seasonal, stale=False
+2026-08-04 12:34:05  uri: nightowl://anime/untrack/178789 -> anime 'untrack' '178789'
+2026-08-04 12:34:05  anime: untracked 178789
+2026-08-04 12:34:06  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-04 12:34:06  sync:   73 upcoming episodes, 2 tracked, 14 seasonal, stale=False
+2026-08-04 12:34:08  uri: nightowl://anime/untrack/21 -> anime 'untrack' '21'
+2026-08-04 12:34:08  anime: untracked 21
+2026-08-04 12:34:08  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-04 12:34:08  sync:   73 upcoming episodes, 1 tracked, 14 seasonal, stale=False
+2026-08-04 12:34:11  uri: nightowl://anime/untrack/178025 -> anime 'untrack' '178025'
+2026-08-04 12:34:11  anime: untracked 178025
+2026-08-04 12:34:11  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-04 12:34:11  sync:   73 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-04 13:53:55  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-04 13:53:55  sync:   73 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-04 13:54:00  uri: nightowl://launch/notion -> launch 'notion' ''
+2026-08-04 13:54:00  launch notion
+2026-08-04 19:32:00  chroma -> rgb(255,254,249)
+2026-08-04 19:33:40  chroma -> rgb(255,253,249)
+2026-08-04 19:35:35  chroma -> rgb(255,253,248)
+2026-08-04 19:39:20  chroma -> rgb(255,253,247)
+2026-08-04 19:39:40  chroma -> rgb(255,252,247)
+2026-08-04 19:42:50  chroma -> rgb(255,252,246)
+2026-08-04 19:45:35  chroma -> rgb(255,251,246)
+2026-08-04 19:46:25  chroma -> rgb(255,251,245)
+2026-08-04 19:49:56  chroma -> rgb(255,251,244)
+2026-08-04 19:51:26  chroma -> rgb(255,250,244)
+2026-08-04 19:53:26  chroma -> rgb(255,250,243)
+2026-08-04 19:56:56  chroma -> rgb(255,250,242)
+2026-08-04 19:57:11  chroma -> rgb(255,249,242)
+2026-08-04 20:00:21  chroma -> rgb(255,249,241)
+2026-08-04 20:02:56  chroma -> rgb(255,248,241)
+2026-08-04 20:03:51  chroma -> rgb(255,248,240)
+2026-08-04 20:07:17  chroma -> rgb(255,248,239)
+2026-08-04 20:08:37  chroma -> rgb(255,247,239)
+2026-08-04 20:10:37  chroma -> rgb(255,247,238)
+2026-08-06 11:06:34  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-06 11:06:34  sync:   53 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-06 11:06:53  screen -> 6500K @ 100%
+2026-08-06 11:06:53  notifications -> False
+2026-08-06 11:06:53  power plan -> HighPerformance
+2026-08-06 11:06:53  monitor timeout -> 15 min
+2026-08-06 11:06:53  wallpaper engine (wallpaper32) -> pause
+2026-08-06 11:06:53  nudge: Work mode
+2026-08-06 11:07:02  MODE -> work
+2026-08-10 02:23:54  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-10 02:23:54  sync:   17 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-10 02:24:21  uri: nightowl://screen -> screen '' ''
+8/10/2026 2:25:09 AM  launcher WARN: invoked with no action - caller dropped its arguments
+2026-08-10 02:25:13  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-10 02:25:13  sync:   17 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-10 02:25:44  launcher WARN: invoked with no action - caller dropped its arguments
+2026-08-10 02:26:44  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-10 02:26:44  sync:   17 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-10 05:00:00  screen -> 6500K @ 100%
+2026-08-10 05:12:00  break skipped (idle 10387s)
+2026-08-10 05:15:01  screen -> 6500K @ 100%
+2026-08-10 05:20:01  expsync: System Bridge complete.
+2026-08-10 05:20:01  expsync:   log rows read:        0
+2026-08-10 05:20:01  expsync:   days of coach focus:  0
+2026-08-10 05:20:01  expsync:   total coach focus:    0 min
+2026-08-10 05:20:01  expsync:   NightOwl focus:       0 min across 0 day(s)
+2026-08-10 05:20:01  expsync:   clean wind-down nights: 0
+2026-08-10 05:20:01  expsync:   feed written:         C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_feed.json
+2026-08-10 05:20:01  expsync:   live dashboard:       C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\solo_leveling_live.html
+2026-08-10 05:20:01  expsync: 
+2026-08-10 05:20:01  expsync:   (No activity_log.csv and no NightOwl focus sessions yet.
+2026-08-10 05:20:01  expsync:    Run the coach (python src/main.py) or complete a NightOwl focus
+2026-08-10 05:20:01  expsync:    block, then re-run this to see EXP flow in.)
+2026-08-10 05:30:01  screen -> 6500K @ 100%
+2026-08-10 05:35:00  break skipped (idle 11767s)
+2026-08-10 05:37:01  break skipped (idle 11887s)
+2026-08-10 05:45:01  screen -> 6500K @ 100%
+2026-08-10 06:00:01  screen -> 6500K @ 100%
+2026-08-10 06:02:01  break skipped (idle 13387s)
+2026-08-10 06:15:01  screen -> 6500K @ 100%
+2026-08-10 06:27:01  break skipped (idle 14887s)
+2026-08-10 06:30:01  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-10 06:30:01  sync:   12 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-10 06:30:01  screen -> 6500K @ 100%
+2026-08-10 06:35:01  break skipped (idle 15365s)
+2026-08-10 06:45:01  screen -> 6500K @ 100%
+2026-08-10 06:52:01  break skipped (idle 16385s)
+2026-08-10 07:00:01  screen -> 6500K @ 100%
+2026-08-10 07:15:01  screen -> 6500K @ 100%
+2026-08-10 07:17:01  break skipped (idle 17885s)
+2026-08-10 07:30:01  screen -> 6500K @ 100%
+2026-08-10 07:35:01  break skipped (idle 18965s)
+2026-08-10 07:42:01  break skipped (idle 19385s)
+2026-08-10 07:45:01  screen -> 6500K @ 100%
+2026-08-10 08:00:01  screen -> 6500K @ 100%
+2026-08-10 08:07:01  break skipped (idle 20885s)
+2026-08-10 08:15:01  screen -> 6500K @ 100%
+2026-08-10 08:30:01  screen -> 6500K @ 100%
+2026-08-10 08:32:01  nudge: Eye break
+2026-08-10 08:35:01  break skipped (idle 213s)
+2026-08-10 08:45:01  screen -> 6500K @ 100%
+2026-08-10 08:57:01  break skipped (idle 297s)
+2026-08-10 09:00:01  screen -> 6500K @ 100%
+2026-08-10 09:15:01  screen -> 6500K @ 100%
+2026-08-10 09:22:01  break skipped (idle 794s)
+2026-08-10 09:30:01  screen -> 6500K @ 100%
+2026-08-10 09:35:01  break skipped (idle 1574s)
+2026-08-10 09:45:01  screen -> 6500K @ 100%
+2026-08-10 09:47:01  break skipped (idle 487s)
+2026-08-10 10:00:01  screen -> 6500K @ 100%
+2026-08-10 10:12:01  break skipped (idle 896s)
+2026-08-10 10:15:01  screen -> 6500K @ 100%
+2026-08-10 10:30:01  screen -> 6500K @ 100%
+2026-08-10 10:35:01  break skipped (idle 2276s)
+2026-08-10 10:37:01  break skipped (idle 2396s)
+2026-08-10 10:45:01  screen -> 6500K @ 100%
+2026-08-10 11:00:01  screen -> 6500K @ 100%
+2026-08-10 11:02:01  break skipped (idle 3896s)
+2026-08-10 11:15:01  screen -> 6500K @ 100%
+2026-08-10 11:27:01  break skipped (idle 5396s)
+2026-08-10 11:30:01  screen -> 6500K @ 100%
+2026-08-10 11:35:01  break skipped (idle 5876s)
+2026-08-10 11:45:01  screen -> 6500K @ 100%
+2026-08-10 11:52:01  break skipped (idle 6896s)
+2026-08-10 12:00:01  screen -> 6500K @ 100%
+2026-08-10 12:15:01  screen -> 6500K @ 100%
+2026-08-10 12:17:01  break skipped (idle 8395s)
+2026-08-10 12:30:01  screen -> 6500K @ 100%
+2026-08-10 12:35:02  nudge: Stand up
+2026-08-10 12:42:01  nudge: Eye break
+2026-08-10 12:45:01  screen -> 6500K @ 100%
+2026-08-10 13:00:01  screen -> 6500K @ 100%
+2026-08-10 13:07:01  nudge: Eye break
+2026-08-10 13:15:01  screen -> 6500K @ 100%
+2026-08-10 13:23:51  uri: nightowl://mode/work -> mode 'work' ''
+2026-08-10 13:23:51  screen -> 6500K @ 100%
+2026-08-10 13:23:51  notifications -> False
+2026-08-10 13:23:51  power plan -> HighPerformance
+2026-08-10 13:23:51  monitor timeout -> 15 min
+2026-08-10 13:23:51  wallpaper engine (wallpaper32) -> pause
+2026-08-10 13:23:51  nudge: Work mode
+2026-08-10 13:24:01  MODE -> work
+2026-08-10 13:30:01  screen -> 6500K @ 100%
+2026-08-10 13:32:01  nudge: Eye break
+2026-08-10 13:35:01  nudge: Stand up
+2026-08-10 13:45:01  screen -> 6500K @ 100%
+2026-08-10 13:57:01  break skipped (idle 290s)
+2026-08-10 14:00:01  screen -> 6500K @ 100%
+2026-08-10 14:15:01  screen -> 6337K @ 100%
+2026-08-10 14:22:01  nudge: Eye break
+2026-08-10 14:30:01  screen -> 6175K @ 99%
+2026-08-10 14:35:01  nudge: Stand up
+2026-08-10 14:45:01  screen -> 6012K @ 99%
+2026-08-10 14:47:01  nudge: Eye break
+2026-08-10 15:00:01  screen -> 5850K @ 98%
+2026-08-10 15:12:01  nudge: Eye break
+2026-08-10 15:15:01  screen -> 6500K @ 100%
+2026-08-10 15:30:01  screen -> 6500K @ 100%
+2026-08-10 15:35:01  nudge: Stand up
+2026-08-10 15:37:01  nudge: Eye break
+2026-08-10 15:45:01  screen -> 6500K @ 100%
+2026-08-10 16:00:02  screen -> 6500K @ 100%
+2026-08-10 16:02:01  break skipped (idle 706s)
+2026-08-10 16:15:01  screen -> 6500K @ 100%
+2026-08-10 16:27:01  break skipped (idle 323s)
+2026-08-10 16:30:01  screen -> 6500K @ 100%
+2026-08-10 16:35:01  break skipped (idle 803s)
+2026-08-10 16:45:01  screen -> 6500K @ 100%
+2026-08-10 16:52:01  nudge: Eye break
+2026-08-10 17:00:01  screen -> 6500K @ 100%
+2026-08-10 17:15:01  screen -> 6500K @ 100%
+2026-08-10 17:17:01  nudge: Eye break
+2026-08-10 17:30:01  screen -> 6500K @ 100%
+2026-08-10 17:35:01  break skipped (idle 1069s)
+2026-08-10 17:42:01  break skipped (idle 1489s)
+2026-08-10 17:45:01  screen -> 6500K @ 100%
+2026-08-10 18:00:01  screen -> 6500K @ 100%
+2026-08-10 18:07:01  break skipped (idle 902s)
+2026-08-10 18:15:01  screen -> 6500K @ 100%
+2026-08-10 18:30:01  screen -> 6500K @ 100%
+2026-08-10 18:32:01  break skipped (idle 2402s)
+2026-08-10 18:35:01  nudge: Stand up
+2026-08-10 18:45:01  screen -> 6500K @ 100%
+2026-08-10 18:57:01  nudge: Eye break
+2026-08-10 19:00:01  notifications -> True
+2026-08-10 19:00:01  power plan -> Balanced
+2026-08-10 19:00:01  screen -> 6500K @ 100%
+2026-08-10 19:00:01  monitor timeout -> 10 min
+2026-08-10 19:00:01  game mode -> False
+2026-08-10 19:00:01  wallpaper engine (wallpaper32) -> play
+2026-08-10 19:00:01  nudge: Wind-down started
+2026-08-10 19:00:16  MODE -> winddown
+2026-08-10 19:15:01  screen -> 6500K @ 100%
+2026-08-10 19:22:01  break skipped (idle 220s)
+2026-08-10 19:30:01  screen -> 6500K @ 100%
+2026-08-10 19:35:01  break skipped (idle 1000s)
+2026-08-10 19:45:01  screen -> 6337K @ 100%
+2026-08-10 19:47:01  break skipped (idle 422s)
+2026-08-10 20:00:01  power plan -> PowerSaver
+2026-08-10 20:00:01  screen -> 6175K @ 99%
+2026-08-10 20:00:01  monitor timeout -> 5 min
+2026-08-10 20:00:01  game mode -> False
+2026-08-10 20:00:02  nudge: Past bedtime
+2026-08-10 20:00:19  MODE -> sleep
+2026-08-10 20:12:02  nudge: Eye break
+2026-08-10 20:15:02  screen -> 6012K @ 99%
+2026-08-10 20:30:02  screen -> 5850K @ 98%
+2026-08-10 20:35:02  break skipped (fullscreen)
+2026-08-10 20:37:02  break skipped (fullscreen)
+2026-08-10 20:45:02  screen -> 5687K @ 98%
+2026-08-10 21:00:02  screen -> 5525K @ 98%
+2026-08-10 21:02:02  nudge: Eye break
+2026-08-10 21:15:02  screen -> 5362K @ 97%
+2026-08-10 21:27:02  nudge: Eye break
+2026-08-10 21:30:02  screen -> 5200K @ 97%
+2026-08-10 21:35:02  nudge: Stand up
+2026-08-10 21:45:02  screen -> 5041K @ 97%
+2026-08-10 21:52:02  break skipped (idle 633s)
+2026-08-10 22:00:02  screen -> 4883K @ 96%
+2026-08-10 22:15:01  screen -> 4725K @ 96%
+2026-08-10 22:17:01  break skipped (idle 2133s)
+2026-08-10 22:30:02  screen -> 4566K @ 95%
+2026-08-10 22:35:01  break skipped (idle 3213s)
+2026-08-10 22:42:01  break skipped (idle 3633s)
+2026-08-10 22:45:01  screen -> 4408K @ 95%
+2026-08-10 23:00:02  screen -> 4250K @ 94%
+2026-08-10 23:07:02  nudge: Eye break
+2026-08-10 23:15:01  screen -> 4091K @ 94%
+2026-08-10 23:30:01  screen -> 3933K @ 94%
+2026-08-10 23:32:01  break skipped (idle 792s)
+2026-08-10 23:35:02  break skipped (idle 972s)
+2026-08-10 23:45:01  screen -> 3775K @ 93%
+2026-08-10 23:57:01  break skipped (idle 2292s)
+2026-08-11 00:00:01  screen -> 3616K @ 93%
+2026-08-11 00:15:01  screen -> 3458K @ 92%
+2026-08-11 00:22:01  break skipped (idle 3792s)
+2026-08-11 00:35:01  break skipped (idle 4572s)
+2026-08-11 00:47:01  break skipped (idle 5292s)
+2026-08-11 01:12:02  nudge: Eye break
+2026-08-11 01:35:02  break skipped (idle 791s)
+2026-08-11 01:37:02  break skipped (idle 911s)
+2026-08-11 02:02:01  break skipped (idle 2410s)
+2026-08-11 02:27:01  break skipped (idle 3910s)
+2026-08-11 02:35:01  break skipped (idle 4391s)
+2026-08-11 02:52:01  break skipped (idle 5410s)
+2026-08-11 03:17:01  break skipped (idle 6910s)
+2026-08-11 03:35:02  break skipped (idle 7991s)
+2026-08-11 03:42:01  break skipped (idle 8410s)
+2026-08-11 04:07:01  break skipped (idle 9910s)
+2026-08-11 04:32:01  break skipped (idle 11410s)
+2026-08-11 04:35:01  break skipped (idle 11590s)
+2026-08-11 04:57:01  break skipped (idle 12910s)
+2026-08-11 05:12:02  break skipped (idle 13810s)
+2026-08-11 05:20:03  expsync: System Bridge complete.
+2026-08-11 05:20:03  expsync:   log rows read:        0
+2026-08-11 05:20:03  expsync:   days of coach focus:  0
+2026-08-11 05:20:03  expsync:   total coach focus:    0 min
+2026-08-11 05:20:03  expsync:   NightOwl focus:       0 min across 0 day(s)
+2026-08-11 05:20:03  expsync:   clean wind-down nights: 0
+2026-08-11 05:20:03  expsync:   feed written:         C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_feed.json
+2026-08-11 05:20:03  expsync:   live dashboard:       C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\solo_leveling_live.html
+2026-08-11 05:20:03  expsync: 
+2026-08-11 05:20:03  expsync:   (No activity_log.csv and no NightOwl focus sessions yet.
+2026-08-11 05:20:03  expsync:    Run the coach (python src/main.py) or complete a NightOwl focus
+2026-08-11 05:20:03  expsync:    block, then re-run this to see EXP flow in.)
+2026-08-11 05:35:02  break skipped (idle 15190s)
+2026-08-11 05:37:02  break skipped (idle 15311s)
+2026-08-11 06:02:02  break skipped (idle 16811s)
+2026-08-11 06:27:02  break skipped (idle 18310s)
+2026-08-11 06:30:03  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-11 06:30:03  sync:   4 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-11 06:35:01  break skipped (idle 18790s)
+2026-08-11 06:52:02  nudge: Eye break
+2026-08-11 07:17:02  break skipped (idle 1606s)
+2026-08-11 07:30:02  screen -> 6500K @ 100%
+2026-08-11 07:35:02  break skipped (idle 2685s)
+2026-08-11 07:42:02  break skipped (idle 3105s)
+2026-08-11 07:45:02  screen -> 6500K @ 100%
+2026-08-11 08:00:02  screen -> 6500K @ 100%
+2026-08-11 08:07:02  break skipped (idle 4605s)
+2026-08-11 08:15:02  screen -> 6500K @ 100%
+2026-08-11 08:30:02  screen -> 6500K @ 100%
+2026-08-11 08:32:02  break skipped (idle 6105s)
+2026-08-11 08:35:02  break skipped (idle 6285s)
+2026-08-11 08:45:02  screen -> 6500K @ 100%
+2026-08-11 08:57:02  break skipped (idle 7605s)
+2026-08-11 09:00:02  screen -> 6500K @ 100%
+2026-08-11 09:15:02  screen -> 6500K @ 100%
+2026-08-11 09:22:02  break skipped (idle 9105s)
+2026-08-11 09:30:02  screen -> 6500K @ 100%
+2026-08-11 09:35:02  break skipped (idle 9885s)
+2026-08-11 09:45:02  screen -> 6500K @ 100%
+2026-08-11 09:47:02  break skipped (idle 10605s)
+2026-08-11 10:00:02  screen -> 6500K @ 100%
+2026-08-11 10:12:02  break skipped (idle 12105s)
+2026-08-11 10:15:02  screen -> 6500K @ 100%
+2026-08-11 10:30:02  screen -> 6500K @ 100%
+2026-08-11 10:35:02  break skipped (idle 13485s)
+2026-08-11 10:37:02  break skipped (idle 13605s)
+2026-08-11 10:45:02  screen -> 6500K @ 100%
+2026-08-11 11:00:02  screen -> 6500K @ 100%
+2026-08-11 11:02:02  break skipped (idle 1042s)
+2026-08-11 11:15:02  screen -> 6500K @ 100%
+2026-08-11 11:27:02  break skipped (idle 2542s)
+2026-08-11 11:30:02  screen -> 6500K @ 100%
+2026-08-11 11:35:02  break skipped (idle 3022s)
+2026-08-11 11:45:02  screen -> 6500K @ 100%
+2026-08-11 11:52:03  nudge: Eye break
+2026-08-11 12:00:03  screen -> 6500K @ 100%
+2026-08-11 12:15:03  screen -> 6500K @ 100%
+2026-08-11 12:17:03  nudge: Eye break
+2026-08-11 12:30:03  screen -> 6500K @ 100%
+2026-08-11 12:35:03  nudge: Stand up
+2026-08-11 12:42:03  nudge: Eye break
+2026-08-11 12:45:03  screen -> 6500K @ 100%
+2026-08-11 13:00:02  screen -> 6500K @ 100%
+2026-08-11 13:07:02  break skipped (idle 236s)
+2026-08-11 13:15:02  screen -> 6500K @ 100%
+2026-08-11 13:30:03  screen -> 6500K @ 100%
+2026-08-11 13:32:03  break skipped (idle 383s)
+2026-08-11 13:35:02  break skipped (idle 562s)
+2026-08-11 13:45:02  screen -> 6500K @ 100%
+2026-08-11 13:57:02  break skipped (idle 369s)
+2026-08-11 14:00:03  screen -> 6500K @ 100%
+2026-08-11 14:15:03  screen -> 6500K @ 100%
+2026-08-11 14:22:03  nudge: Eye break
+2026-08-11 14:30:02  screen -> 6500K @ 100%
+2026-08-11 14:35:02  break skipped (idle 710s)
+2026-08-11 14:45:02  screen -> 6500K @ 100%
+2026-08-11 14:47:03  nudge: Eye break
+2026-08-11 15:00:03  screen -> 6500K @ 100%
+2026-08-11 15:12:03  nudge: Eye break
+2026-08-11 15:15:02  screen -> 6500K @ 100%
+2026-08-11 15:30:02  screen -> 6500K @ 100%
+2026-08-11 15:35:02  break skipped (idle 511s)
+2026-08-11 15:37:02  break skipped (idle 631s)
+2026-08-11 15:45:02  screen -> 6500K @ 100%
+2026-08-11 16:00:02  screen -> 6500K @ 100%
+2026-08-11 16:02:02  break skipped (idle 810s)
+2026-08-11 16:15:02  screen -> 6500K @ 100%
+2026-08-11 16:27:03  nudge: Eye break
+2026-08-11 16:30:02  screen -> 6500K @ 100%
+2026-08-11 16:35:03  break skipped (idle 577s)
+2026-08-11 16:45:03  screen -> 6500K @ 100%
+2026-08-11 16:52:02  break skipped (idle 1596s)
+2026-08-11 17:00:02  screen -> 6500K @ 100%
+2026-08-11 17:15:02  screen -> 6500K @ 100%
+2026-08-11 17:17:03  nudge: Eye break
+2026-08-11 17:30:03  screen -> 6500K @ 100%
+2026-08-11 17:35:02  break skipped (idle 1124s)
+2026-08-11 17:42:02  break skipped (idle 1543s)
+2026-08-11 17:45:02  screen -> 6500K @ 100%
+2026-08-11 18:00:02  screen -> 6500K @ 100%
+2026-08-11 18:07:02  break skipped (idle 3043s)
+2026-08-11 18:15:02  screen -> 6500K @ 100%
+2026-08-11 18:30:02  screen -> 6500K @ 100%
+2026-08-11 18:32:03  nudge: Eye break
+2026-08-11 18:35:03  nudge: Stand up
+2026-08-11 18:45:02  screen -> 6500K @ 100%
+2026-08-11 18:57:03  nudge: Eye break
+2026-08-11 19:00:02  notifications -> True
+2026-08-11 19:00:02  screen -> 6500K @ 100%
+2026-08-11 19:00:02  power plan -> Balanced
+2026-08-11 19:00:03  monitor timeout -> 10 min
+2026-08-11 19:00:03  game mode -> False
+2026-08-11 19:00:03  wallpaper engine (wallpaper32) -> play
+2026-08-11 19:00:03  nudge: Wind-down started
+2026-08-11 20:18:16  screen -> 5977K @ 99%
+2026-08-11 20:18:18  notifications -> False
+2026-08-11 20:18:19  power plan -> HighPerformance
+2026-08-11 20:18:20  monitor timeout -> 15 min
+2026-08-11 20:18:20  wallpaper engine (wallpaper32) -> pause
+2026-08-11 20:18:20  chroma daemon started
+2026-08-11 20:18:20  nudge: Work mode
+2026-08-11 20:18:20  chroma: session registered (http://localhost:59770/chromasdk)
+2026-08-11 20:18:21  chroma -> rgb(255,246,236)
+2026-08-11 20:18:31  MODE -> work
+2026-08-11 20:19:46  chroma -> rgb(255,245,236)
+2026-08-11 20:20:41  chroma -> rgb(255,245,235)
+2026-08-11 20:23:56  chroma -> rgb(255,245,234)
+2026-08-11 20:25:16  chroma -> rgb(255,244,234)
+2026-08-11 20:27:01  power plan -> PowerSaver
+2026-08-11 20:27:01  monitor timeout -> 5 min
+2026-08-11 20:27:01  game mode -> False
+2026-08-11 20:27:02  nudge: Past bedtime
+2026-08-11 20:27:11  chroma -> rgb(255,244,233)
+2026-08-11 20:27:19  MODE -> sleep
+2026-08-11 20:30:00  screen -> 5850K @ 98%
+2026-08-11 20:30:27  chroma -> rgb(255,244,232)
+2026-08-11 20:30:42  chroma -> rgb(255,243,232)
+2026-08-11 20:33:43  chroma -> rgb(255,243,231)
+2026-08-11 20:35:01  nudge: Stand up
+2026-08-11 20:36:09  chroma -> rgb(255,242,231)
+2026-08-11 20:36:49  chroma -> rgb(255,242,230)
+2026-08-11 20:37:01  nudge: Eye break
+2026-08-11 20:40:05  chroma -> rgb(255,242,229)
+2026-08-11 20:41:26  chroma -> rgb(255,241,229)
+2026-08-11 20:43:11  chroma -> rgb(255,241,228)
+2026-08-11 20:45:01  screen -> 5687K @ 98%
+2026-08-11 20:46:17  chroma -> rgb(255,241,227)
+2026-08-11 20:46:48  chroma -> rgb(255,240,227)
+2026-08-11 20:49:24  chroma -> rgb(255,240,226)
+2026-08-11 20:52:00  chroma -> rgb(255,239,226)
+2026-08-11 20:52:30  chroma -> rgb(255,239,225)
+2026-08-11 20:55:35  chroma -> rgb(255,239,224)
+2026-08-11 20:57:11  chroma -> rgb(255,238,224)
+2026-08-11 20:58:36  chroma -> rgb(255,238,223)
+2026-08-11 21:00:01  screen -> 5525K @ 98%
+2026-08-11 21:01:32  chroma -> rgb(255,238,222)
+2026-08-11 21:02:01  break skipped (idle 872s)
+2026-08-11 21:02:18  chroma -> rgb(255,237,222)
+2026-08-11 21:04:39  chroma -> rgb(255,237,221)
+2026-08-11 21:07:20  chroma -> rgb(255,236,221)
+2026-08-11 21:07:35  chroma -> rgb(255,236,220)
+2026-08-11 21:10:31  chroma -> rgb(255,236,219)
+2026-08-11 21:12:27  chroma -> rgb(255,235,219)
+2026-08-11 21:13:27  chroma -> rgb(255,235,218)
+2026-08-11 21:15:01  screen -> 5362K @ 97%
+2026-08-11 21:16:18  chroma -> rgb(255,235,217)
+2026-08-11 21:17:24  chroma -> rgb(255,234,217)
+2026-08-11 21:19:10  chroma -> rgb(255,234,216)
+2026-08-11 21:22:01  chroma -> rgb(255,234,215)
+2026-08-11 21:22:21  chroma -> rgb(255,233,215)
+2026-08-11 21:24:57  chroma -> rgb(255,233,214)
+2026-08-11 21:27:01  nudge: Eye break
+2026-08-11 21:27:12  chroma -> rgb(255,232,214)
+2026-08-11 21:27:48  chroma -> rgb(255,232,213)
+2026-08-11 21:30:01  screen -> 5200K @ 97%
+2026-08-11 21:30:34  chroma -> rgb(255,232,212)
+2026-08-11 21:32:04  chroma -> rgb(255,231,212)
+2026-08-11 21:33:25  chroma -> rgb(255,231,211)
+2026-08-11 21:35:01  nudge: Stand up
+2026-08-11 21:36:16  chroma -> rgb(255,231,210)
+2026-08-11 21:37:01  chroma -> rgb(255,230,210)
+2026-08-11 21:39:07  chroma -> rgb(255,230,209)
+2026-08-11 21:41:48  chroma -> rgb(255,229,209)
+2026-08-11 21:41:53  chroma -> rgb(255,229,208)
+2026-08-11 21:44:39  chroma -> rgb(255,229,207)
+2026-08-11 21:45:01  screen -> 5041K @ 97%
+2026-08-11 21:46:40  chroma -> rgb(255,228,207)
+2026-08-11 21:47:25  chroma -> rgb(255,228,206)
+2026-08-11 21:50:11  chroma -> rgb(255,228,205)
+2026-08-11 21:51:21  chroma -> rgb(255,227,205)
+2026-08-11 21:52:01  nudge: Eye break
+2026-08-11 21:52:57  chroma -> rgb(255,227,204)
+2026-08-11 21:55:33  chroma -> rgb(255,227,203)
+2026-08-11 21:56:08  chroma -> rgb(255,226,203)
+2026-08-11 21:58:14  chroma -> rgb(255,226,202)
+2026-08-11 22:00:01  screen -> 4883K @ 96%
+2026-08-11 22:00:45  chroma -> rgb(255,225,202)
+2026-08-11 22:00:55  chroma -> rgb(255,225,201)
+2026-08-11 22:03:31  chroma -> rgb(255,225,200)
+2026-08-11 22:05:26  chroma -> rgb(255,224,200)
+2026-08-11 22:06:12  chroma -> rgb(255,224,199)
+2026-08-11 22:08:43  chroma -> rgb(255,224,198)
+2026-08-11 22:09:58  chroma -> rgb(255,223,198)
+2026-08-11 22:11:24  chroma -> rgb(255,223,197)
+2026-08-11 22:13:55  chroma -> rgb(255,223,196)
+2026-08-11 22:14:30  chroma -> rgb(255,222,196)
+2026-08-11 22:15:01  screen -> 4725K @ 96%
+2026-08-11 22:16:31  chroma -> rgb(255,222,195)
+2026-08-11 22:17:01  break skipped (idle 982s)
+2026-08-11 22:18:57  chroma -> rgb(255,221,194)
+2026-08-11 22:21:32  chroma -> rgb(255,221,193)
+2026-08-11 22:23:23  chroma -> rgb(255,220,193)
+2026-08-11 22:23:58  chroma -> rgb(255,220,192)
+2026-08-11 22:26:29  chroma -> rgb(255,220,191)
+2026-08-11 22:27:50  chroma -> rgb(255,219,191)
+2026-08-11 22:28:55  chroma -> rgb(255,219,190)
+2026-08-11 22:30:01  screen -> 4566K @ 95%
+2026-08-11 22:31:21  chroma -> rgb(255,219,189)
+2026-08-11 22:32:12  chroma -> rgb(255,218,189)
+2026-08-11 22:33:47  chroma -> rgb(255,218,188)
+2026-08-11 22:35:01  break skipped (idle 2062s)
+2026-08-11 22:36:13  chroma -> rgb(255,218,187)
+2026-08-11 22:36:28  chroma -> rgb(255,217,187)
+2026-08-11 22:38:34  chroma -> rgb(255,217,186)
+2026-08-11 22:40:45  chroma -> rgb(255,216,186)
+2026-08-11 22:40:55  chroma -> rgb(255,216,185)
+2026-08-11 22:42:01  nudge: Eye break
+2026-08-11 22:43:21  chroma -> rgb(255,216,184)
+2026-08-11 22:45:01  screen -> 4408K @ 95%
+2026-08-11 22:45:01  chroma -> rgb(255,215,184)
+2026-08-11 22:45:42  chroma -> rgb(255,215,183)
+2026-08-11 22:47:57  chroma -> rgb(255,215,182)
+2026-08-11 22:49:13  chroma -> rgb(255,214,182)
+2026-08-11 22:50:13  chroma -> rgb(255,214,181)
+2026-08-11 22:52:29  chroma -> rgb(255,214,180)
+2026-08-11 22:53:15  chroma -> rgb(255,213,180)
+2026-08-11 22:54:45  chroma -> rgb(255,213,179)
+2026-08-11 22:57:01  chroma -> rgb(255,213,178)
+2026-08-11 22:57:21  chroma -> rgb(255,212,178)
+2026-08-11 22:59:17  chroma -> rgb(255,212,177)
+2026-08-11 23:00:01  screen -> 4250K @ 94%
+2026-08-11 23:01:23  chroma -> rgb(255,211,177)
+2026-08-11 23:01:28  chroma -> rgb(255,211,176)
+2026-08-11 23:03:39  chroma -> rgb(255,211,175)
+2026-08-11 23:05:29  chroma -> rgb(255,210,175)
+2026-08-11 23:06:00  chroma -> rgb(255,210,174)
+2026-08-11 23:07:01  break skipped (idle 1099s)
+2026-08-11 23:08:00  chroma -> rgb(255,210,173)
+2026-08-11 23:09:26  chroma -> rgb(255,209,173)
+2026-08-11 23:10:11  chroma -> rgb(255,209,172)
+2026-08-11 23:12:22  chroma -> rgb(255,209,171)
+2026-08-11 23:13:22  chroma -> rgb(255,208,171)
+2026-08-11 23:14:28  chroma -> rgb(255,208,170)
+2026-08-11 23:15:01  screen -> 4091K @ 94%
+2026-08-11 23:16:39  chroma -> rgb(255,208,169)
+2026-08-11 23:17:14  chroma -> rgb(255,207,169)
+2026-08-11 23:18:44  chroma -> rgb(255,207,168)
+2026-08-11 23:20:50  chroma -> rgb(255,207,167)
+2026-08-11 23:21:05  chroma -> rgb(255,206,167)
+2026-08-11 23:22:51  chroma -> rgb(255,206,166)
+2026-08-11 23:24:52  chroma -> rgb(255,205,165)
+2026-08-11 23:26:58  chroma -> rgb(255,205,164)
+2026-08-11 23:28:43  chroma -> rgb(255,204,164)
+2026-08-11 23:28:58  chroma -> rgb(255,204,163)
+2026-08-11 23:30:01  screen -> 3933K @ 94%
+2026-08-11 23:30:59  chroma -> rgb(255,204,162)
+2026-08-11 23:32:01  break skipped (idle 2599s)
+2026-08-11 23:32:30  chroma -> rgb(255,203,162)
+2026-08-11 23:32:55  chroma -> rgb(255,203,161)
+2026-08-11 23:34:56  chroma -> rgb(255,203,160)
+2026-08-11 23:35:01  break skipped (idle 2779s)
+2026-08-11 23:36:11  chroma -> rgb(255,202,160)
+2026-08-11 23:36:57  chroma -> rgb(255,202,159)
+2026-08-11 23:38:47  chroma -> rgb(255,202,158)
+2026-08-11 23:39:48  chroma -> rgb(255,201,158)
+2026-08-11 23:40:48  chroma -> rgb(255,201,157)
+2026-08-11 23:42:44  chroma -> rgb(255,201,156)
+2026-08-11 23:43:29  chroma -> rgb(255,200,156)
+2026-08-11 23:44:35  chroma -> rgb(255,200,155)
+2026-08-11 23:45:01  screen -> 3775K @ 93%
+2026-08-11 23:46:31  chroma -> rgb(255,200,154)
+2026-08-11 23:47:06  chroma -> rgb(255,199,154)
+2026-08-11 23:48:21  chroma -> rgb(255,199,153)
+2026-08-11 23:50:17  chroma -> rgb(255,199,152)
+2026-08-11 23:50:32  chroma -> rgb(255,198,152)
+2026-08-11 23:52:08  chroma -> rgb(255,198,151)
+2026-08-11 23:53:59  chroma -> rgb(255,198,150)
+2026-08-11 23:54:04  chroma -> rgb(255,197,150)
+2026-08-11 23:55:49  chroma -> rgb(255,197,149)
+2026-08-11 23:57:01  break skipped (idle 451s)
+2026-08-11 23:57:35  chroma -> rgb(255,196,148)
+2026-08-11 23:59:26  chroma -> rgb(255,196,147)
+2026-08-12 00:00:00  screen -> 3617K @ 93%
+2026-08-12 00:01:06  chroma -> rgb(255,195,147)
+2026-08-12 00:01:11  chroma -> rgb(255,195,146)
+2026-08-12 00:02:57  chroma -> rgb(255,195,145)
+2026-08-12 00:04:32  chroma -> rgb(255,194,145)
+2026-08-12 00:04:42  chroma -> rgb(255,194,144)
+2026-08-12 00:06:28  chroma -> rgb(255,194,143)
+2026-08-12 00:07:49  chroma -> rgb(255,193,143)
+2026-08-12 00:08:14  chroma -> rgb(255,193,142)
+2026-08-12 00:09:55  chroma -> rgb(255,193,141)
+2026-08-12 00:11:15  chroma -> rgb(255,192,141)
+2026-08-12 00:11:35  chroma -> rgb(255,192,140)
+2026-08-12 00:13:21  chroma -> rgb(255,192,139)
+2026-08-12 00:14:31  chroma -> rgb(255,191,139)
+2026-08-12 00:15:01  screen -> 3458K @ 92%
+2026-08-12 00:15:02  chroma -> rgb(255,191,138)
+2026-08-12 00:16:42  chroma -> rgb(255,191,137)
+2026-08-12 00:17:48  chroma -> rgb(255,190,137)
+2026-08-12 00:18:18  chroma -> rgb(255,190,136)
+2026-08-12 00:20:04  chroma -> rgb(255,190,135)
+2026-08-12 00:21:04  chroma -> rgb(255,189,135)
+2026-08-12 00:21:39  chroma -> rgb(255,189,134)
+2026-08-12 00:22:01  break skipped (idle 1951s)
+2026-08-12 00:23:15  chroma -> rgb(255,189,133)
+2026-08-12 00:24:20  chroma -> rgb(255,188,133)
+2026-08-12 00:24:50  chroma -> rgb(255,188,132)
+2026-08-12 00:26:31  chroma -> rgb(255,188,131)
+2026-08-12 00:27:26  chroma -> rgb(255,187,131)
+2026-08-12 00:28:07  chroma -> rgb(255,187,130)
+2026-08-12 00:29:42  chroma -> rgb(255,187,129)
+2026-08-12 00:30:28  chroma -> rgb(255,186,129)
+2026-08-12 00:30:58  chroma -> rgb(255,186,128)
+2026-08-12 00:32:13  chroma -> rgb(255,186,127)
+2026-08-12 00:32:53  chroma -> rgb(255,185,127)
+2026-08-12 00:33:29  chroma -> rgb(255,185,126)
+2026-08-12 00:34:39  chroma -> rgb(255,185,125)
+2026-08-12 00:35:01  break skipped (idle 2731s)
+2026-08-12 00:35:24  chroma -> rgb(255,184,125)
+2026-08-12 00:35:50  chroma -> rgb(255,184,124)
+2026-08-12 00:37:05  chroma -> rgb(255,184,123)
+2026-08-12 00:37:45  chroma -> rgb(255,183,123)
+2026-08-12 00:38:16  chroma -> rgb(255,183,122)
+2026-08-12 00:39:26  chroma -> rgb(255,183,121)
+2026-08-12 00:40:11  chroma -> rgb(255,182,121)
+2026-08-12 00:40:36  chroma -> rgb(255,182,120)
+2026-08-12 00:41:47  chroma -> rgb(255,182,119)
+2026-08-12 00:42:37  chroma -> rgb(255,181,119)
+2026-08-12 00:42:57  chroma -> rgb(255,181,118)
+2026-08-12 00:44:08  chroma -> rgb(255,181,117)
+2026-08-12 00:44:53  chroma -> rgb(255,180,117)
+2026-08-12 00:45:13  chroma -> rgb(255,180,116)
+2026-08-12 00:46:19  chroma -> rgb(255,180,115)
+2026-08-12 00:47:01  break skipped (idle 3451s)
+2026-08-12 00:47:14  chroma -> rgb(255,179,115)
+2026-08-12 00:47:29  chroma -> rgb(255,179,114)
+2026-08-12 00:48:35  chroma -> rgb(255,179,113)
+2026-08-12 00:49:35  chroma -> rgb(255,178,113)
+2026-08-12 00:49:45  chroma -> rgb(255,178,112)
+2026-08-12 00:50:51  chroma -> rgb(255,178,111)
+2026-08-12 00:51:51  chroma -> rgb(255,177,111)
+2026-08-12 00:51:56  chroma -> rgb(255,177,110)
+2026-08-12 00:53:01  chroma -> rgb(255,177,109)
+2026-08-12 00:54:07  chroma -> rgb(255,176,108)
+2026-08-12 00:55:07  chroma -> rgb(255,176,107)
+2026-08-12 00:56:13  chroma -> rgb(255,176,106)
+2026-08-12 00:56:18  chroma -> rgb(255,175,106)
+2026-08-12 00:57:13  chroma -> rgb(255,175,105)
+2026-08-12 00:58:18  chroma -> rgb(255,175,104)
+2026-08-12 00:58:34  chroma -> rgb(255,174,104)
+2026-08-12 00:59:19  chroma -> rgb(255,174,103)
+2026-08-12 01:00:24  chroma -> rgb(255,174,102)
+2026-08-12 01:00:45  chroma -> rgb(255,173,102)
+2026-08-12 01:01:20  chroma -> rgb(255,173,101)
+2026-08-12 01:02:25  chroma -> rgb(255,173,100)
+2026-08-12 01:02:55  chroma -> rgb(255,172,100)
+2026-08-12 01:03:20  chroma -> rgb(255,172,99)
+2026-08-12 01:04:26  chroma -> rgb(255,172,98)
+2026-08-12 01:05:06  chroma -> rgb(255,171,98)
+2026-08-12 01:05:26  chroma -> rgb(255,171,97)
+2026-08-12 01:06:22  chroma -> rgb(255,171,96)
+2026-08-12 01:07:12  chroma -> rgb(255,170,96)
+2026-08-12 01:07:22  chroma -> rgb(255,170,95)
+2026-08-12 01:08:17  chroma -> rgb(255,170,94)
+2026-08-12 01:09:18  chroma -> rgb(255,169,93)
+2026-08-12 01:10:18  chroma -> rgb(255,169,92)
+2026-08-12 01:11:08  chroma -> rgb(255,169,91)
+2026-08-12 01:11:24  chroma -> rgb(255,168,91)
+2026-08-12 01:12:01  break skipped (idle 4951s)
+2026-08-12 01:12:09  chroma -> rgb(255,168,90)
+2026-08-12 01:13:09  chroma -> rgb(255,168,89)
+2026-08-12 01:13:24  chroma -> rgb(255,167,89)
+2026-08-12 01:14:00  chroma -> rgb(255,167,88)
+2026-08-12 01:14:55  chroma -> rgb(255,167,87)
+2026-08-12 01:15:25  chroma -> rgb(255,166,87)
+2026-08-12 01:15:55  chroma -> rgb(255,166,86)
+2026-08-12 01:16:46  chroma -> rgb(255,166,85)
+2026-08-12 01:17:26  chroma -> rgb(255,165,85)
+2026-08-12 01:17:41  chroma -> rgb(255,165,84)
+2026-08-12 01:18:36  chroma -> rgb(255,165,83)
+2026-08-12 01:19:32  chroma -> rgb(255,164,82)
+2026-08-12 01:20:17  chroma -> rgb(255,164,81)
+2026-08-12 01:21:12  chroma -> rgb(255,164,80)
+2026-08-12 01:21:33  chroma -> rgb(255,163,80)
+2026-08-12 01:22:08  chroma -> rgb(255,163,79)
+2026-08-12 01:22:58  chroma -> rgb(255,163,78)
+2026-08-12 01:23:28  chroma -> rgb(255,162,78)
+2026-08-12 01:23:48  chroma -> rgb(255,162,77)
+2026-08-12 01:24:39  chroma -> rgb(255,162,76)
+2026-08-12 01:25:24  chroma -> rgb(255,161,76)
+2026-08-12 01:25:34  chroma -> rgb(255,161,75)
+2026-08-12 01:26:24  chroma -> rgb(255,161,74)
+2026-08-12 01:27:15  chroma -> rgb(255,161,73)
+2026-08-12 01:27:20  chroma -> rgb(255,160,73)
+2026-08-12 01:28:05  chroma -> rgb(255,160,72)
+2026-08-12 01:28:50  chroma -> rgb(255,160,71)
+2026-08-12 01:29:16  chroma -> rgb(255,159,71)
+2026-08-12 01:29:41  chroma -> rgb(255,159,70)
+2026-08-12 01:35:01  break skipped (idle 6331s)
+2026-08-12 01:37:01  break skipped (idle 6451s)
+2026-08-12 02:02:01  break skipped (idle 7950s)
+2026-08-12 02:27:01  break skipped (idle 9451s)
+2026-08-12 02:35:01  break skipped (idle 9931s)
+2026-08-12 02:52:01  break skipped (idle 10950s)
+2026-08-12 03:17:01  break skipped (idle 12451s)
+2026-08-12 03:35:01  break skipped (idle 13530s)
+2026-08-12 03:42:01  break skipped (idle 13951s)
+2026-08-12 04:07:01  break skipped (idle 15451s)
+2026-08-12 04:32:01  break skipped (idle 16950s)
+2026-08-12 04:35:01  break skipped (idle 17130s)
+2026-08-12 04:57:01  break skipped (idle 18450s)
+2026-08-12 05:12:02  break skipped (idle 19351s)
+2026-08-12 05:20:04  expsync: System Bridge complete.
+2026-08-12 05:20:04  expsync:   log rows read:        0
+2026-08-12 05:20:04  expsync:   days of coach focus:  0
+2026-08-12 05:20:04  expsync:   total coach focus:    0 min
+2026-08-12 05:20:04  expsync:   NightOwl focus:       0 min across 0 day(s)
+2026-08-12 05:20:04  expsync:   clean wind-down nights: 1
+2026-08-12 05:20:04  expsync:   feed written:         C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_feed.json
+2026-08-12 05:20:04  expsync:   live dashboard:       C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\solo_leveling_live.html
+2026-08-12 05:20:04  expsync: 
+2026-08-12 05:20:04  expsync:   (No activity_log.csv and no NightOwl focus sessions yet.
+2026-08-12 05:20:04  expsync:    Run the coach (python src/main.py) or complete a NightOwl focus
+2026-08-12 05:20:04  expsync:    block, then re-run this to see EXP flow in.)
+2026-08-12 05:35:02  break skipped (idle 20731s)
+2026-08-12 05:37:03  break skipped (idle 20852s)
+2026-08-12 06:02:03  break skipped (idle 22352s)
+2026-08-12 06:27:03  break skipped (idle 23852s)
+2026-08-12 06:30:03  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-12 06:30:03  sync:   0 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-12 06:35:03  break skipped (idle 24332s)
+2026-08-12 06:52:03  break skipped (idle 25352s)
+2026-08-12 07:17:03  break skipped (idle 26852s)
+2026-08-12 07:30:01  chroma -> rgb(255,254,250)
+2026-08-12 07:30:03  screen -> 6500K @ 100%
+2026-08-12 07:35:03  break skipped (idle 27932s)
+2026-08-12 07:42:03  break skipped (idle 28351s)
+2026-08-12 07:45:03  screen -> 6500K @ 100%
+2026-08-12 08:00:03  screen -> 6500K @ 100%
+2026-08-12 08:07:04  nudge: Eye break
+2026-08-12 08:15:03  screen -> 6500K @ 100%
+2026-08-12 08:30:03  screen -> 6500K @ 100%
+2026-08-12 08:32:03  nudge: Eye break
+2026-08-12 08:35:03  nudge: Stand up
+2026-08-12 08:45:03  screen -> 6500K @ 100%
+2026-08-12 08:57:03  break skipped (idle 485s)
+2026-08-12 09:00:03  screen -> 6500K @ 100%
+2026-08-12 09:15:03  screen -> 6500K @ 100%
+2026-08-12 09:22:03  nudge: Eye break
+2026-08-12 09:30:03  screen -> 6500K @ 100%
+2026-08-12 09:35:03  break skipped (idle 897s)
+2026-08-12 09:45:03  screen -> 6500K @ 100%
+2026-08-12 09:47:03  break skipped (idle 1617s)
+2026-08-12 10:00:03  screen -> 6500K @ 100%
+2026-08-12 10:12:03  break skipped (idle 3117s)
+2026-08-12 10:15:03  screen -> 6500K @ 100%
+2026-08-12 10:30:03  screen -> 6500K @ 100%
+2026-08-12 10:35:03  break skipped (idle 4497s)
+2026-08-12 10:37:03  break skipped (idle 4617s)
+2026-08-12 10:45:03  screen -> 6500K @ 100%
+2026-08-12 11:00:03  screen -> 6500K @ 100%
+2026-08-12 11:02:03  break skipped (idle 6117s)
+2026-08-12 11:15:03  screen -> 6500K @ 100%
+2026-08-12 11:27:03  nudge: Eye break
+2026-08-12 11:30:03  screen -> 6500K @ 100%
+2026-08-12 11:35:03  nudge: Stand up
+2026-08-12 11:45:03  screen -> 6500K @ 100%
+2026-08-12 11:52:03  nudge: Eye break
+2026-08-12 12:00:03  screen -> 6500K @ 100%
+2026-08-12 12:15:03  screen -> 6500K @ 100%
+2026-08-12 12:17:03  break skipped (idle 278s)
+2026-08-12 12:30:03  screen -> 6500K @ 100%
+2026-08-12 12:35:03  nudge: Stand up
+2026-08-12 12:42:03  break skipped (idle 574s)
+2026-08-12 12:45:03  screen -> 6500K @ 100%
+2026-08-12 13:00:03  screen -> 6500K @ 100%
+2026-08-12 13:12:34  screen -> 6500K @ 100%
+2026-08-12 13:12:34  notifications -> False
+2026-08-12 13:12:34  power plan -> HighPerformance
+2026-08-12 13:12:34  monitor timeout -> 15 min
+2026-08-12 13:12:34  wallpaper engine (wallpaper32) -> pause
+2026-08-12 13:12:34  nudge: Work mode
+2026-08-12 13:12:35  chroma daemon started
+2026-08-12 13:12:35  chroma: session registered (http://localhost:54454/chromasdk)
+2026-08-12 13:12:36  chroma -> rgb(255,254,250)
+2026-08-12 13:12:46  MODE -> work
+2026-08-12 13:15:02  screen -> 6500K @ 100%
+2026-08-12 13:30:02  screen -> 6500K @ 100%
+2026-08-12 13:32:01  nudge: Eye break
+2026-08-12 13:35:01  nudge: Stand up
+2026-08-12 13:45:01  screen -> 6500K @ 100%
+2026-08-12 13:57:01  nudge: Eye break
+2026-08-12 14:00:01  screen -> 6500K @ 100%
+2026-08-12 14:15:01  screen -> 6500K @ 100%
+2026-08-12 14:22:01  nudge: Eye break
+2026-08-12 14:30:01  screen -> 6500K @ 100%
+2026-08-12 14:35:01  nudge: Stand up
+2026-08-12 14:45:01  screen -> 6500K @ 100%
+2026-08-12 14:47:01  nudge: Eye break
+2026-08-12 15:00:01  screen -> 6500K @ 100%
+2026-08-12 15:12:02  nudge: Eye break
+2026-08-12 15:15:01  screen -> 6500K @ 100%
+2026-08-12 15:30:01  screen -> 6500K @ 100%
+2026-08-12 15:35:01  nudge: Stand up
+2026-08-12 15:37:01  nudge: Eye break
+2026-08-12 15:45:01  screen -> 6500K @ 100%
+2026-08-12 16:00:02  screen -> 6500K @ 100%
+2026-08-12 16:02:02  nudge: Eye break
+2026-08-12 16:15:01  screen -> 6500K @ 100%
+2026-08-12 16:27:01  break skipped (idle 246s)
+2026-08-12 16:30:01  screen -> 6500K @ 100%
+2026-08-12 16:35:01  nudge: Stand up
+2026-08-12 16:45:01  screen -> 6500K @ 100%
+2026-08-12 16:52:01  nudge: Eye break
+2026-08-12 17:00:01  screen -> 6500K @ 100%
+2026-08-12 17:15:01  screen -> 6500K @ 100%
+2026-08-12 17:17:02  nudge: Eye break
+2026-08-12 17:30:01  screen -> 6500K @ 100%
+2026-08-12 17:35:01  nudge: Stand up
+2026-08-12 17:42:01  nudge: Eye break
+2026-08-12 17:45:01  screen -> 6500K @ 100%
+2026-08-12 18:00:01  screen -> 6500K @ 100%
+2026-08-12 18:07:02  nudge: Eye break
+2026-08-12 18:15:01  screen -> 6500K @ 100%
+2026-08-12 18:30:01  screen -> 6500K @ 100%
+2026-08-12 18:32:01  nudge: Eye break
+2026-08-12 18:35:01  nudge: Stand up
+2026-08-12 18:45:01  screen -> 6500K @ 100%
+2026-08-12 18:57:01  break skipped (idle 1495s)
+2026-08-12 19:00:01  screen -> 6500K @ 100%
+2026-08-12 19:00:02  notifications -> True
+2026-08-12 19:00:02  power plan -> Balanced
+2026-08-12 19:00:02  monitor timeout -> 10 min
+2026-08-12 19:00:02  game mode -> False
+2026-08-12 19:00:02  wallpaper engine (wallpaper32) -> play
+2026-08-12 19:00:03  nudge: Wind-down started
+2026-08-12 19:00:17  MODE -> winddown
+2026-08-12 19:15:01  screen -> 6500K @ 100%
+2026-08-12 19:22:01  break skipped (idle 304s)
+2026-08-12 19:30:01  screen -> 6500K @ 100%
+2026-08-12 19:32:03  chroma -> rgb(255,254,249)
+2026-08-12 19:33:43  chroma -> rgb(255,253,249)
+2026-08-12 19:35:01  nudge: Stand up
+2026-08-12 19:35:38  chroma -> rgb(255,253,248)
+2026-08-12 19:39:19  chroma -> rgb(255,253,247)
+2026-08-12 19:39:39  chroma -> rgb(255,252,247)
+2026-08-12 19:42:49  chroma -> rgb(255,252,246)
+2026-08-12 19:45:01  screen -> 6337K @ 100%
+2026-08-12 19:45:34  chroma -> rgb(255,251,246)
+2026-08-12 19:46:24  chroma -> rgb(255,251,245)
+2026-08-12 19:47:01  break skipped (idle 597s)
+2026-08-12 19:49:54  chroma -> rgb(255,251,244)
+2026-08-12 19:51:24  chroma -> rgb(255,250,244)
+2026-08-12 19:53:24  chroma -> rgb(255,250,243)
+2026-08-12 19:56:55  chroma -> rgb(255,250,242)
+2026-08-12 19:57:15  chroma -> rgb(255,249,242)
+2026-08-12 20:00:01  screen -> 6175K @ 99%
+2026-08-12 20:00:02  power plan -> PowerSaver
+2026-08-12 20:00:02  monitor timeout -> 5 min
+2026-08-12 20:00:02  game mode -> False
+2026-08-12 20:00:03  nudge: Past bedtime
+2026-08-12 20:00:20  MODE -> sleep
+2026-08-12 20:00:20  chroma -> rgb(255,249,241)
+2026-08-12 20:02:55  chroma -> rgb(255,248,241)
+2026-08-12 20:03:50  chroma -> rgb(255,248,240)
+2026-08-12 20:07:16  chroma -> rgb(255,248,239)
+2026-08-12 20:08:36  chroma -> rgb(255,247,239)
+2026-08-12 20:10:36  chroma -> rgb(255,247,238)
+2026-08-12 20:12:02  break skipped (idle 325s)
+2026-08-12 20:14:02  chroma -> rgb(255,247,237)
+2026-08-12 20:14:12  chroma -> rgb(255,246,237)
+2026-08-12 20:15:02  screen -> 6012K @ 99%
+2026-08-12 20:17:22  chroma -> rgb(255,246,236)
+2026-08-12 20:19:42  chroma -> rgb(255,245,236)
+2026-08-12 20:20:37  chroma -> rgb(255,245,235)
+2026-08-12 20:23:53  chroma -> rgb(255,245,234)
+2026-08-12 20:25:18  chroma -> rgb(255,244,234)
+2026-08-12 20:27:13  chroma -> rgb(255,244,233)
+2026-08-12 20:30:02  screen -> 5850K @ 98%
+2026-08-12 20:30:29  chroma -> rgb(255,244,232)
+2026-08-12 20:30:44  chroma -> rgb(255,243,232)
+2026-08-12 20:33:39  chroma -> rgb(255,243,231)
+2026-08-12 20:35:02  break skipped (idle 1705s)
+2026-08-12 20:36:09  chroma -> rgb(255,242,231)
+2026-08-12 20:36:50  chroma -> rgb(255,242,230)
+2026-08-12 20:37:02  break skipped (idle 1825s)
+2026-08-12 20:40:05  chroma -> rgb(255,242,229)
+2026-08-12 20:41:25  chroma -> rgb(255,241,229)
+2026-08-12 20:43:10  chroma -> rgb(255,241,228)
+2026-08-12 20:45:02  screen -> 5687K @ 98%
+2026-08-12 20:46:21  chroma -> rgb(255,241,227)
+2026-08-12 20:46:46  chroma -> rgb(255,240,227)
+2026-08-12 20:49:21  chroma -> rgb(255,240,226)
+2026-08-12 20:51:56  chroma -> rgb(255,239,226)
+2026-08-12 20:52:32  chroma -> rgb(255,239,225)
+2026-08-12 20:55:32  chroma -> rgb(255,239,224)
+2026-08-12 20:57:12  chroma -> rgb(255,238,224)
+2026-08-12 20:58:37  chroma -> rgb(255,238,223)
+2026-08-12 21:00:03  screen -> 5524K @ 98%
+2026-08-12 21:01:33  chroma -> rgb(255,238,222)
+2026-08-12 21:02:03  nudge: Eye break
+2026-08-12 21:02:18  chroma -> rgb(255,237,222)
+2026-08-12 21:04:38  chroma -> rgb(255,237,221)
+2026-08-12 21:07:24  chroma -> rgb(255,236,221)
+2026-08-12 21:07:34  chroma -> rgb(255,236,220)
+2026-08-12 21:10:29  chroma -> rgb(255,236,219)
+2026-08-12 21:12:29  chroma -> rgb(255,235,219)
+2026-08-12 21:13:29  chroma -> rgb(255,235,218)
+2026-08-12 21:15:02  screen -> 5362K @ 97%
+2026-08-12 21:16:20  chroma -> rgb(255,235,217)
+2026-08-12 21:17:25  chroma -> rgb(255,234,217)
+2026-08-12 21:19:10  chroma -> rgb(255,234,216)
+2026-08-12 21:22:00  chroma -> rgb(255,234,215)
+2026-08-12 21:22:21  chroma -> rgb(255,233,215)
+2026-08-12 21:24:56  chroma -> rgb(255,233,214)
+2026-08-12 21:27:03  nudge: Eye break
+2026-08-12 21:27:11  chroma -> rgb(255,232,214)
+2026-08-12 21:27:46  chroma -> rgb(255,232,213)
+2026-08-12 21:30:03  screen -> 5200K @ 97%
+2026-08-12 21:30:32  chroma -> rgb(255,232,212)
+2026-08-12 21:32:02  chroma -> rgb(255,231,212)
+2026-08-12 21:33:22  chroma -> rgb(255,231,211)
+2026-08-12 21:35:03  nudge: Stand up
+2026-08-12 21:36:12  chroma -> rgb(255,231,210)
+2026-08-12 21:36:57  chroma -> rgb(255,230,210)
+2026-08-12 21:39:03  chroma -> rgb(255,230,209)
+2026-08-12 21:41:48  chroma -> rgb(255,229,209)
+2026-08-12 21:41:53  chroma -> rgb(255,229,208)
+2026-08-12 21:44:38  chroma -> rgb(255,229,207)
+2026-08-12 21:45:03  screen -> 5041K @ 97%
+2026-08-12 21:46:39  chroma -> rgb(255,228,207)
+2026-08-12 21:47:24  chroma -> rgb(255,228,206)
+2026-08-12 21:50:09  chroma -> rgb(255,228,205)
+2026-08-12 21:51:24  chroma -> rgb(255,227,205)
+2026-08-12 21:52:02  nudge: Eye break
+2026-08-12 21:52:55  chroma -> rgb(255,227,204)
+2026-08-12 21:55:35  chroma -> rgb(255,227,203)
+2026-08-12 21:56:10  chroma -> rgb(255,226,203)
+2026-08-12 21:58:15  chroma -> rgb(255,226,202)
+2026-08-12 22:00:03  screen -> 4883K @ 96%
+2026-08-12 22:00:46  chroma -> rgb(255,225,202)
+2026-08-12 22:00:51  chroma -> rgb(255,225,201)
+2026-08-12 22:03:32  chroma -> rgb(255,225,200)
+2026-08-12 22:05:23  chroma -> rgb(255,224,200)
+2026-08-12 22:06:13  chroma -> rgb(255,224,199)
+2026-08-12 22:08:43  chroma -> rgb(255,224,198)
+2026-08-12 22:09:58  chroma -> rgb(255,223,198)
+2026-08-12 22:11:24  chroma -> rgb(255,223,197)
+2026-08-12 22:13:59  chroma -> rgb(255,223,196)
+2026-08-12 22:14:29  chroma -> rgb(255,222,196)
+2026-08-12 22:15:02  screen -> 4725K @ 96%
+2026-08-12 22:16:29  chroma -> rgb(255,222,195)
+2026-08-12 22:17:02  break skipped (idle 190s)
+2026-08-12 22:19:00  chroma -> rgb(255,221,194)
+2026-08-12 22:21:30  chroma -> rgb(255,221,193)
+2026-08-12 22:23:25  chroma -> rgb(255,220,193)
+2026-08-12 22:24:00  chroma -> rgb(255,220,192)
+2026-08-12 22:26:26  chroma -> rgb(255,220,191)
+2026-08-12 22:27:51  chroma -> rgb(255,219,191)
+2026-08-12 22:28:56  chroma -> rgb(255,219,190)
+2026-08-12 22:30:02  screen -> 4566K @ 95%
+2026-08-12 22:31:21  chroma -> rgb(255,219,189)
+2026-08-12 22:32:11  chroma -> rgb(255,218,189)
+2026-08-12 22:33:47  chroma -> rgb(255,218,188)
+2026-08-12 22:35:03  nudge: Stand up
+2026-08-12 22:36:12  chroma -> rgb(255,218,187)
+2026-08-12 22:36:32  chroma -> rgb(255,217,187)
+2026-08-12 22:38:32  chroma -> rgb(255,217,186)
+2026-08-12 22:40:47  chroma -> rgb(255,216,186)
+2026-08-12 22:40:58  chroma -> rgb(255,216,185)
+2026-08-12 22:42:04  nudge: Eye break
+2026-08-12 22:43:18  chroma -> rgb(255,216,184)
+2026-08-12 22:44:59  chroma -> rgb(255,215,184)
+2026-08-12 22:45:02  screen -> 4408K @ 95%
+2026-08-12 22:45:39  chroma -> rgb(255,215,183)
+2026-08-12 22:47:59  chroma -> rgb(255,215,182)
+2026-08-12 22:49:09  chroma -> rgb(255,214,182)
+2026-08-12 22:50:14  chroma -> rgb(255,214,181)
+2026-08-12 22:52:30  chroma -> rgb(255,214,180)
+2026-08-12 22:53:15  chroma -> rgb(255,213,180)
+2026-08-12 22:54:45  chroma -> rgb(255,213,179)
+2026-08-12 22:57:05  chroma -> rgb(255,213,178)
+2026-08-12 22:57:20  chroma -> rgb(255,212,178)
+2026-08-12 22:59:21  chroma -> rgb(255,212,177)
+2026-08-12 23:00:03  screen -> 4249K @ 94%
+2026-08-12 23:01:26  chroma -> rgb(255,211,177)
+2026-08-12 23:01:31  chroma -> rgb(255,211,176)
+2026-08-12 23:03:41  chroma -> rgb(255,211,175)
+2026-08-12 23:05:27  chroma -> rgb(255,210,175)
+2026-08-12 23:05:57  chroma -> rgb(255,210,174)
+2026-08-12 23:07:03  nudge: Eye break
+2026-08-12 23:08:02  chroma -> rgb(255,210,173)
+2026-08-12 23:09:27  chroma -> rgb(255,209,173)
+2026-08-12 23:10:12  chroma -> rgb(255,209,172)
+2026-08-12 23:12:23  chroma -> rgb(255,209,171)
+2026-08-12 23:13:18  chroma -> rgb(255,208,171)
+2026-08-12 23:14:28  chroma -> rgb(255,208,170)
+2026-08-12 23:15:03  screen -> 4091K @ 94%
+2026-08-12 23:16:39  chroma -> rgb(255,208,169)
+2026-08-12 23:17:14  chroma -> rgb(255,207,169)
+2026-08-12 23:18:44  chroma -> rgb(255,207,168)
+2026-08-12 23:20:49  chroma -> rgb(255,207,167)
+2026-08-12 23:21:04  chroma -> rgb(255,206,167)
+2026-08-12 23:22:50  chroma -> rgb(255,206,166)
+2026-08-12 23:24:55  chroma -> rgb(255,205,165)
+2026-08-12 23:27:00  chroma -> rgb(255,205,164)
+2026-08-12 23:28:40  chroma -> rgb(255,204,164)
+2026-08-12 23:29:00  chroma -> rgb(255,204,163)
+2026-08-12 23:30:02  screen -> 3933K @ 94%
+2026-08-12 23:30:56  chroma -> rgb(255,204,162)
+2026-08-12 23:32:02  nudge: Eye break
+2026-08-12 23:32:31  chroma -> rgb(255,203,162)
+2026-08-12 23:32:56  chroma -> rgb(255,203,161)
+2026-08-12 23:34:56  chroma -> rgb(255,203,160)
+2026-08-12 23:35:02  nudge: Stand up
+2026-08-12 23:36:11  chroma -> rgb(255,202,160)
+2026-08-12 23:36:57  chroma -> rgb(255,202,159)
+2026-08-12 23:38:52  chroma -> rgb(255,202,158)
+2026-08-12 23:39:47  chroma -> rgb(255,201,158)
+2026-08-12 23:40:47  chroma -> rgb(255,201,157)
+2026-08-12 23:42:42  chroma -> rgb(255,201,156)
+2026-08-12 23:43:27  chroma -> rgb(255,200,156)
+2026-08-12 23:44:37  chroma -> rgb(255,200,155)
+2026-08-12 23:45:02  screen -> 3775K @ 93%
+2026-08-12 23:46:28  chroma -> rgb(255,200,154)
+2026-08-12 23:47:03  chroma -> rgb(255,199,154)
+2026-08-12 23:48:23  chroma -> rgb(255,199,153)
+2026-08-12 23:50:18  chroma -> rgb(255,199,152)
+2026-08-12 23:50:33  chroma -> rgb(255,198,152)
+2026-08-12 23:52:03  chroma -> rgb(255,198,151)
+2026-08-12 23:53:59  chroma -> rgb(255,198,150)
+2026-08-12 23:54:04  chroma -> rgb(255,197,150)
+2026-08-12 23:55:49  chroma -> rgb(255,197,149)
+2026-08-12 23:57:02  break skipped (idle 1359s)
+2026-08-12 23:57:34  chroma -> rgb(255,196,148)
+2026-08-12 23:59:24  chroma -> rgb(255,196,147)
+2026-08-13 00:00:02  screen -> 3616K @ 93%
+2026-08-13 00:01:05  chroma -> rgb(255,195,147)
+2026-08-13 00:01:10  chroma -> rgb(255,195,146)
+2026-08-13 00:03:00  chroma -> rgb(255,195,145)
+2026-08-13 00:04:30  chroma -> rgb(255,194,145)
+2026-08-13 00:04:40  chroma -> rgb(255,194,144)
+2026-08-13 00:06:30  chroma -> rgb(255,194,143)
+2026-08-13 00:07:51  chroma -> rgb(255,193,143)
+2026-08-13 00:08:11  chroma -> rgb(255,193,142)
+2026-08-13 00:09:56  chroma -> rgb(255,193,141)
+2026-08-13 00:11:16  chroma -> rgb(255,192,141)
+2026-08-13 00:11:36  chroma -> rgb(255,192,140)
+2026-08-13 00:13:16  chroma -> rgb(255,192,139)
+2026-08-13 00:14:31  chroma -> rgb(255,191,139)
+2026-08-13 00:15:01  chroma -> rgb(255,191,138)
+2026-08-13 00:15:02  screen -> 3458K @ 92%
+2026-08-13 00:16:42  chroma -> rgb(255,191,137)
+2026-08-13 00:17:47  chroma -> rgb(255,190,137)
+2026-08-13 00:18:22  chroma -> rgb(255,190,136)
+2026-08-13 00:20:02  chroma -> rgb(255,190,135)
+2026-08-13 00:21:07  chroma -> rgb(255,189,135)
+2026-08-13 00:21:37  chroma -> rgb(255,189,134)
+2026-08-13 00:22:02  break skipped (idle 2859s)
+2026-08-13 00:23:18  chroma -> rgb(255,189,133)
+2026-08-13 00:24:18  chroma -> rgb(255,188,133)
+2026-08-13 00:24:53  chroma -> rgb(255,188,132)
+2026-08-13 00:26:28  chroma -> rgb(255,188,131)
+2026-08-13 00:27:28  chroma -> rgb(255,187,131)
+2026-08-13 00:28:03  chroma -> rgb(255,187,130)
+2026-08-13 00:29:43  chroma -> rgb(255,187,129)
+2026-08-13 00:30:29  chroma -> rgb(255,186,129)
+2026-08-13 00:30:59  chroma -> rgb(255,186,128)
+2026-08-13 00:32:14  chroma -> rgb(255,186,127)
+2026-08-13 00:32:54  chroma -> rgb(255,185,127)
+2026-08-13 00:33:29  chroma -> rgb(255,185,126)
+2026-08-13 00:34:39  chroma -> rgb(255,185,125)
+2026-08-13 00:35:02  break skipped (idle 3639s)
+2026-08-13 00:35:24  chroma -> rgb(255,184,125)
+2026-08-13 00:35:49  chroma -> rgb(255,184,124)
+2026-08-13 00:37:05  chroma -> rgb(255,184,123)
+2026-08-13 00:37:50  chroma -> rgb(255,183,123)
+2026-08-13 00:38:15  chroma -> rgb(255,183,122)
+2026-08-13 00:39:25  chroma -> rgb(255,183,121)
+2026-08-13 00:40:10  chroma -> rgb(255,182,121)
+2026-08-13 00:40:40  chroma -> rgb(255,182,120)
+2026-08-13 00:41:45  chroma -> rgb(255,182,119)
+2026-08-13 00:42:35  chroma -> rgb(255,181,119)
+2026-08-13 00:43:00  chroma -> rgb(255,181,118)
+2026-08-13 00:44:05  chroma -> rgb(255,181,117)
+2026-08-13 00:44:56  chroma -> rgb(255,180,117)
+2026-08-13 00:45:16  chroma -> rgb(255,180,116)
+2026-08-13 00:46:21  chroma -> rgb(255,180,115)
+2026-08-13 00:47:02  break skipped (idle 4359s)
+2026-08-13 00:47:16  chroma -> rgb(255,179,115)
+2026-08-13 00:47:26  chroma -> rgb(255,179,114)
+2026-08-13 00:48:36  chroma -> rgb(255,179,113)
+2026-08-13 00:49:36  chroma -> rgb(255,178,113)
+2026-08-13 00:49:41  chroma -> rgb(255,178,112)
+2026-08-13 00:50:51  chroma -> rgb(255,178,111)
+2026-08-13 00:51:52  chroma -> rgb(255,177,110)
+2026-08-13 00:53:02  chroma -> rgb(255,177,109)
+2026-08-13 00:54:02  chroma -> rgb(255,177,108)
+2026-08-13 00:54:07  chroma -> rgb(255,176,108)
+2026-08-13 00:55:07  chroma -> rgb(255,176,107)
+2026-08-13 00:56:12  chroma -> rgb(255,176,106)
+2026-08-13 00:56:17  chroma -> rgb(255,175,106)
+2026-08-13 00:57:12  chroma -> rgb(255,175,105)
+2026-08-13 00:58:17  chroma -> rgb(255,175,104)
+2026-08-13 00:58:32  chroma -> rgb(255,174,104)
+2026-08-13 00:59:18  chroma -> rgb(255,174,103)
+2026-08-13 01:00:23  chroma -> rgb(255,174,102)
+2026-08-13 01:00:43  chroma -> rgb(255,173,102)
+2026-08-13 01:01:23  chroma -> rgb(255,173,101)
+2026-08-13 01:02:23  chroma -> rgb(255,173,100)
+2026-08-13 01:02:53  chroma -> rgb(255,172,100)
+2026-08-13 01:03:23  chroma -> rgb(255,172,99)
+2026-08-13 01:04:23  chroma -> rgb(255,172,98)
+2026-08-13 01:05:03  chroma -> rgb(255,171,98)
+2026-08-13 01:05:23  chroma -> rgb(255,171,97)
+2026-08-13 01:06:24  chroma -> rgb(255,171,96)
+2026-08-13 01:07:14  chroma -> rgb(255,170,96)
+2026-08-13 01:07:19  chroma -> rgb(255,170,95)
+2026-08-13 01:08:19  chroma -> rgb(255,170,94)
+2026-08-13 01:09:19  chroma -> rgb(255,169,93)
+2026-08-13 01:10:14  chroma -> rgb(255,169,92)
+2026-08-13 01:11:09  chroma -> rgb(255,169,91)
+2026-08-13 01:11:24  chroma -> rgb(255,168,91)
+2026-08-13 01:12:02  break skipped (idle 5859s)
+2026-08-13 01:12:09  chroma -> rgb(255,168,90)
+2026-08-13 01:13:09  chroma -> rgb(255,168,89)
+2026-08-13 01:13:25  chroma -> rgb(255,167,89)
+2026-08-13 01:14:00  chroma -> rgb(255,167,88)
+2026-08-13 01:14:55  chroma -> rgb(255,167,87)
+2026-08-13 01:15:25  chroma -> rgb(255,166,87)
+2026-08-13 01:15:55  chroma -> rgb(255,166,86)
+2026-08-13 01:16:50  chroma -> rgb(255,166,85)
+2026-08-13 01:17:30  chroma -> rgb(255,165,85)
+2026-08-13 01:17:40  chroma -> rgb(255,165,84)
+2026-08-13 01:18:35  chroma -> rgb(255,165,83)
+2026-08-13 01:19:30  chroma -> rgb(255,164,82)
+2026-08-13 01:20:21  chroma -> rgb(255,164,81)
+2026-08-13 01:21:16  chroma -> rgb(255,164,80)
+2026-08-13 01:21:31  chroma -> rgb(255,163,80)
+2026-08-13 01:22:06  chroma -> rgb(255,163,79)
+2026-08-13 01:22:56  chroma -> rgb(255,163,78)
+2026-08-13 01:23:26  chroma -> rgb(255,162,78)
+2026-08-13 01:23:51  chroma -> rgb(255,162,77)
+2026-08-13 01:24:41  chroma -> rgb(255,162,76)
+2026-08-13 01:25:26  chroma -> rgb(255,161,76)
+2026-08-13 01:25:36  chroma -> rgb(255,161,75)
+2026-08-13 01:26:21  chroma -> rgb(255,161,74)
+2026-08-13 01:27:11  chroma -> rgb(255,161,73)
+2026-08-13 01:27:16  chroma -> rgb(255,160,73)
+2026-08-13 01:28:02  chroma -> rgb(255,160,72)
+2026-08-13 01:28:52  chroma -> rgb(255,160,71)
+2026-08-13 01:29:17  chroma -> rgb(255,159,71)
+2026-08-13 01:29:42  chroma -> rgb(255,159,70)
+2026-08-13 01:35:02  break skipped (idle 7239s)
+2026-08-13 01:37:02  break skipped (idle 7359s)
+2026-08-13 02:02:02  break skipped (idle 8859s)
+2026-08-13 02:27:02  break skipped (idle 10359s)
+2026-08-13 02:35:02  break skipped (idle 10839s)
+2026-08-13 02:52:02  break skipped (idle 11859s)
+2026-08-13 03:17:02  break skipped (idle 13359s)
+2026-08-13 03:35:02  break skipped (idle 14439s)
+2026-08-13 03:42:02  break skipped (idle 14859s)
+2026-08-13 04:07:02  break skipped (idle 16358s)
+2026-08-13 04:32:02  break skipped (idle 17858s)
+2026-08-13 04:35:02  break skipped (idle 18038s)
+2026-08-13 04:57:02  break skipped (idle 19358s)
+2026-08-13 05:12:03  break skipped (idle 20259s)
+2026-08-13 05:20:03  expsync: System Bridge complete.
+2026-08-13 05:20:03  expsync:   days of tracker deep work: 1
+2026-08-13 05:20:03  expsync:   total deep work:          72.8 min
+2026-08-13 05:20:03  expsync:   NightOwl focus:           0 min across 0 day(s)
+2026-08-13 05:20:03  expsync:   clean wind-down nights:   2
+2026-08-13 05:20:03  expsync:   feed written:             C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_feed.json
+2026-08-13 05:20:03  expsync:   live dashboard:           C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\solo_leveling_live.html
+2026-08-13 05:35:03  break skipped (idle 21639s)
+2026-08-13 05:37:03  break skipped (idle 21759s)
+2026-08-13 06:02:03  break skipped (idle 23259s)
+2026-08-13 06:27:03  break skipped (idle 24759s)
+2026-08-13 06:30:04  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-13 06:30:04  sync:   0 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-13 06:35:03  break skipped (idle 25239s)
+2026-08-13 06:52:03  break skipped (idle 26259s)
+2026-08-13 07:17:03  break skipped (idle 27759s)
+2026-08-13 07:30:01  chroma -> rgb(255,254,250)
+2026-08-13 07:30:04  screen -> 6500K @ 100%
+2026-08-13 07:35:04  break skipped (idle 28840s)
+2026-08-13 07:42:03  break skipped (idle 29259s)
+2026-08-13 07:45:04  screen -> 6500K @ 100%
+2026-08-13 08:00:05  screen -> 6500K @ 100%
+2026-08-13 08:07:04  break skipped (idle 30759s)
+2026-08-13 08:15:04  screen -> 6500K @ 100%
+2026-08-13 08:30:04  screen -> 6500K @ 100%
+2026-08-13 08:32:03  break skipped (idle 32259s)
+2026-08-13 08:35:03  break skipped (idle 32439s)
+2026-08-13 08:45:04  screen -> 6500K @ 100%
+2026-08-13 08:57:04  break skipped (idle 33759s)
+2026-08-13 09:00:04  screen -> 6500K @ 100%
+2026-08-13 09:15:04  screen -> 6500K @ 100%
+2026-08-17 10:55:05  screen -> 6500K @ 100%
+2026-08-17 10:55:05  notifications -> False
+2026-08-17 10:55:06  power plan -> HighPerformance
+2026-08-17 10:55:06  monitor timeout -> 15 min
+2026-08-17 10:55:07  wallpaper engine (wallpaper32) -> pause
+2026-08-17 10:55:09  chroma daemon started
+2026-08-17 10:55:09  nudge: Work mode
+2026-08-17 10:55:11  chroma: session registered (http://localhost:57880/chromasdk)
+2026-08-17 10:55:12  chroma -> rgb(255,254,250)
+2026-08-17 10:56:17  MODE -> work
+2026-08-17 10:59:15  notifications -> True
+2026-08-17 10:59:15  screen -> 6500K @ 100%
+2026-08-17 10:59:15  break skipped (fullscreen)
+2026-08-17 10:59:15  break skipped (fullscreen)
+2026-08-17 10:59:15  power plan -> PowerSaver
+2026-08-17 10:59:16  power plan -> Balanced
+2026-08-17 10:59:16  monitor timeout -> 5 min
+2026-08-17 10:59:16  monitor timeout -> 10 min
+2026-08-17 10:59:16  game mode -> False
+2026-08-17 10:59:16  game mode -> False
+2026-08-17 10:59:16  expsync: System Bridge complete.
+2026-08-17 10:59:16  expsync:   days of tracker deep work: 2
+2026-08-17 10:59:16  expsync:   total deep work:          74.8 min
+2026-08-17 10:59:16  expsync:   NightOwl focus:           0 min across 0 day(s)
+2026-08-17 10:59:16  expsync:   clean wind-down nights:   3
+2026-08-17 10:59:16  expsync:   feed written:             C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_feed.json
+2026-08-17 10:59:16  expsync:   live dashboard:           C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\solo_leveling_live.html
+2026-08-17 10:59:16  wallpaper engine (wallpaper32) -> play
+2026-08-17 10:59:16  nudge: Past bedtime
+2026-08-17 10:59:16  nudge: Wind-down started
+2026-08-17 10:59:16  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-17 10:59:16  sync:   2 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-17 10:59:31  MODE -> winddown
+2026-08-17 10:59:32  MODE -> sleep
+2026-08-17 11:00:01  screen -> 6500K @ 100%
+2026-08-17 11:02:01  break skipped (idle 330s)
+2026-08-17 11:14:15  screen -> 6500K @ 100%
+2026-08-17 11:15:01  screen -> 6500K @ 100%
+2026-08-17 11:24:14  break skipped (idle 1663s)
+2026-08-17 11:27:01  break skipped (idle 1830s)
+2026-08-17 11:29:15  screen -> 6500K @ 100%
+2026-08-17 11:30:01  screen -> 6500K @ 100%
+2026-08-17 11:35:01  break skipped (idle 2310s)
+2026-08-17 11:44:15  screen -> 6500K @ 100%
+2026-08-17 11:45:01  screen -> 6500K @ 100%
+2026-08-17 11:49:14  break skipped (idle 3163s)
+2026-08-17 11:52:01  break skipped (idle 3330s)
+2026-08-17 11:59:14  break skipped (idle 3763s)
+2026-08-17 11:59:15  screen -> 6500K @ 100%
+2026-08-17 12:00:01  screen -> 6500K @ 100%
+2026-08-17 12:14:14  break skipped (idle 4663s)
+2026-08-17 12:14:15  screen -> 6500K @ 100%
+2026-08-17 12:15:01  screen -> 6500K @ 100%
+2026-08-17 12:17:01  break skipped (idle 4830s)
+2026-08-17 12:29:15  screen -> 6500K @ 100%
+2026-08-17 12:30:01  screen -> 6500K @ 100%
+2026-08-17 12:35:01  break skipped (idle 5910s)
+2026-08-17 12:39:15  nudge: Eye break
+2026-08-17 12:42:01  nudge: Eye break
+2026-08-17 12:44:15  screen -> 6500K @ 100%
+2026-08-17 12:45:01  screen -> 6500K @ 100%
+2026-08-17 12:59:15  screen -> 6500K @ 100%
+2026-08-17 12:59:15  nudge: Stand up
+2026-08-17 13:00:01  screen -> 6500K @ 100%
+2026-08-17 13:04:15  nudge: Eye break
+2026-08-17 13:07:01  nudge: Eye break
+2026-08-17 13:14:15  screen -> 6500K @ 100%
+2026-08-17 13:15:01  screen -> 6500K @ 100%
+2026-08-17 13:29:15  screen -> 6500K @ 100%
+2026-08-17 13:29:15  nudge: Eye break
+2026-08-17 13:30:01  screen -> 6500K @ 100%
+2026-08-17 13:32:01  break skipped (idle 222s)
+2026-08-17 13:35:01  break skipped (idle 402s)
+2026-08-17 13:44:15  screen -> 6500K @ 100%
+2026-08-17 13:45:01  screen -> 6500K @ 100%
+2026-08-17 13:54:15  nudge: Eye break
+2026-08-17 13:57:01  nudge: Eye break
+2026-08-17 13:59:15  screen -> 6500K @ 100%
+2026-08-17 13:59:15  nudge: Stand up
+2026-08-17 14:00:01  screen -> 6500K @ 100%
+2026-08-17 14:14:15  screen -> 6500K @ 100%
+2026-08-17 14:15:01  screen -> 6500K @ 100%
+2026-08-17 14:19:15  nudge: Eye break
+2026-08-17 14:22:01  nudge: Eye break
+2026-08-17 14:29:15  screen -> 6500K @ 100%
+2026-08-17 14:29:36  sync: hub built -> C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\hub\index.html
+2026-08-17 14:29:37  sync:   2 upcoming episodes, 0 tracked, 14 seasonal, stale=False
+2026-08-17 14:30:01  screen -> 6500K @ 100%
+2026-08-17 14:31:01  psychowl server started
+2026-08-17 14:31:02  psychowl server started
+2026-08-17 14:40:17  SKIPPED stale scheduled 'winddown' (phase is Day - missed run replayed on boot)
+2026-08-17 14:40:18  SKIPPED stale scheduled 'winddown' (phase is Day - missed run replayed on boot)
+2026-08-17 14:45:01  screen -> 6500K @ 100%
+2026-08-17 14:47:01  break skipped (protected block: 🧪 CHEM 3A — Lecture (online))
+2026-08-17 15:00:02  screen -> 6500K @ 100%
+2026-08-17 15:05:02  break skipped (protected block: 🧪 CHEM 3A — Lecture (online))
+2026-08-17 15:12:08  break skipped (protected block: 🧪 CHEM 3A — Lecture (online))
+2026-08-17 15:15:02  screen -> 6500K @ 100%
+2026-08-17 15:30:03  screen -> 6500K @ 100%
+2026-08-17 15:37:01  break skipped (idle 817s)
+2026-08-17 15:45:01  screen -> 6500K @ 100%
+2026-08-17 16:00:01  screen -> 6500K @ 100%
+2026-08-17 16:02:01  break skipped (idle 364s)
+2026-08-17 16:05:01  break skipped (protected block: 📚 Primerica — pre-licensing hours (5 to go))
+2026-08-17 16:15:01  screen -> 6500K @ 100%
+2026-08-17 16:27:01  break skipped (protected block: 📚 Primerica — pre-licensing hours (5 to go))
+2026-08-17 16:30:01  screen -> 6500K @ 100%
+2026-08-17 16:45:01  screen -> 6500K @ 100%
+2026-08-17 16:52:02  break skipped (protected block: 📚 Primerica — pre-licensing hours (5 to go))
+2026-08-17 17:00:02  screen -> 6500K @ 100%
+2026-08-17 17:05:01  break skipped (protected block: 📚 Primerica — pre-licensing hours (5 to go))
+2026-08-17 17:15:01  screen -> 6500K @ 100%
+2026-08-17 17:17:01  break skipped (protected block: 📚 Primerica — pre-licensing hours (5 to go))
+2026-08-17 17:30:01  screen -> 6500K @ 100%
+2026-08-17 17:42:01  break skipped (idle 240s)
+2026-08-17 17:45:01  screen -> 6500K @ 100%
+2026-08-17 18:00:01  screen -> 6500K @ 100%
+2026-08-17 18:05:02  break skipped (protected block: 🔑 Secure primary email — new password + 2FA, remove parent recovery)
+2026-08-17 18:07:01  break skipped (protected block: 🔑 Secure primary email — new password + 2FA, remove parent recovery)
+2026-08-17 18:15:01  screen -> 6500K @ 100%
+2026-08-17 18:30:01  screen -> 6500K @ 100%
+2026-08-17 18:32:01  nudge: Eye break
+2026-08-17 18:45:01  screen -> 6500K @ 100%
+2026-08-17 18:57:05  nudge: Eye break
+2026-08-17 19:00:01  screen -> 6500K @ 100%
+2026-08-17 19:05:01  break skipped (idle 295s)
+2026-08-17 19:15:02  screen -> 6500K @ 100%
+2026-08-17 19:22:02  break skipped (protected block: 🧪 CHEM 3A — Appendix A, 9 PhET simulation pages)
+2026-08-17 19:30:01  screen -> 6500K @ 100%
+2026-08-17 19:32:02  chroma -> rgb(255,254,249)
+2026-08-17 19:33:42  chroma -> rgb(255,253,249)
+2026-08-17 19:35:37  chroma -> rgb(255,253,248)
+2026-08-17 19:39:17  chroma -> rgb(255,253,247)
+2026-08-17 19:39:42  chroma -> rgb(255,252,247)
+2026-08-17 19:42:47  chroma -> rgb(255,252,246)
+2026-08-17 19:45:01  screen -> 6337K @ 100%
+2026-08-17 19:45:38  chroma -> rgb(255,251,246)
+2026-08-17 19:46:23  chroma -> rgb(255,251,245)
+2026-08-17 19:47:02  break skipped (protected block: 🧪 CHEM 3A — Appendix A, 9 PhET simulation pages)
+2026-08-17 19:49:58  chroma -> rgb(255,251,244)
+2026-08-17 19:51:23  chroma -> rgb(255,250,244)
+2026-08-17 19:53:24  chroma -> rgb(255,250,243)
+2026-08-17 19:56:59  chroma -> rgb(255,250,242)
+2026-08-17 19:57:14  chroma -> rgb(255,249,242)
+2026-08-17 20:00:02  screen -> 6175K @ 99%
+2026-08-17 20:00:19  chroma -> rgb(255,249,241)
+2026-08-17 20:02:54  chroma -> rgb(255,248,241)
+2026-08-17 20:03:54  chroma -> rgb(255,248,240)
+2026-08-17 20:05:02  break skipped (protected block: 🧪 CHEM 3A — Appendix A, 9 PhET simulation pages)
+2026-08-17 20:07:15  chroma -> rgb(255,248,239)
+2026-08-17 20:08:35  chroma -> rgb(255,247,239)
+2026-08-17 20:10:35  chroma -> rgb(255,247,238)
+2026-08-17 20:12:01  break skipped (protected block: 🧪 CHEM 3A — Appendix A, 9 PhET simulation pages)
+2026-08-17 20:14:00  chroma -> rgb(255,247,237)
+2026-08-17 20:14:10  chroma -> rgb(255,246,237)
+2026-08-17 20:15:01  screen -> 6012K @ 99%
+2026-08-17 20:17:20  chroma -> rgb(255,246,236)
+2026-08-17 20:19:45  chroma -> rgb(255,245,236)
+2026-08-17 20:20:40  chroma -> rgb(255,245,235)
+2026-08-17 20:23:55  chroma -> rgb(255,245,234)
+2026-08-17 20:25:16  chroma -> rgb(255,244,234)
+2026-08-17 20:27:11  chroma -> rgb(255,244,233)
+2026-08-17 20:30:02  screen -> 5850K @ 98%
+2026-08-17 20:30:26  chroma -> rgb(255,244,232)
+2026-08-17 20:30:46  chroma -> rgb(255,243,232)
+2026-08-17 20:33:41  chroma -> rgb(255,243,231)
+2026-08-17 20:36:11  chroma -> rgb(255,242,231)
+2026-08-17 20:36:52  chroma -> rgb(255,242,230)
+2026-08-17 20:37:02  nudge: Eye break
+2026-08-17 20:40:02  chroma -> rgb(255,242,229)
+2026-08-17 20:41:27  chroma -> rgb(255,241,229)
+2026-08-17 20:43:12  chroma -> rgb(255,241,228)
+2026-08-17 20:45:02  screen -> 5687K @ 98%
+2026-08-17 20:46:17  chroma -> rgb(255,241,227)
+2026-08-17 20:46:47  chroma -> rgb(255,240,227)
+2026-08-17 20:49:22  chroma -> rgb(255,240,226)
+2026-08-17 20:51:58  chroma -> rgb(255,239,226)
+2026-08-17 20:52:33  chroma -> rgb(255,239,225)
+2026-08-17 20:55:33  chroma -> rgb(255,239,224)
+2026-08-17 20:57:13  chroma -> rgb(255,238,224)
+2026-08-17 20:58:38  chroma -> rgb(255,238,223)
+2026-08-17 21:00:02  screen -> 5525K @ 98%
+2026-08-17 21:01:33  chroma -> rgb(255,238,222)
+2026-08-17 21:02:01  break skipped (idle 1429s)
+2026-08-17 21:02:18  chroma -> rgb(255,237,222)
+2026-08-17 21:04:39  chroma -> rgb(255,237,221)
+2026-08-17 21:05:01  nudge: Stretch break
+2026-08-17 21:07:24  chroma -> rgb(255,236,221)
+2026-08-17 21:07:34  chroma -> rgb(255,236,220)
+2026-08-17 21:10:29  chroma -> rgb(255,236,219)
+2026-08-17 21:12:25  chroma -> rgb(255,235,219)
+2026-08-17 21:13:30  chroma -> rgb(255,235,218)
+2026-08-17 21:15:02  screen -> 5362K @ 97%
+2026-08-17 21:16:20  chroma -> rgb(255,235,217)
+2026-08-17 21:17:25  chroma -> rgb(255,234,217)
+2026-08-17 21:19:11  chroma -> rgb(255,234,216)
+2026-08-17 21:22:01  chroma -> rgb(255,234,215)
+2026-08-17 21:22:21  chroma -> rgb(255,233,215)
+2026-08-17 21:24:57  chroma -> rgb(255,233,214)
+2026-08-17 21:27:01  nudge: Eye break
+2026-08-17 21:27:12  chroma -> rgb(255,232,214)
+2026-08-17 21:27:47  chroma -> rgb(255,232,213)
+2026-08-17 21:30:01  screen -> 5200K @ 97%
+2026-08-17 21:30:32  chroma -> rgb(255,232,212)
+2026-08-17 21:32:03  chroma -> rgb(255,231,212)
+2026-08-17 21:33:23  chroma -> rgb(255,231,211)
+2026-08-17 21:36:13  chroma -> rgb(255,231,210)
+2026-08-17 21:36:58  chroma -> rgb(255,230,210)
+2026-08-17 21:39:04  chroma -> rgb(255,230,209)
+2026-08-17 21:41:49  chroma -> rgb(255,229,209)
+2026-08-17 21:41:54  chroma -> rgb(255,229,208)
+2026-08-17 21:44:40  chroma -> rgb(255,229,207)
+2026-08-17 21:45:01  screen -> 5041K @ 97%
+2026-08-17 21:46:40  chroma -> rgb(255,228,207)
+2026-08-17 21:47:25  chroma -> rgb(255,228,206)
+2026-08-17 21:50:10  chroma -> rgb(255,228,205)
+2026-08-17 21:51:25  chroma -> rgb(255,227,205)
+2026-08-17 21:52:01  nudge: Eye break
+2026-08-17 21:52:55  chroma -> rgb(255,227,204)
+2026-08-17 21:55:35  chroma -> rgb(255,227,203)
+2026-08-17 21:56:10  chroma -> rgb(255,226,203)
+2026-08-17 21:58:15  chroma -> rgb(255,226,202)
+2026-08-17 22:00:01  screen -> 4883K @ 96%
+2026-08-17 22:00:45  chroma -> rgb(255,225,202)
+2026-08-17 22:00:51  chroma -> rgb(255,225,201)
+2026-08-17 22:03:31  chroma -> rgb(255,225,200)
+2026-08-17 22:05:01  break skipped (idle 251s)
+2026-08-17 22:05:26  chroma -> rgb(255,224,200)
+2026-08-17 22:06:11  chroma -> rgb(255,224,199)
+2026-08-17 22:08:46  chroma -> rgb(255,224,198)
+2026-08-17 22:09:56  chroma -> rgb(255,223,198)
+2026-08-17 22:11:21  chroma -> rgb(255,223,197)
+2026-08-17 22:13:56  chroma -> rgb(255,223,196)
+2026-08-17 22:14:31  chroma -> rgb(255,222,196)
+2026-08-17 22:15:01  screen -> 4725K @ 96%
+2026-08-17 22:16:31  chroma -> rgb(255,222,195)
+2026-08-17 22:17:01  break skipped (idle 330s)
+2026-08-17 22:18:56  chroma -> rgb(255,221,194)
+2026-08-17 22:21:32  chroma -> rgb(255,221,193)
+2026-08-17 22:23:27  chroma -> rgb(255,220,193)
+2026-08-17 22:23:57  chroma -> rgb(255,220,192)
+2026-08-17 22:26:27  chroma -> rgb(255,220,191)
+2026-08-17 22:27:52  chroma -> rgb(255,219,191)
+2026-08-17 22:28:57  chroma -> rgb(255,219,190)
+2026-08-17 22:30:01  screen -> 4566K @ 95%
+2026-08-17 22:31:22  chroma -> rgb(255,219,189)
+2026-08-17 22:32:12  chroma -> rgb(255,218,189)
+2026-08-17 22:33:42  chroma -> rgb(255,218,188)
+2026-08-17 22:36:12  chroma -> rgb(255,218,187)
+2026-08-17 22:36:27  chroma -> rgb(255,217,187)
+2026-08-17 22:38:32  chroma -> rgb(255,217,186)
+2026-08-17 22:40:48  chroma -> rgb(255,216,186)
+2026-08-17 22:40:58  chroma -> rgb(255,216,185)
+2026-08-17 22:42:01  break skipped (idle 1431s)
+2026-08-17 22:43:18  chroma -> rgb(255,216,184)
+2026-08-17 22:45:01  screen -> 4408K @ 95%
+2026-08-17 22:45:03  chroma -> rgb(255,215,184)
+2026-08-17 22:45:43  chroma -> rgb(255,215,183)
+2026-08-17 22:47:58  chroma -> rgb(255,215,182)
+2026-08-17 22:49:13  chroma -> rgb(255,214,182)
+2026-08-17 22:50:13  chroma -> rgb(255,214,181)
+2026-08-17 22:52:28  chroma -> rgb(255,214,180)
+2026-08-17 22:53:13  chroma -> rgb(255,213,180)
+2026-08-17 22:54:48  chroma -> rgb(255,213,179)
+2026-08-17 22:57:03  chroma -> rgb(255,213,178)
+2026-08-17 22:57:18  chroma -> rgb(255,212,178)
+2026-08-17 22:59:18  chroma -> rgb(255,212,177)
+2026-08-17 23:00:01  screen -> 4250K @ 94%
+2026-08-17 23:01:24  chroma -> rgb(255,211,177)
+2026-08-17 23:01:29  chroma -> rgb(255,211,176)
+2026-08-17 23:03:39  chroma -> rgb(255,211,175)
+2026-08-17 23:05:01  break skipped (idle 386s)
+2026-08-17 23:05:29  chroma -> rgb(255,210,175)
+2026-08-17 23:05:59  chroma -> rgb(255,210,174)
+2026-08-17 23:07:01  break skipped (idle 506s)
+2026-08-17 23:08:04  chroma -> rgb(255,210,173)
+2026-08-17 23:09:29  chroma -> rgb(255,209,173)
+2026-08-17 23:10:14  chroma -> rgb(255,209,172)
+2026-08-17 23:12:24  chroma -> rgb(255,209,171)
+2026-08-17 23:13:19  chroma -> rgb(255,208,171)
+2026-08-17 23:14:29  chroma -> rgb(255,208,170)
+2026-08-17 23:15:01  screen -> 4091K @ 94%
+2026-08-17 23:16:39  chroma -> rgb(255,208,169)
+2026-08-17 23:17:14  chroma -> rgb(255,207,169)
+2026-08-17 23:18:44  chroma -> rgb(255,207,168)
+2026-08-17 23:20:50  chroma -> rgb(255,207,167)
+2026-08-17 23:21:05  chroma -> rgb(255,206,167)
+2026-08-17 23:22:50  chroma -> rgb(255,206,166)
+2026-08-17 23:24:55  chroma -> rgb(255,205,165)
+2026-08-17 23:27:00  chroma -> rgb(255,205,164)
+2026-08-17 23:28:40  chroma -> rgb(255,204,164)
+2026-08-17 23:29:00  chroma -> rgb(255,204,163)
+2026-08-17 23:30:01  screen -> 3933K @ 94%
+2026-08-17 23:31:00  chroma -> rgb(255,204,162)
+2026-08-17 23:32:33  chroma -> rgb(255,203,162)
+2026-08-17 23:32:39  nudge: Eye break
+2026-08-17 23:33:01  chroma -> rgb(255,203,161)
+2026-08-17 23:35:01  chroma -> rgb(255,203,160)
+2026-08-17 23:36:33  screen -> 3864K @ 93%
+2026-08-17 23:36:33  notifications -> False
+2026-08-17 23:36:33  power plan -> HighPerformance
+2026-08-17 23:36:33  monitor timeout -> 15 min
+2026-08-17 23:36:34  wallpaper engine (wallpaper32) -> pause
+2026-08-17 23:36:35  chroma daemon started
+2026-08-17 23:36:36  nudge: Work mode
+2026-08-17 23:36:36  chroma: session registered (http://localhost:54921/chromasdk)
+2026-08-17 23:36:36  chroma -> rgb(255,202,160)
+2026-08-17 23:36:48  MODE -> work
+2026-08-17 23:36:56  chroma -> rgb(255,202,159)
+2026-08-17 23:38:52  chroma -> rgb(255,202,158)
+2026-08-17 23:39:47  chroma -> rgb(255,201,158)
+2026-08-17 23:40:47  chroma -> rgb(255,201,157)
+2026-08-17 23:42:42  chroma -> rgb(255,201,156)
+2026-08-17 23:43:27  chroma -> rgb(255,200,156)
+2026-08-17 23:44:37  chroma -> rgb(255,200,155)
+2026-08-17 23:45:01  screen -> 3775K @ 93%
+2026-08-17 23:46:32  chroma -> rgb(255,200,154)
+2026-08-17 23:47:02  chroma -> rgb(255,199,154)
+2026-08-17 23:48:22  chroma -> rgb(255,199,153)
+2026-08-17 23:50:17  chroma -> rgb(255,199,152)
+2026-08-17 23:50:32  chroma -> rgb(255,198,152)
+2026-08-17 23:52:07  chroma -> rgb(255,198,151)
+2026-08-17 23:53:57  chroma -> rgb(255,198,150)
+2026-08-17 23:54:02  chroma -> rgb(255,197,150)
+2026-08-17 23:55:47  chroma -> rgb(255,197,149)
+2026-08-17 23:57:01  break skipped (idle 191s)
+2026-08-17 23:57:38  chroma -> rgb(255,196,148)
+2026-08-17 23:59:23  chroma -> rgb(255,196,147)
+2026-08-18 00:00:01  screen -> 3616K @ 93%
+2026-08-18 00:01:08  chroma -> rgb(255,195,147)
+2026-08-18 00:01:13  chroma -> rgb(255,195,146)
+2026-08-18 00:02:58  chroma -> rgb(255,195,145)
+2026-08-18 00:04:28  chroma -> rgb(255,194,145)
+2026-08-18 00:04:43  chroma -> rgb(255,194,144)
+2026-08-18 00:05:01  nudge: Stretch break
+2026-08-18 00:06:28  chroma -> rgb(255,194,143)
+2026-08-18 00:07:48  chroma -> rgb(255,193,143)
+2026-08-18 00:08:13  chroma -> rgb(255,193,142)
+2026-08-18 00:09:53  chroma -> rgb(255,193,141)
+2026-08-18 00:11:13  chroma -> rgb(255,192,141)
+2026-08-18 00:11:39  chroma -> rgb(255,192,140)
+2026-08-18 00:13:19  chroma -> rgb(255,192,139)
+2026-08-18 00:14:34  chroma -> rgb(255,191,139)
+2026-08-18 00:14:59  chroma -> rgb(255,191,138)
+2026-08-18 00:15:01  screen -> 3458K @ 92%
+2026-08-18 00:16:44  chroma -> rgb(255,191,137)
+2026-08-18 00:17:44  chroma -> rgb(255,190,137)
+2026-08-18 00:18:19  chroma -> rgb(255,190,136)
+2026-08-18 00:20:04  chroma -> rgb(255,190,135)
+2026-08-18 00:21:04  chroma -> rgb(255,189,135)
+2026-08-18 00:21:39  chroma -> rgb(255,189,134)
+2026-08-18 00:22:01  nudge: Eye break
+2026-08-18 00:23:14  chroma -> rgb(255,189,133)
+2026-08-18 00:24:19  chroma -> rgb(255,188,133)
+2026-08-18 00:24:54  chroma -> rgb(255,188,132)
+2026-08-18 00:26:30  chroma -> rgb(255,188,131)
+2026-08-18 00:27:25  chroma -> rgb(255,187,131)
+2026-08-18 00:28:05  chroma -> rgb(255,187,130)
+2026-08-18 00:29:40  chroma -> rgb(255,187,129)
+2026-08-18 00:30:02  notifications -> True
+2026-08-18 00:30:02  power plan -> Balanced
+2026-08-18 00:30:02  monitor timeout -> 10 min
+2026-08-18 00:30:02  game mode -> False
+2026-08-18 00:30:02  wallpaper engine (wallpaper32) -> play
+2026-08-18 00:30:02  nudge: Wind-down
+2026-08-18 00:30:17  MODE -> winddown
+2026-08-18 00:30:25  chroma -> rgb(255,186,129)
+2026-08-18 00:31:00  chroma -> rgb(255,186,128)
+2026-08-18 00:32:15  chroma -> rgb(255,186,127)
+2026-08-18 00:32:55  chroma -> rgb(255,185,127)
+2026-08-18 00:33:25  chroma -> rgb(255,185,126)
+2026-08-18 00:34:40  chroma -> rgb(255,185,125)
+2026-08-18 00:35:26  chroma -> rgb(255,184,125)
+2026-08-18 00:35:51  chroma -> rgb(255,184,124)
+2026-08-18 00:37:02  chroma -> rgb(255,184,123)
+2026-08-18 00:37:47  chroma -> rgb(255,183,123)
+2026-08-18 00:38:17  chroma -> rgb(255,183,122)
+2026-08-18 00:39:27  chroma -> rgb(255,183,121)
+2026-08-18 00:40:12  chroma -> rgb(255,182,121)
+2026-08-18 00:40:37  chroma -> rgb(255,182,120)
+2026-08-18 00:41:47  chroma -> rgb(255,182,119)
+2026-08-18 00:42:37  chroma -> rgb(255,181,119)
+2026-08-18 00:42:57  chroma -> rgb(255,181,118)
+2026-08-18 00:44:08  chroma -> rgb(255,181,117)
+2026-08-18 00:44:58  chroma -> rgb(255,180,117)
+2026-08-18 00:45:13  chroma -> rgb(255,180,116)
+2026-08-18 00:46:23  chroma -> rgb(255,180,115)
+2026-08-18 00:47:02  nudge: Eye break
+2026-08-18 00:47:13  chroma -> rgb(255,179,115)
+2026-08-18 00:47:28  chroma -> rgb(255,179,114)
+2026-08-18 00:48:38  chroma -> rgb(255,179,113)
+2026-08-18 00:49:33  chroma -> rgb(255,178,113)
+2026-08-18 00:49:43  chroma -> rgb(255,178,112)
+2026-08-18 00:50:02  notifications -> False
+2026-08-18 00:50:02  quiet hours started (🕯️ Night Ritual → Lights Out)
+2026-08-18 00:50:53  chroma -> rgb(255,178,111)
+2026-08-18 00:51:48  chroma -> rgb(255,177,111)
+2026-08-18 00:51:53  chroma -> rgb(255,177,110)
+2026-08-18 00:53:03  chroma -> rgb(255,177,109)
+2026-08-18 00:54:03  chroma -> rgb(255,177,108)
+2026-08-18 00:54:08  chroma -> rgb(255,176,108)
+2026-08-18 00:55:09  chroma -> rgb(255,176,107)
+2026-08-18 00:56:09  chroma -> rgb(255,176,106)
+2026-08-18 00:56:19  chroma -> rgb(255,175,106)
+2026-08-18 00:57:14  chroma -> rgb(255,175,105)
+2026-08-18 00:58:14  chroma -> rgb(255,175,104)
+2026-08-18 00:58:34  chroma -> rgb(255,174,104)
+2026-08-18 00:59:19  chroma -> rgb(255,174,103)
+2026-08-18 01:00:24  chroma -> rgb(255,174,102)
+2026-08-18 01:00:44  chroma -> rgb(255,173,102)
+2026-08-18 01:01:19  chroma -> rgb(255,173,101)
+2026-08-18 01:02:24  chroma -> rgb(255,173,100)
+2026-08-18 01:02:54  chroma -> rgb(255,172,100)
+2026-08-18 01:03:24  chroma -> rgb(255,172,99)
+2026-08-18 01:04:24  chroma -> rgb(255,172,98)
+2026-08-18 01:05:01  nudge: Stretch break
+2026-08-18 01:05:04  chroma -> rgb(255,171,98)
+2026-08-18 01:05:24  chroma -> rgb(255,171,97)
+2026-08-18 01:06:24  chroma -> rgb(255,171,96)
+2026-08-18 01:07:14  chroma -> rgb(255,170,96)
+2026-08-18 01:07:19  chroma -> rgb(255,170,95)
+2026-08-18 01:08:19  chroma -> rgb(255,170,94)
+2026-08-18 01:09:19  chroma -> rgb(255,169,93)
+2026-08-18 01:10:14  chroma -> rgb(255,169,92)
+2026-08-18 01:11:09  chroma -> rgb(255,169,91)
+2026-08-18 01:11:24  chroma -> rgb(255,168,91)
+2026-08-18 01:12:02  nudge: Eye break
+2026-08-18 01:12:10  chroma -> rgb(255,168,90)
+2026-08-18 01:13:10  chroma -> rgb(255,168,89)
+2026-08-18 01:13:25  chroma -> rgb(255,167,89)
+2026-08-18 01:14:00  chroma -> rgb(255,167,88)
+2026-08-18 01:14:55  chroma -> rgb(255,167,87)
+2026-08-18 01:15:25  chroma -> rgb(255,166,87)
+2026-08-18 01:15:55  chroma -> rgb(255,166,86)
+2026-08-18 01:16:50  chroma -> rgb(255,166,85)
+2026-08-18 01:17:30  chroma -> rgb(255,165,85)
+2026-08-18 01:17:40  chroma -> rgb(255,165,84)
+2026-08-18 01:18:35  chroma -> rgb(255,165,83)
+2026-08-18 01:19:30  chroma -> rgb(255,164,82)
+2026-08-18 01:20:21  chroma -> rgb(255,164,81)
+2026-08-18 01:21:11  chroma -> rgb(255,164,80)
+2026-08-18 01:21:31  chroma -> rgb(255,163,80)
+2026-08-18 01:22:06  chroma -> rgb(255,163,79)
+2026-08-18 01:22:56  chroma -> rgb(255,163,78)
+2026-08-18 01:23:26  chroma -> rgb(255,162,78)
+2026-08-18 01:23:51  chroma -> rgb(255,162,77)
+2026-08-18 01:24:41  chroma -> rgb(255,162,76)
+2026-08-18 01:25:26  chroma -> rgb(255,161,76)
+2026-08-18 01:25:36  chroma -> rgb(255,161,75)
+2026-08-18 01:26:21  chroma -> rgb(255,161,74)
+2026-08-18 01:27:11  chroma -> rgb(255,161,73)
+2026-08-18 01:27:16  chroma -> rgb(255,160,73)
+2026-08-18 01:28:01  chroma -> rgb(255,160,72)
+2026-08-18 01:28:52  chroma -> rgb(255,160,71)
+2026-08-18 01:29:17  chroma -> rgb(255,159,71)
+2026-08-18 01:29:42  chroma -> rgb(255,159,70)
+2026-08-18 01:30:02  notifications -> True
+2026-08-18 01:30:02  quiet hours ended, notifications -> True
+2026-08-18 01:30:02  power plan -> PowerSaver
+2026-08-18 01:30:03  monitor timeout -> 5 min
+2026-08-18 01:30:03  game mode -> False
+2026-08-18 01:30:03  nudge: Late one
+2026-08-18 01:30:20  MODE -> sleep
+2026-08-18 01:37:04  nudge: Eye break
+2026-08-18 02:02:02  nudge: Eye break
+2026-08-18 02:05:03  nudge: Stretch break
+2026-08-18 02:27:02  break skipped (idle 795s)
+2026-08-18 02:52:02  break skipped (idle 2295s)
+2026-08-18 03:05:02  break skipped (idle 3075s)
+2026-08-18 03:17:02  break skipped (idle 3795s)
+2026-08-18 03:42:02  break skipped (idle 5295s)
+2026-08-18 04:05:02  break skipped (idle 6675s)
+2026-08-18 04:07:02  break skipped (idle 6795s)
+2026-08-18 04:32:02  break skipped (idle 8295s)
+2026-08-18 04:57:02  break skipped (idle 9795s)
+2026-08-18 05:05:02  break skipped (idle 10274s)
+2026-08-18 05:22:02  break skipped (idle 11295s)
+2026-08-18 05:47:02  break skipped (idle 12794s)
+2026-08-18 06:05:02  break skipped (idle 13874s)
+2026-08-18 06:12:02  break skipped (idle 14294s)
+2026-08-18 06:37:02  break skipped (idle 15794s)
+2026-08-18 07:02:02  break skipped (idle 17294s)
+2026-08-18 07:05:02  break skipped (idle 17474s)
+2026-08-18 07:27:02  break skipped (idle 977s)
+2026-08-18 07:30:03  screen -> 6500K @ 100%
+2026-08-18 07:30:03  chroma -> rgb(255,254,250)
+2026-08-18 07:42:03  break skipped (idle 1878s)
+2026-08-18 07:45:03  screen -> 6500K @ 100%
+2026-08-18 07:50:03  ERROR [expsync ]: Unable to create process using 'C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\Python\pythoncore-3.14-64\python.exe C:\Users\aware\OneDrive\Desktop\wrproj\Solo-Leveling-System\system_bridge.py': The system cannot find the file specified.
+2026-08-18 08:00:03  screen -> 6500K @ 100%
+2026-08-18 08:05:03  break skipped (idle 3258s)
+2026-08-18 08:07:03  break skipped (idle 3379s)
+2026-08-18 08:15:03  screen -> 6500K @ 100%
+2026-08-18 08:30:03  screen -> 6500K @ 100%
+2026-08-18 08:32:03  break skipped (idle 4879s)
+2026-08-18 08:45:03  screen -> 6500K @ 100%
+2026-08-18 08:57:03  break skipped (idle 6379s)
+2026-08-18 09:00:03  ERROR [sync ]: Unable to create process using 'C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\Python\pythoncore-3.14-64\python.exe C:\Users\aware\OneDrive\Desktop\wrproj\nightowl\python\build_hub.py': The system cannot find the file specified.
+2026-08-18 09:00:03  screen -> 6500K @ 100%
+2026-08-18 09:05:04  nudge: Stretch break
+2026-08-18 09:15:03  screen -> 6500K @ 100%
+2026-08-18 09:22:03  break skipped (idle 1137s)
+2026-08-18 09:30:03  screen -> 6500K @ 100%
+2026-08-18 09:45:04  screen -> 6500K @ 100%
+2026-08-18 09:47:04  nudge: Eye break
+2026-08-18 10:00:04  screen -> 6500K @ 100%
+2026-08-18 10:05:05  nudge: Stretch break
+2026-08-18 10:12:05  nudge: Eye break
+2026-08-18 10:15:04  screen -> 6500K @ 100%

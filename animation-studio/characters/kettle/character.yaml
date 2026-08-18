@@ -1,0 +1,17 @@
+# EXAMPLE character. Replace with your own design.
+name: Kettle
+kind: full
+
+trigger: kttlbr
+
+description: >-
+  small brass automaton, rounded copper body, single glass porthole eye,
+  riveted seams, verdigris patina, steam vent on the shoulder, soft cel shading
+
+negative: humanoid face, chrome, photorealistic metal
+
+lora_path: null
+lora_weight: 0.85
+ipadapter_weight: 0.6
+
+palette: ["#B98A4C", "#7E5A2E", "#8FB9A8", "#2E2A26"]

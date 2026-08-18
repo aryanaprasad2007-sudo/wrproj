@@ -1,0 +1,69 @@
+{
+  "fetchedAt": "2026-08-17T14:43:01.723847-07:00",
+  "fetchedAtLocal": "14:43",
+  "events": [
+    {
+      "title": "\ud83e\uddea CHEM 3A \u2014 Lecture (online)",
+      "start": "2026-08-17T13:00:00-07:00",
+      "end": "2026-08-17T15:30:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83d\udcda Primerica \u2014 pre-licensing hours (5 to go)",
+      "start": "2026-08-17T15:45:00-07:00",
+      "end": "2026-08-17T17:45:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83d\udd11 Secure primary email \u2014 new password + 2FA, remove parent recovery",
+      "start": "2026-08-17T17:45:00-07:00",
+      "end": "2026-08-17T18:30:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83d\uddd1\ufe0f Take out garbage + bins to the street",
+      "start": "2026-08-17T19:00:00-07:00",
+      "end": "2026-08-17T19:15:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83e\uddea CHEM 3A \u2014 Appendix A, 9 PhET simulation pages",
+      "start": "2026-08-17T19:15:00-07:00",
+      "end": "2026-08-17T20:15:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83d\udd12 Freeze credit \u2014 Equifax, Experian, TransUnion",
+      "start": "2026-08-17T20:15:00-07:00",
+      "end": "2026-08-17T20:35:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83c\udf19 sleep",
+      "start": "2026-08-17T21:45:00-07:00",
+      "end": "2026-08-18T00:45:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83e\uddf4 Skincare \u2014 nightly routine",
+      "start": "2026-08-17T23:00:00-07:00",
+      "end": "2026-08-17T23:15:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    },
+    {
+      "title": "\ud83d\udd6f\ufe0f Night Ritual \u2192 Lights Out",
+      "start": "2026-08-18T00:45:00-07:00",
+      "end": "2026-08-18T01:30:00-07:00",
+      "allDay": false,
+      "calendar": "School"
+    }
+  ]
+}

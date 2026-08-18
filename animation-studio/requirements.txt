@@ -1,0 +1,27 @@
+# Install via scripts/setup_env.py, which adds the CUDA index for torch.
+# Listed here for reference and for non-CUDA/CI installs.
+#
+#   torch and torchvision MUST come from the CUDA index or you get the
+#   CPU-only build, which silently disables the GPU:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+
+torch>=2.4
+torchvision>=0.19
+diffusers>=0.32
+transformers>=4.44
+accelerate>=0.34
+peft>=0.13
+safetensors
+sentencepiece
+protobuf
+pillow
+numpy
+pyyaml
+imageio
+imageio-ffmpeg
+psutil
+tqdm
+
+# optional: 8-bit AdamW for LoRA training (~0.3 GB less VRAM).
+# Windows wheels are patchy; setup_env.py treats a failure here as non-fatal.
+# bitsandbytes

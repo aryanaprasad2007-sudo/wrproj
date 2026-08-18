@@ -1,0 +1,118 @@
+{
+ "as_of": "2026-07-11 00:07",
+ "window_days": 30,
+ "symbols": [
+  "JPM",
+  "GS",
+  "XOM",
+  "CVX",
+  "CAT",
+  "DE",
+  "BA",
+  "WMT",
+  "COST",
+  "HD",
+  "UNH",
+  "DIS",
+  "KO"
+ ],
+ "engine": "SWING_PRO-D v2.2 \u00b7 daily \u00b7 long-only \u00b7 pure stop + 3R",
+ "venue": "Webull PAPER (UAT)",
+ "book": 2000.0,
+ "sizing_pct": 22.0,
+ "trades_signaled": 0,
+ "trades_takeable": 0,
+ "trades_untakeable": 0,
+ "open_now": 0,
+ "wins": 0,
+ "win_rate": null,
+ "net": 0,
+ "net_pct": 0.0,
+ "sim_equity": 2000.0,
+ "per_trade_budget": 440.0,
+ "affordability": [
+  {
+   "symbol": "JPM",
+   "price": 336.38,
+   "min_book_1sh": 1529.0,
+   "affordable": true
+  },
+  {
+   "symbol": "GS",
+   "price": 1055.08,
+   "min_book_1sh": 4796.0,
+   "affordable": false
+  },
+  {
+   "symbol": "XOM",
+   "price": 138.83,
+   "min_book_1sh": 631.0,
+   "affordable": true
+  },
+  {
+   "symbol": "CVX",
+   "price": 176.32,
+   "min_book_1sh": 801.0,
+   "affordable": true
+  },
+  {
+   "symbol": "CAT",
+   "price": 951.67,
+   "min_book_1sh": 4326.0,
+   "affordable": false
+  },
+  {
+   "symbol": "DE",
+   "price": 586.87,
+   "min_book_1sh": 2668.0,
+   "affordable": false
+  },
+  {
+   "symbol": "BA",
+   "price": 222.22,
+   "min_book_1sh": 1010.0,
+   "affordable": true
+  },
+  {
+   "symbol": "WMT",
+   "price": 113.9,
+   "min_book_1sh": 518.0,
+   "affordable": true
+  },
+  {
+   "symbol": "COST",
+   "price": 916.05,
+   "min_book_1sh": 4164.0,
+   "affordable": false
+  },
+  {
+   "symbol": "HD",
+   "price": 343.37,
+   "min_book_1sh": 1561.0,
+   "affordable": true
+  },
+  {
+   "symbol": "UNH",
+   "price": 424.57,
+   "min_book_1sh": 1930.0,
+   "affordable": true
+  },
+  {
+   "symbol": "DIS",
+   "price": 95.59,
+   "min_book_1sh": 435.0,
+   "affordable": true
+  },
+  {
+   "symbol": "KO",
+   "price": 83.48,
+   "min_book_1sh": 379.0,
+   "affordable": true
+  }
+ ],
+ "sizing_warning": "On a $2,000 book at 22% ($440/trade), 9/13 symbols are tradeable (JPM, XOM, CVX, BA, WMT, HD, UNH, DIS, KO); the pricier ones will be SKIPPED at signal time: GS, CAT, DE, COST.",
+ "blocker": "No daily setup fired on JPM, GS, XOM, CVX, CAT, DE, BA, WMT, COST, HD, UNH, DIS, KO in the last 30 days \u2014 at ~0.4 trades/week this is normal, not a fault.",
+ "detail": [],
+ "errors": [],
+ "note": "One month of a ~0.4-trade/week daily system is a curiosity, not evidence. The go/no-go bar stays >=30 closed trades at/above benchmark (PF 1.72). Not financial advice."
+}

@@ -1,0 +1,391 @@
+{
+  "date": "Monday, August 18, 2026",
+  "nowTask": {
+    "text": "Account separation — email is CLOSED, bank account is Wednesday's link",
+    "why": "The email lockdown is done, and two more of the cluster came with it: every account's 2FA is now on an authenticator app rather than SMS (texts were never private on a family plan), and MyUCSC plus financial aid are reset with parent recovery removed. Drive and Notion are safe for your written record again. Remaining chain: sole-name checking account at a NEW bank Wednesday (joint accounts can't have a holder removed), then income redirected to it Thursday. Two links left, and Wednesday just got lighter.",
+    "area": "Admin",
+    "notionId": "3bf7cd99fe8581fdbe86de8b55de2d33",
+    "since": "Mon Aug 17"
+  },
+  "sources": {
+    "Notion": "ok",
+    "Calendar": "ok",
+    "Gmail": "ok"
+  },
+  "statusLine": "Ari is back from the cruise today (expected Tue Aug 18). Three committed items lock the day: Visiting Angels interview at 1:45 PM (income independence), CHEM Mole checkpoint due 1 hour at noon (module checkpoint, retakeable), and MCD Biology frosh items due today (mostly done Aug 15, just closure needed). The interview is the priority — it unlocks work toward Wednesday's account setup, where the whole independence chain accelerates (new sole-name account opens Wed, income redirect Thu). MCD items fit into the afternoon (2:30–3:00 PM). Start the Units 1–4 reading backlog this afternoon (4:00–5:00 PM); Test 2 is Friday and the backlog is ~110 pages, so every page counts. RIGHT NOW block carries through from yesterday — bank account opens Wednesday, income redirect Thursday.",
+  "topPriorities": [
+    {
+      "text": "Conduct the Visiting Angels interview — 15 minutes on camera at 1:45 PM",
+      "why": "Due today. Income independence is the live project this week (new sole-name account Wed, income redirect Thu). Paid work that is his own is a direct input to that. Already prepared: strongest cards are current IHSS provider experience, pre-med student, DOJ background cleared Aug 10, and one concrete story ready.",
+      "area": "Personal",
+      "notionId": "3bf7cd99fe8581ba9fc7f651577b5808",
+      "fixed": true
+    },
+    {
+      "text": "CHEM 3A — The Mole Module Checkpoint (1 hour, noon to 1 PM)",
+      "why": "Due today. Module checkpoints allow retakes — zero-risk attempt. Covers material on Test 2 (Friday), so it serves dual duty as Friday prep while scoring today.",
+      "area": "School",
+      "notionId": "3b47cd99fe8581ce9378d25722be6f50",
+      "fixed": true
+    },
+    {
+      "text": "Finish MCD Biology frosh course — optional Fall 2026 planning items",
+      "why": "Due today. Mostly done Aug 15 (made major progress before cruise), just needs closure. Low stakes (0 points, optional), so this is finish-line push. Scheduled 2:30–3:00 PM right after interview.",
+      "area": "School",
+      "notionId": "3aa7cd99fe8581239d3afe882e80e559",
+      "fixed": true
+    },
+    {
+      "text": "Start CHEM Units 1–4 reading backlog — read first 15+ pages",
+      "why": "Test 2 is Friday and covers exactly these units. ~110 pages unread, due Friday but test Friday = now. Starts at 4:00 PM today. Every page is review of material already mastered in module checkpoints.",
+      "area": "School",
+      "notionId": "3bd7cd99fe858147b376de44635d496e",
+      "fixed": true
+    },
+    {
+      "text": "Pre-Med Longgame Tracker — open for 5 minutes",
+      "why": "Area dark 2+ weeks, self-development is a standing lens per your standing instruction (2026-08-11). Pulse check only, no commitment, takes 5 minutes. Can happen in the 6:00–7:30 PM free block or tomorrow.",
+      "area": "Pre-Med"
+    }
+  ],
+  "topBacklog": [
+    {
+      "text": "Continue CHEM Units 1–4 reading (pages 15–50, ~60+ pages left after today)",
+      "why": "Test 2 Friday. Continue the backlog across Tue–Fri.",
+      "area": "School",
+      "notionId": "3bd7cd99fe858147b376de44635d496e"
+    },
+    {
+      "text": "Check Test 1 score in Gradescope",
+      "why": "Posted Aug 16. Two minutes and it tells you how much Test 2 actually has to carry — Test 2 can replace Test 1.",
+      "area": "School"
+    },
+    {
+      "text": "Lewis Structures Module Checkpoint — retake (Attempt 2 of 3, no score risk)",
+      "why": "Due Wed Aug 19. Scores 1/4 = 25%, lowest in course. Best-of-3 means retry cannot lower that 1 point — only cost is ~25 min + late flag. 3 points recoverable at zero risk. Highest-value single retake available.",
+      "area": "School",
+      "notionId": "3c07cd99fe8581d99938e63dae82f34e"
+    }
+  ],
+  "plan": [
+    {
+      "time": "7:00 – 9:15 AM",
+      "text": "Morning routine — wake, daylight in eyes, coffee, breakfast, prayer closet",
+      "area": "Personal",
+      "why": "Non-negotiables: wake 7:00 AM regardless of sleep time. Daylight in eyes within 15 min sets tonight's melatonin."
+    },
+    {
+      "time": "9:15 – 11:00 AM",
+      "text": "💪 Gym + Walk Home",
+      "area": "Health",
+      "why": "The morning body slot, already on the calendar.",
+      "fixed": true
+    },
+    {
+      "time": "11:00 AM – 12:00 PM",
+      "text": "Lunch + MCD Biology frosh review (what's left, what's closest to done)",
+      "area": "School",
+      "why": "Items due today. Review what remains, prioritize what to finish in the 2:30 slot."
+    },
+    {
+      "time": "12:00 – 1:00 PM",
+      "text": "🧪 CHEM 3A — The Mole Module Checkpoint (1 hour, self-paced)",
+      "area": "School",
+      "why": "Due today, closes Top 5 #2.",
+      "fixed": true
+    },
+    {
+      "time": "1:00 – 1:45 PM",
+      "text": "Interview prep (test camera, review notes, 5 min breathing exercise, water)",
+      "area": "Personal",
+      "why": "Transition time before the 1:45 call. Keep it calm, don't over-prep."
+    },
+    {
+      "time": "1:45 – 2:15 PM",
+      "text": "💼 Interview — Experienced Caregiver, Visiting Angels (on camera, 15 min)",
+      "area": "Personal",
+      "why": "Income independence play. Already prepared. Load the strongest cards: IHSS provider, pre-med, DOJ cleared, one concrete story. Closes Top 5 #1.",
+      "fixed": true
+    },
+    {
+      "time": "2:15 – 2:30 PM",
+      "text": "Debrief + transition",
+      "area": "Personal",
+      "why": "Reset after the call. Hydrate, breathe."
+    },
+    {
+      "time": "2:30 – 3:00 PM",
+      "text": "Finish MCD Biology frosh course — optional items (30 min, STEP-BY-STEP)",
+      "area": "School",
+      "why": "Closes Top 5 #3. Final review, any last submissions, verify completion percentage.",
+      "fixed": true
+    },
+    {
+      "time": "3:00 – 4:00 PM",
+      "text": "Free block — rest, movement, admin, or schoolwork",
+      "area": "Personal",
+      "why": "Open for whatever the day needs. Debrief from the interview, shift gears, or prep for reading block."
+    },
+    {
+      "time": "4:00 – 5:00 PM",
+      "text": "📖 Start CHEM Units 1–4 reading (read ~15 pages, Test 2 review, STEP-BY-STEP)",
+      "area": "School",
+      "why": "Test 2 Friday covers exactly these units. ~110 pages unread. Backlog due Friday = now. Closes Top 5 #4.",
+      "fixed": true
+    },
+    {
+      "time": "5:00 – 6:00 PM",
+      "text": "🍽 Dinner",
+      "area": "Personal"
+    },
+    {
+      "time": "6:00 – 7:30 PM",
+      "text": "Free block — continue reading, Pre-Med pulse check (5 min), or evening tasks",
+      "area": "School",
+      "why": "Open space. Use for Top 5 #5 (Pre-Med check, 5 min only) or continue reading if focus is good, or both."
+    },
+    {
+      "time": "7:30 – 9:45 PM",
+      "text": "Free block — reading, admin, movement, journaling, or rest",
+      "area": "Personal",
+      "why": "Open evening. Use as needed."
+    },
+    {
+      "time": "9:45 PM – 12:45 AM",
+      "text": "🌙 Night ritual → lights out (6 steps, wake 7:00 AM regardless)",
+      "area": "Personal",
+      "why": "Close the loops, creative anchor, dim + shower, analog only, prayer, bed.",
+      "fixed": true
+    },
+    {
+      "time": "11:00 – 11:15 PM",
+      "text": "🧴 Skincare — nightly routine (inside night ritual window)",
+      "area": "Health",
+      "why": "Standing 15-min slot so it doesn't get buried.",
+      "fixed": true
+    }
+  ],
+  "carriedOver": [],
+  "dueToday": [
+    {
+      "text": "Interview — Experienced Caregiver, Visiting Angels (video, 1:45–2:15 PM)",
+      "priority": "High",
+      "area": "Personal",
+      "source": "Command Center",
+      "when": "Due today · 15 min on camera",
+      "notionId": "3bf7cd99fe8581ba9fc7f651577b5808"
+    },
+    {
+      "text": "MCD Biology frosh course — optional Fall 2026 planning items",
+      "priority": "Medium",
+      "area": "School",
+      "source": "Command Center",
+      "when": "Due today · mostly done Aug 15, needs closure",
+      "notionId": "3aa7cd99fe8581239d3afe882e80e559"
+    },
+    {
+      "text": "CHEM 3A — The Mole Module Checkpoint (5 pts)",
+      "priority": "High",
+      "area": "School",
+      "source": "Command Center",
+      "when": "Due today · noon–1 PM · module checkpoint (retakeable)",
+      "notionId": "3b47cd99fe8581ce9378d25722be6f50"
+    }
+  ],
+  "schedule": [
+    {
+      "time": "9:15 – 11:00 AM",
+      "text": "Gym + Walk Home",
+      "area": "Health"
+    },
+    {
+      "time": "11:00 AM – 12:00 PM",
+      "text": "MCD Biology frosh items review",
+      "area": "School"
+    },
+    {
+      "time": "12:00 – 1:00 PM",
+      "text": "CHEM 3A — The Mole Module Checkpoint",
+      "area": "School"
+    },
+    {
+      "time": "1:45 – 2:15 PM",
+      "text": "Visiting Angels interview",
+      "area": "Personal"
+    },
+    {
+      "time": "2:30 – 3:00 PM",
+      "text": "Finish MCD Biology frosh items",
+      "area": "School"
+    },
+    {
+      "time": "4:00 – 5:00 PM",
+      "text": "Start CHEM Units 1–4 reading",
+      "area": "School"
+    }
+  ],
+  "email": [
+    {
+      "subject": "The Stuff Nobody Tells You About Starting at UCSC: Join us for a live Zoom session!",
+      "who": "Orientation Course (Canvas/instructure)",
+      "action": "Zoom event Tue evening 5 PM Pacific — College Anxieties and Self Care session. Not actionable today, but noted for awareness.",
+      "priority": "Low"
+    },
+    {
+      "subject": "Ingrid Moody (Orientation Course (f26)) just sent you a message in Canvas",
+      "who": "Canvas",
+      "action": "Instructor message about Porter 1A. Assignment 5 due Aug 23, not urgent today.",
+      "priority": "Low"
+    }
+  ],
+  "thisWeek": [
+    {
+      "text": "Ask UCSC Financial Aid what a dependency override requires",
+      "due": "Wed Aug 19",
+      "area": "School",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3bf7cd99fe858110a2c5f2923533d499"
+    },
+    {
+      "text": "Open new checking account at a different bank, sole name",
+      "due": "Wed Aug 19",
+      "area": "Admin",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3bf7cd99fe8581fdbe86de8b55de2d33"
+    },
+    {
+      "text": "Sign & mail California State Application (LIC 441-9) to RLC",
+      "due": "Wed Aug 19",
+      "area": "Admin",
+      "priority": "Medium",
+      "source": "Command Center",
+      "notionId": "3b97cd99fe85813da4a3d4f63f3a8fd8"
+    },
+    {
+      "text": "CHEM 3A — Retake Lewis Structures Module Checkpoint (1/4 now, 2 attempts live)",
+      "due": "Wed Aug 19",
+      "area": "School",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3c07cd99fe8581d99938e63dae82f34e"
+    },
+    {
+      "text": "CHEM 3A Test 2 logistics — sign Academic Integrity Contract + submit \"How do you want to take Test 2?\" (3 pts)",
+      "due": "Wed Aug 19",
+      "area": "School",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3c07cd99fe858152a0c2f28608c85deb"
+    },
+    {
+      "text": "Redirect Instratix commissions and all income to new account",
+      "due": "Thu Aug 20",
+      "area": "Admin",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3bf7cd99fe8581318127e8a132294046"
+    },
+    {
+      "text": "Ask one friend about a backup place to stay if needed",
+      "due": "Thu Aug 20",
+      "area": "Personal",
+      "priority": "Medium",
+      "source": "Command Center",
+      "notionId": "3bf7cd99fe8581aeb779d50511e73cfa"
+    },
+    {
+      "text": "CHEM 3A Test 2 (20% — can replace Test 1)",
+      "due": "Fri Aug 21",
+      "area": "School",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3aa7cd99fe85815bae20e290fa4c88fa"
+    },
+    {
+      "text": "CHEM 3A — Units 1–4 reading backlog (~110 pages) = Test 2 review",
+      "due": "Fri Aug 21",
+      "area": "School",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3bd7cd99fe858147b376de44635d496e"
+    },
+    {
+      "text": "CHEM 3A — Advanced Theories of Covalent Bonding Module Checkpoint (5 pts)",
+      "due": "Fri Aug 21",
+      "area": "School",
+      "priority": "High",
+      "source": "Command Center",
+      "notionId": "3b47cd99fe8581788298fd61e433b82b"
+    },
+    {
+      "text": "Porter 1A — Assignment 5 (What does your reading say about you?)",
+      "due": "Sun Aug 23",
+      "area": "School",
+      "priority": "Medium",
+      "source": "Command Center",
+      "notionId": "3a87cd99fe85810bb784d7d3afec6be3"
+    }
+  ],
+  "crosscheck": [
+    {
+      "text": "Ari returns from cruise today. Email address is independent (2FA off SMS, parent recovery removed as of yesterday 5:45 PM). No new flags. Account separation nowTask carries: bank Wed, income redirect Thu.",
+      "severity": "info",
+      "sources": "Expected vs Calendar"
+    },
+    {
+      "text": "Canvas unswept since Aug 12 — five days, inside the 7-day window, so no flag yet. Goes stale Wednesday. Run /canvas-sweep in Brave before then rather than after, since Test 2 is Friday.",
+      "severity": "watch",
+      "sources": "canvas_state.json"
+    }
+  ],
+  "notionHub": [
+    {
+      "group": "Databases",
+      "items": [
+        {
+          "title": "✅ Command Center",
+          "url": "https://app.notion.com/p/21a05fe057f0405a85786b40bfa7acac",
+          "note": "42 open — School 20 · Admin 11 · Personal 8 · Interest 3"
+        },
+        {
+          "title": "💰 Financial Tracker",
+          "url": "https://app.notion.com/p/8523b07eb34849e48fee1688953623a1",
+          "note": "37 entries · latest Aug 9"
+        }
+      ]
+    },
+    {
+      "group": "School",
+      "items": [
+        {
+          "title": "🧪 Chem 3A + 3B Speedrun Plan",
+          "url": "https://app.notion.com/p/36d7cd99fe8581a1bbbcf429327b5405",
+          "note": "Test 2 Friday Aug 21"
+        }
+      ]
+    },
+    {
+      "group": "Pre-Med & Health",
+      "items": [
+        {
+          "title": "🩺 Pre-Med Longgame Tracker",
+          "url": "https://app.notion.com/p/36d7cd99fe8581728a4af59c7fbfbac5",
+          "note": "quiet 2+ weeks — first thing off backlog"
+        }
+      ]
+    },
+    {
+      "group": "Money & Work",
+      "items": [
+        {
+          "title": "💼 Primerica Licensing — Plan",
+          "url": "https://app.notion.com/p/3b17cd99fe8581bfb018f4af60be2c2b",
+          "note": "7 of 12 hours; Visiting Angels interview today is income focus"
+        }
+      ]
+    }
+  ],
+  "exploration": []
+}

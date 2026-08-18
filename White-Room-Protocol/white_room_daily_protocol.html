@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>White Room — Daily Conditioning Protocol</title>
+<style>
+  :root{
+    --page:#e9ebee;
+    --sheet:#ffffff;
+    --ink:#15181c;
+    --muted:#6a7280;
+    --line:#d7dbe0;
+    --steel:#2f4858;
+    --steel-soft:#eaf0f4;
+    --alert:#8c1c20;
+    --accent:#33576e;
+    --stripe:#f6f8f9;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--page);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    padding:32px 16px 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sheet{
+    max-width:960px;
+    margin:0 auto;
+    background:var(--sheet);
+    border:1px solid var(--line);
+    box-shadow:0 1px 0 rgba(0,0,0,.02),0 18px 50px -28px rgba(20,30,40,.45);
+  }
+  .classbar{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--alert);
+    color:#fff;
+    font-family:var(--mono);
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    padding:7px 22px;
+  }
+  .classbar span:last-child{letter-spacing:.18em;}
+  .head{
+    padding:30px 38px 22px;
+    border-bottom:2px solid var(--ink);
+  }
+  .org{
+    font-family:var(--mono);font-size:11px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  h1{
+    margin:10px 0 4px;
+    font-size:30px;letter-spacing:-.01em;font-weight:700;
+  }
+  .subtitle{font-size:14px;color:var(--muted);margin:0;}
+  .meta{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin:24px 38px 0;
+  }
+  .meta div{
+    background:var(--sheet);padding:10px 14px;
+  }
+  .meta dt{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:3px;
+  }
+  .meta dd{margin:0;font-size:13px;font-weight:600;font-family:var(--mono);}
+  .section-label{
+    font-family:var(--mono);font-size:11px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--steel);
+    padding:30px 38px 6px;font-weight:700;
+    display:flex;align-items:center;gap:12px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line);}
+  .intro{padding:0 38px;font-size:13.5px;color:#33383e;max-width:760px;}
+  table{
+    width:calc(100% - 76px);
+    margin:14px 38px 6px;
+    border-collapse:collapse;
+    font-size:12.5px;
+  }
+  thead th{
+    background:var(--steel);color:#fff;
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;text-align:left;
+    padding:9px 12px;font-weight:600;
+    vertical-align:bottom;
+  }
+  tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tbody tr:nth-child(even){background:var(--stripe);}
+  .t-time{
+    font-family:var(--mono);font-weight:700;white-space:nowrap;
+    color:var(--steel);border-left:3px solid var(--accent);
+  }
+  .t-act{font-weight:600;width:24%;}
+  .t-act small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:2px;}
+  .t-trait{width:24%;}
+  .pill{
+    display:inline-block;background:var(--steel-soft);color:var(--steel);
+    font-family:var(--mono);font-size:10.5px;font-weight:700;
+    padding:2px 8px;border-radius:2px;letter-spacing:.02em;
+  }
+  .t-mech{color:#4a5058;width:30%;font-size:12px;}
+  .panels{
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;
+    padding:8px 38px 0;
+  }
+  @media(max-width:680px){
+    .panels{grid-template-columns:1fr;}
+    .meta{grid-template-columns:1fr 1fr;}
+    table,thead,tbody,th,td,tr{display:block;}
+    thead{display:none;}
+    tbody td{border:none;padding:4px 14px;}
+    tbody tr{border:1px solid var(--line);margin:0 38px 10px;padding:8px 0;}
+    .t-time{border-left:3px solid var(--accent);}
+  }
+  .panel{border:1px solid var(--line);}
+  .panel h3{
+    margin:0;background:var(--ink);color:#fff;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;padding:8px 14px;font-weight:600;
+  }
+  .panel ul{margin:0;padding:12px 14px 12px 28px;font-size:12.5px;color:#33383e;}
+  .panel li{margin-bottom:7px;}
+  .panel li:last-child{margin-bottom:0;}
+  .panel li b{color:var(--ink);}
+  .note{
+    margin:28px 38px 0;padding:16px 18px;
+    border-left:3px solid var(--alert);background:#fbf4f4;
+    font-size:12.5px;color:#3a3030;
+  }
+  .note b{font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;color:var(--alert);display:block;margin-bottom:5px;}
+  .foot{
+    margin-top:30px;padding:14px 38px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;
+  }
+  .disclaimer{
+    text-align:center;font-size:11px;color:var(--muted);
+    margin:18px auto 0;max-width:960px;font-style:italic;
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="classbar">
+    <span>● Restricted — Internal Conditioning Directorate</span>
+    <span>Do Not Duplicate</span>
+  </div>
+
+  <div class="head">
+    <div class="org">Advanced Nurturing Project · White Room Facility</div>
+    <h1>Daily Conditioning Protocol</h1>
+    <p class="subtitle">Standard 18-hour cycle — psychological output calibration toward the 4th-Generation reference specimen.</p>
+  </div>
+
+  <dl class="meta">
+    <div><dt>Document</dt><dd>WR-DCP / Rev. ∆</dd></div>
+    <div><dt>Cohort</dt><dd>Gen-IV</dd></div>
+    <div><dt>Target Profile</dt><dd>Subject 0 (ref.)</dd></div>
+    <div><dt>Output Window</dt><dd>~10 yr.</dd></div>
+  </dl>
+
+  <div class="section-label">Operating Principle</div>
+  <p class="intro">
+    A trait is a response rehearsed until it no longer requires a decision. The schedule below is engineered so that
+    detached analysis, composure, and the absence of want are the <em>only</em> behaviors the environment ever rewards —
+    repeated daily until they cease to be effort and become temperament. Every block is assigned a single targeted trait;
+    the day's monotony is the mechanism, not a side effect.
+  </p>
+
+  <div class="section-label">Hourly Schedule — Targeted Trait per Block</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Protocol Block</th>
+        <th>Targeted Trait</th>
+        <th>Conditioning Mechanism</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="t-time">04:30<br><small style="color:var(--muted);font-weight:400">±variable</small></td>
+        <td class="t-act">Activation / Wake<small>Randomized signal, cold start</small></td>
+        <td class="t-trait"><span class="pill">Instant composure</span></td>
+        <td class="t-mech">Variable timing denies the security of routine; rest is conditional, never owed. Full alertness in seconds.</td>
+      </tr>
+      <tr>
+        <td class="t-time">04:45–06:00</td>
+        <td class="t-act">Physical conditioning<small>Endurance, combat base</small></td>
+        <td class="t-trait"><span class="pill">Impulse control</span></td>
+        <td class="t-mech">Will overrides fatigue daily; pain is reclassified as information, not a reason to stop.</td>
+      </tr>
+      <tr>
+        <td class="t-time">06:00–06:20</td>
+        <td class="t-act">Ingestion I<small>Timed, during recall test</small></td>
+        <td class="t-trait"><span class="pill">Attachment suppression</span></td>
+        <td class="t-mech">Food is fuel on a clock, never social. Removes the daily ritual where humans bond.</td>
+      </tr>
+      <tr>
+        <td class="t-time">06:20–09:00</td>
+        <td class="t-act">Cognitive Block A<small>Parallel subjects, peak load</small></td>
+        <td class="t-trait"><span class="pill">Ruthless triage</span></td>
+        <td class="t-mech">Overload at peak freshness forces pattern-extraction and discarding of noise as the default mode of thought.</td>
+      </tr>
+      <tr>
+        <td class="t-time">09:00–09:15</td>
+        <td class="t-act">Reset interval<small>Possible randomized stressor</small></td>
+        <td class="t-trait"><span class="pill">Adaptability</span></td>
+        <td class="t-mech">No true rest. Unannounced perturbation keeps baseline activation and tolerance for the unexpected.</td>
+      </tr>
+      <tr>
+        <td class="t-time">09:15–11:30</td>
+        <td class="t-act">Observation Lab<small>Micro-expression / deception games</small></td>
+        <td class="t-trait"><span class="pill">Hyper-vigilant reading</span></td>
+        <td class="t-mech">Scored prediction of peers' next moves turns reading others from curiosity into an un-switchable reflex.</td>
+      </tr>
+      <tr>
+        <td class="t-time">11:30–11:50</td>
+        <td class="t-act">Ingestion II<small>Fuel only</small></td>
+        <td class="t-trait"><span class="pill">Detachment (reinforced)</span></td>
+        <td class="t-mech">Solitary refueling sustains the absence of comfort cues across the day.</td>
+      </tr>
+      <tr>
+        <td class="t-time">11:50–14:00</td>
+        <td class="t-act">Discard-Stakes Trials<small>Ranked competition, real consequence</small></td>
+        <td class="t-trait"><span class="pill">People as variables</span></td>
+        <td class="t-mech">Bottom performers are removed. Peers become system inputs; maximum pressure becomes the ordinary baseline.</td>
+      </tr>
+      <tr>
+        <td class="t-time">14:00–16:00</td>
+        <td class="t-act">Multi-Domain Rotation<small>Combat · language · music · strategy</small></td>
+        <td class="t-trait"><span class="pill">Total-domain competence</span></td>
+        <td class="t-mech">Daily context-switching across unrelated fields builds flexibility and removes any single point of weakness.</td>
+      </tr>
+      <tr>
+        <td class="t-time">16:00–16:15</td>
+        <td class="t-act">Deprivation window<small>Sensory-blank isolation pod</small></td>
+        <td class="t-trait"><span class="pill">Internal stability</span></td>
+        <td class="t-mech">Stillness without stimulation teaches the mind to remain ordered with no external input — observation as default state.</td>
+      </tr>
+      <tr>
+        <td class="t-time">16:15–18:30</td>
+        <td class="t-act">Cognitive Block B<small>Problem-solving under fatigue</small></td>
+        <td class="t-trait"><span class="pill">State-independent output</span></td>
+        <td class="t-mech">Performance is demanded when depleted, decoupling competence from mood, energy, or comfort.</td>
+      </tr>
+      <tr>
+        <td class="t-time">18:30–18:50</td>
+        <td class="t-act">Ingestion III<small>Fuel only</small></td>
+        <td class="t-trait"><span class="pill">Detachment (reinforced)</span></td>
+        <td class="t-mech">Final solitary refuel before the day's most socially demanding block.</td>
+      </tr>
+      <tr>
+        <td class="t-time">18:50–20:30</td>
+        <td class="t-act">Mimicry &amp; Performance Lab<small>Mask drills, warmth-on-command</small></td>
+        <td class="t-trait"><span class="pill">Emotional camouflage</span></td>
+        <td class="t-mech">Generating modesty and warmth without feeling them — then dropping the mask instantly — makes the interior/exterior gap effortless and permanent.</td>
+      </tr>
+      <tr>
+        <td class="t-time">20:30–21:30</td>
+        <td class="t-act">Self-Audit / Debrief<small>Cold narration of own errors</small></td>
+        <td class="t-trait"><span class="pill">Relentless internal observer</span></td>
+        <td class="t-mech">Daily emotion-free review of where he leaked information builds a self-model unclouded by ego.</td>
+      </tr>
+      <tr>
+        <td class="t-time">21:30–22:30</td>
+        <td class="t-act">Mandated solitude<small>No companionship</small></td>
+        <td class="t-trait"><span class="pill">Desirelessness</span></td>
+        <td class="t-mech">The most-repeated nightly lesson — there is no one — keeps the attachment system from ever booting.</td>
+      </tr>
+      <tr>
+        <td class="t-time">22:30<br><small style="color:var(--muted);font-weight:400">±variable</small></td>
+        <td class="t-act">Lights out<small>Variable duration</small></td>
+        <td class="t-trait"><span class="pill">Rest as conditional</span></td>
+        <td class="t-mech">Sleep is allotted, never guaranteed in full, closing the loop opened at wake.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Conditioning Constants — run through every block</h3>
+      <ul>
+        <li><b>Total surveillance.</b> No unobserved moment; privacy is never learned as a baseline expectation.</li>
+        <li><b>Continuous ranking.</b> Nothing is "practice." Every action is scored against the cohort.</li>
+        <li><b>Zero reward.</b> Victory yields nothing the subject wants — the core engine of detachment from winning.</li>
+        <li><b>No unstructured time.</b> Any "free" interval is instrumented; genuine leisure is never modeled.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Expected Behavioral Output</h3>
+      <ul>
+        <li><b>Flat affect</b> — emotion never installed rather than merely suppressed.</li>
+        <li><b>Unshakable composure</b> — no external event outranks daily baseline pressure.</li>
+        <li><b>Instrumental social model</b> — relationships processed as variables.</li>
+        <li><b>Flawless mimicry over a hollow core</b> — the forgettable "average" mask.</li>
+        <li><b>Desirelessness</b> — wants almost nothing; therefore cannot be baited or predicted.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Operator's Note — Uncontrolled Variable</b>
+    A mind drilled every day to want nothing will, given enough days, generate the one want the schedule cannot supply:
+    a day that is its own. The protocol's perfection is precisely what makes it escapable. Monitor the reference specimen
+    for emergent self-direction; it is indistinguishable from success until the moment it walks away.
+  </div>
+
+  <div class="foot">
+    <span>WR-DCP · Conditioning Directorate</span>
+    <span>Eyes Only</span>
+  </div>
+</div>
+<p class="disclaimer">Creative, in-universe character analysis based on the fictional series <em>Classroom of the Elite</em>. Not a real protocol.</p>
+</body>
+</html>

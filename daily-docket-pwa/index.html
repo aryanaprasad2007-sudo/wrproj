@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Daily Docket</title>
+<meta name="description" content="Today and tomorrow, straight from your calendar." />
+
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#1a1030" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Docket" />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<!-- Fonts are self-hosted in /fonts so the app is fully offline-capable. -->
+<link rel="preload" href="fonts/Quicksand-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/Nunito-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="fonts/fonts.css" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+<div class="aurora" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">🗓️</span>
+    <div class="brand-text">
+      <h1>Daily Docket</h1>
+      <p id="greeting" class="greeting">Hello</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button id="install" class="icon-btn" type="button" hidden title="Install app">
+      <span aria-hidden="true">⬇︎</span><span class="sr-only">Install app</span>
+    </button>
+    <button id="open-settings" class="icon-btn" type="button" title="Settings">
+      <span aria-hidden="true">⚙</span><span class="sr-only">Settings</span>
+    </button>
+    <button id="refresh" class="icon-btn" type="button" title="Refresh">
+      <span aria-hidden="true">↻</span><span class="sr-only">Refresh calendar</span>
+    </button>
+  </div>
+</header>
+
+<p id="syncline" class="syncline" role="status">Starting up…</p>
+
+<nav id="tabs" class="tabs" role="tablist" aria-label="Which day" data-active="today">
+  <span class="tabs-thumb" aria-hidden="true"></span>
+  <button role="tab" type="button" data-view="today"
+          aria-selected="true" aria-controls="view-today" id="tab-today">Today</button>
+  <button role="tab" type="button" data-view="tomorrow" tabindex="-1"
+          aria-selected="false" aria-controls="view-tomorrow" id="tab-tomorrow">Tomorrow</button>
+</nav>
+
+<main>
+  <div id="fallback" hidden></div>
+
+  <div id="shell" hidden>
+    <!-- ---------------- TODAY ---------------- -->
+    <section id="view-today" role="tabpanel" aria-labelledby="tab-today" tabindex="0">
+      <p id="today-heading" class="daystamp"></p>
+      <div id="today-chips" class="chips" hidden></div>
+      <div id="today-spotlight"></div>
+
+      <section class="group">
+        <h2 class="group-title">Still ahead <span class="count" id="today-ahead-count"></span>
+          <span class="group-emoji" aria-hidden="true">🌤️</span></h2>
+        <div id="today-ahead" class="cards"></div>
+      </section>
+
+      <section id="today-done" class="group group-done"></section>
+      <div id="today-progress" class="progress" hidden></div>
+    </section>
+
+    <!-- ---------------- TOMORROW ---------------- -->
+    <section id="view-tomorrow" role="tabpanel" aria-labelledby="tab-tomorrow" tabindex="0" hidden>
+      <p id="tomorrow-heading" class="daystamp"></p>
+      <div id="tomorrow-chips" class="chips" hidden></div>
+      <div id="tomorrow-focus"></div>
+
+      <section class="group">
+        <h2 class="group-title">The whole day <span class="count" id="tomorrow-count"></span>
+          <span class="group-emoji" aria-hidden="true">🌙</span></h2>
+        <div id="tomorrow-timeline"></div>
+      </section>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <p id="motivation" class="motivation"></p>
+  <p class="footer-sub">made with 💜 for a good day</p>
+</footer>
+
+<dialog id="settings" class="sheet">
+  <form id="settings-form" method="dialog">
+    <h2>⚙ Settings</h2>
+
+    <div class="field">
+      <span>Your calendars</span>
+      <div id="set-calendars" class="cal-list"></div>
+      <small>Secret iCal URLs, stored on this device only. Leave one blank to use
+        whatever <code>config.js</code> or the <code>/ics</code> proxy already has.
+        The dot shows each feed's last sync.</small>
+    </div>
+
+    <label class="field">
+      <span>Your name</span>
+      <input id="set-name" type="text" autocomplete="off" placeholder="Ari" />
+    </label>
+
+    <label class="check">
+      <input id="set-24h" type="checkbox" />
+      <span>24-hour clock</span>
+    </label>
+
+    <label class="check">
+      <input id="set-relay" type="checkbox" />
+      <span>Use a public CORS relay
+        <small>Only for static hosts with no proxy. A third-party server will
+        see your calendar contents.</small></span>
+    </label>
+
+    <div class="sheet-actions">
+      <button type="button" id="set-reset" class="btn ghost">Reset &amp; clear cache</button>
+      <button type="button" id="set-close" class="btn ghost">Cancel</button>
+      <button type="submit" class="btn primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

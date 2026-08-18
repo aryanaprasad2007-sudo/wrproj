@@ -1,0 +1,399 @@
+//@version=6
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © @Apeaverage & @SXDXST_FB6 (Impulse MACD) • Refined by Akash (SMA/RSI/MACD)
+// SWING_PRO — ALL-IN-ONE STRATEGY.
+//   One script does everything: backtests the trades, draws the on-chart BUY / SELL / EXIT / COVER
+//   signals, and fires alerts — all from the same logic, so the arrows ARE the trades.
+//   START with the "⚡ Quick Setup" panel: Direction, Market mode, Strictness. The Advanced groups
+//   below only take effect when Strictness = "Custom".
+//   HONEST NOTE: ~50 knobs curve-fit easily. Treat the Strategy Tester output as a hypothesis to
+//   falsify (walk-forward, other symbols/TFs). Set real commission + slippage in Properties. Not financial advice.
+strategy("SWING_PRO — All-in-One [Strategy]", shorttitle="SWING_PRO", overlay=true,
+     max_labels_count=500, pyramiding=0, calc_on_every_tick=false,
+     initial_capital=100000, default_qty_type=strategy.percent_of_equity, default_qty_value=10,
+     commission_type=strategy.commission.percent, commission_value=0.01, slippage=1)
+
+// ═══════════════════ ⚡ QUICK SETUP — START HERE ═══════════════════
+g0 = "⚡ Quick Setup — start here"
+tradeDir   = input.string("Both", "Trade direction", options=["Both", "Buys only (long)", "Sells only (short)"], group=g0, tooltip="Both = trade long and short. Or restrict to one side.")
+marketMode = input.string("24/7 (all hours)", "Market mode", options=["24/7 (all hours)", "US stocks — day trade (flat by close)"], group=g0, tooltip="24/7: crypto, futures, forex, or any time of day — no session limit. US stocks day trade: only 09:30–16:00 ET and auto-flat before the close.")
+strictness = input.string("Balanced", "Signal strictness", options=["Relaxed (more signals)", "Balanced", "Strict (fewer, cleaner)", "Custom (use Advanced)"], group=g0, tooltip="Relaxed loosens the quality filters for more signals; Strict tightens them for fewer, higher-quality ones; Custom obeys the Advanced toggles below.")
+minBarsBetween = input.int(5, "Minimum bars between trades", minval=0, group=g0, tooltip="Spacing so you don't get clustered back-to-back signals.")
+showSignals = input.bool(true, "Show BUY / SELL / EXIT labels on chart", group=g0)
+markerSize  = input.string("Large", "Signal label size", options=["Small", "Normal", "Large", "Huge"], group=g0)
+sizeOpt = markerSize == "Small" ? size.small : markerSize == "Normal" ? size.normal : markerSize == "Huge" ? size.huge : size.large
+
+allowLongs  = tradeDir != "Sells only (short)"
+allowShorts = tradeDir != "Buys only (long)"
+is24h      = marketMode == "24/7 (all hours)"
+isRelaxed  = strictness == "Relaxed (more signals)"
+isStrict   = strictness == "Strict (fewer, cleaner)"
+isCustom   = strictness == "Custom (use Advanced)"
+
+// ═══════════════════ ADVANCED (only used when Strictness = Custom, or for fine-tuning) ═══════════════════
+
+// ── Advanced 1) Overall trend ──
+gT = "Advanced 1) Overall trend"
+useTrend     = input.bool(true,  "Only trade with the trend", group=gT)
+useHTFTrend  = input.bool(true,  "Judge the trend from a bigger timeframe", group=gT)
+useAutoHTF   = input.bool(true,  "Pick that timeframe automatically", group=gT, tooltip="5-min chart × 15 = 75-min trend view.")
+autoHtfMult  = input.int(15, "How much bigger? (× chart timeframe)", minval=2, maxval=60, step=1, group=gT)
+htfTfManual  = input.timeframe("60", "Bigger timeframe (if automatic is off)", group=gT)
+trendType    = input.string("EMA", "Trend line style", options=["EMA", "SMA"], group=gT)
+trendLen     = input.int(50, "Trend line length (bars)", minval=10, maxval=200, step=5, group=gT)
+useSlope     = input.bool(true,  "Skip flat, sideways markets", group=gT)
+slopeLen     = input.int(3, "Tilt lookback (bars)", minval=1, group=gT)
+slopeMinATR  = input.float(0.20, "How steep the trend must be", minval=0.0, maxval=1.0, step=0.05, group=gT)
+useBuffer    = input.bool(false, "Require price to clear the line by a margin", group=gT)
+bufferATR    = input.float(0.5, "Size of that margin (volatility units)", minval=0.0, step=0.1, group=gT)
+showTrend    = input.bool(false, "Show the trend line on the chart", group=gT)
+
+// ── Advanced 2) MACD ──
+gM = "Advanced 2) Momentum (MACD)"
+fastLength   = input.int(12, "MACD fast", minval=1, group=gM)
+slowLength   = input.int(26, "MACD slow", minval=1, group=gM)
+signalLength = input.int(9,  "MACD signal", minval=1, group=gM)
+
+// ── Advanced 3) RSI ──
+gR = "Advanced 3) Pressure (RSI)"
+rsiLength     = input.int(14, "RSI lookback (bars)", minval=1, group=gR)
+rsiLongLevel  = input.int(52, "Buys need RSI above this", group=gR)
+rsiShortLevel = input.int(48, "Sells need RSI below this", group=gR)
+
+// ── Advanced 4) Impulse ──
+gI = "Advanced 4) Extra momentum (Impulse)"
+useImpulse   = input.bool(true, "Require this extra confirmation (Custom mode)", group=gI)
+lengthMA     = input.int(34, "Smoothing length", minval=1, group=gI)
+lengthSignal = input.int(9,  "Signal length", minval=1, group=gI)
+
+// ── Advanced 5) Trade-quality filters ──
+gF = "Advanced 5) Trade-quality filters"
+useADX  = input.bool(true,  "Only trade when trend is strong (Custom mode)", group=gF)
+adxLen  = input.int(14, "Trend-strength lookback (bars)", minval=1, group=gF)
+adxMin  = input.int(20, "Minimum trend strength (Custom mode)", minval=1, maxval=50, step=1, group=gF)
+useVol  = input.bool(true,  "Require above-average volume (Custom mode)", group=gF)
+volLen  = input.int(20, "Volume average lookback (bars)", minval=1, group=gF)
+volMult = input.float(1.5, "Volume must beat its average by", minval=0.0, maxval=4.0, step=0.1, group=gF)
+
+// ── Advanced 5b) Market alignment ──
+gX = "Advanced 5b) Follow the broader market"
+useMarketFilter = input.bool(true, "Only trade with the overall market (Custom mode)", group=gX)
+marketSym       = input.symbol("SPY", "Market index to follow", group=gX)
+marketMaLen     = input.int(50, "Market trend length (bars)", minval=5, maxval=200, step=5, group=gX)
+
+// ── Advanced 6) Anti-chase ──
+gQ = "Advanced 6) Anti-chase"
+useCandle      = input.bool(true, "Entry bar must match (green to buy, red to sell)", group=gQ)
+useAvoidExt    = input.bool(true, "Don't chase overextended reversals", group=gQ)
+obLevel        = input.int(72, "Skip late buys when RSI is above this", group=gQ)
+osLevel        = input.int(28, "Skip late sells when RSI is below this", group=gQ)
+useVolRegime   = input.bool(false, "Skip very quiet periods", group=gQ)
+minAtrPct      = input.float(0.03, "Min movement (% of price)", minval=0.0, step=0.01, group=gQ)
+
+// ── Advanced 7) Stop-loss & profit target ──
+gA = "Advanced 7) Stop-loss & profit target"
+atrLen      = input.int(14, "Volatility lookback (bars)", minval=1, group=gA)
+atrStopMult = input.float(1.5, "Stop distance (volatility units)", minval=0.1, maxval=5.0, step=0.1, group=gA)
+rrRatio     = input.float(2.0, "Profit target vs. risk", minval=0.1, maxval=6.0, step=0.1, group=gA)
+useStructStop = input.bool(true, "Put the stop just past the recent swing", group=gA)
+structLookback = input.int(10, "Swing lookback (bars)", minval=2, maxval=50, step=1, group=gA)
+structBufATR  = input.float(0.25, "Extra cushion past the swing", minval=0.0, maxval=2.0, step=0.05, group=gA)
+usePartial   = input.bool(true, "Take partial profit at a first target", group=gA)
+partialPct   = input.int(50, "How much to close at first target (%)", minval=1, maxval=99, step=5, group=gA)
+partialR     = input.float(1.0, "First target distance (× risk)", minval=0.2, maxval=4.0, step=0.1, group=gA)
+useBreakeven = input.bool(true, "Move stop to breakeven once in profit", group=gA)
+beTriggerR   = input.float(1.0, "Breakeven trigger (× risk)", minval=0.2, maxval=4.0, step=0.1, group=gA)
+showRiskLbl = input.bool(false, "Show stop & target labels", group=gA)
+
+// ── Advanced 8) Signal timing ──
+gS = "Advanced 8) Signal timing"
+confirmClose = input.bool(true, "Only act after the bar closes (no repaint)", group=gS)
+
+// ── Advanced 9) Entry & exit styles ──
+gE = "Advanced 9) Entry & exit styles"
+useStateEntry = input.bool(true, "Entry A: Trend (everything lines up)", group=gE)
+allowReentry  = input.bool(true,  "Allow trading the same direction again", group=gE)
+usePullback   = input.bool(true,  "Entry B: Buy the dip / sell the bounce", group=gE)
+pullbackEMA   = input.int(9, "Fast line for dips, bounces & reversals", minval=1, group=gE)
+exitOnMACD    = input.bool(true,  "Exit when momentum flips against you", group=gE)
+exitOnTrend   = input.bool(true,  "Exit when price closes back across the trend", group=gE)
+exitOnRSI     = input.bool(false, "Exit when RSI crosses back through 50", group=gE)
+exitOnTarget  = input.bool(true,  "Exit at the stop-loss / profit target", group=gE)
+showExits     = input.bool(true,  "Show EXIT / COVER markers", group=gE)
+longWinsOnConflict = input.bool(false, "If buy & sell trigger same bar, take the buy", group=gE)
+
+// ── Advanced 9b) Day-trade auto-flat (used in 'US stocks' mode) ──
+gN = "Advanced 9b) Day-trade auto-flat"
+useEOD   = input.bool(true,  "Close everything before the bell (Custom mode)", group=gN, tooltip="In 'US stocks — day trade' mode this is automatic. Here only for Custom strictness.")
+eodFlat  = input.session("1555-1600", "Flat-by window", group=gN)
+noNewWin = input.session("1545-1600", "Stop opening NEW trades in this late window", group=gN)
+
+// ── Advanced 10) Reversal trades ──
+gV = "Advanced 10) Reversal trades (against the trend)"
+useReversals = input.bool(false, "Entry C: Trade the trend turning", group=gV)
+revExitFast  = input.bool(true, "Exit reversal trades on the fast line", group=gV)
+revRsiFloor  = input.int(40, "Reversal RSI floor", minval=1, maxval=60, group=gV)
+revVolMult   = input.float(1.0, "Reversal volume multiplier", minval=0.0, step=0.1, group=gV)
+
+// ── Advanced 11) Backtest date range ──
+gW = "Advanced 11) Backtest date range"
+useDateFilter = input.bool(false, "Only test between two dates", group=gW)
+startDate     = input.time(timestamp("01 Jan 2024 00:00 +0000"), "From", group=gW)
+endDate       = input.time(timestamp("01 Jan 2027 00:00 +0000"), "To", group=gW)
+inWindow      = not useDateFilter or (time >= startDate and time <= endDate)
+
+// ── Advanced 12) Marker colours & trend line ──
+gD = "Advanced 12) Marker colours"
+buyTag        = input.string("▲ BUY", "Text on the buy marker", group=gD)
+sellTag       = input.string("▼ SELL", "Text on the sell marker", group=gD)
+buyMarkerCol  = input.color(#26a69a, "Buy marker colour", group=gD)
+sellMarkerCol = input.color(#e53935, "Sell marker colour", group=gD)
+exitMarkerCol = input.color(color.orange, "Exit / cover marker colour", group=gD)
+
+// ── Effective filters — Quick Setup "Strictness" / "Market mode" drive these unless Custom ──
+useADX_e     = isCustom ? useADX : not isRelaxed
+adxMin_e     = isCustom ? adxMin : (isStrict ? 25 : 20)
+useVol_e     = isCustom ? useVol : isStrict
+useMarket_e  = isCustom ? useMarketFilter : not isRelaxed
+useImpulse_e = isCustom ? useImpulse : not isRelaxed
+useEOD_e     = isCustom ? useEOD : not is24h
+
+// ── Functions ──
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    ema1 + (ema1 - ema2)
+
+atr = ta.atr(atrLen)
+
+// ── Higher timeframe ──
+chartSec = timeframe.in_seconds(timeframe.period)
+autoSec  = chartSec * autoHtfMult
+htfAuto  = autoSec % 60 == 0 ? str.tostring(int(autoSec / 60)) : str.tostring(int(autoSec)) + "S"
+htfTf    = useAutoHTF ? htfAuto : htfTfManual
+localMA = trendType == "EMA" ? ta.ema(close, trendLen) : ta.sma(close, trendLen)
+[htfMA, htfMAprev, htfATR] = request.security(syminfo.tickerid, htfTf, [localMA[1], localMA[1 + slopeLen], ta.atr(atrLen)[1]], lookahead=barmerge.lookahead_off)
+trendMA = useHTFTrend ? htfMA : localMA
+slopeATRval = useHTFTrend ? (htfATR > 0 ? (htfMA - htfMAprev) / htfATR : 0.0) : (atr > 0 ? (localMA - localMA[slopeLen]) / atr : 0.0)
+slopeUp = slopeATRval >=  slopeMinATR
+slopeDn = slopeATRval <= -slopeMinATR
+slopeFlat = useSlope and not slopeUp and not slopeDn
+slopeLongOK  = not useSlope or slopeUp
+slopeShortOK = not useSlope or slopeDn
+buf  = useBuffer ? bufferATR * atr : 0.0
+bull = not useTrend or close > trendMA + buf
+bear = not useTrend or close < trendMA - buf
+
+// ── Market-index alignment ──
+[mktClose, mktMA] = request.security(marketSym, timeframe.period, [close, ta.ema(close, marketMaLen)])
+mktLongOK  = not useMarket_e or (mktClose > mktMA)
+mktShortOK = not useMarket_e or (mktClose < mktMA)
+
+// ── Swing levels ──
+swingLow  = ta.lowest(low,  structLookback)
+swingHigh = ta.highest(high, structLookback)
+
+// ── Impulse MACD ──
+srcImp = hlc3
+hi  = calc_smma(high, lengthMA)
+lo  = calc_smma(low,  lengthMA)
+mi  = calc_zlema(srcImp, lengthMA)
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)
+impBull = not useImpulse_e or md > sb
+impBear = not useImpulse_e or md < sb
+
+// ── MACD + RSI ──
+[macdValue, signalValue, macdHist] = ta.macd(close, fastLength, slowLength, signalLength)
+macdBull = macdValue > signalValue
+macdBear = macdValue < signalValue
+rsiValue   = ta.rsi(close, rsiLength)
+rsiLongOK  = rsiValue > rsiLongLevel
+rsiShortOK = rsiValue < rsiShortLevel
+
+// ── Filters ──
+[diPlus, diMinus, adxValue] = ta.dmi(adxLen, adxLen)
+adxOK = not useADX_e or adxValue >= adxMin_e
+volAvg = ta.sma(volume, volLen)
+volOK  = not useVol_e or na(volume) or volume >= volMult * volAvg
+inSess = is24h ? true : not na(time(timeframe.period, "0930-1600"))
+atrPctOK = not useVolRegime or (close > 0 and (atr / close * 100.0) >= minAtrPct)
+filtersOK = adxOK and volOK and inSess and atrPctOK
+
+// ── Quality guards ──
+candleBuyOK     = not useCandle or close > open
+candleSellOK    = not useCandle or close < open
+notExtremeLong  = not useAvoidExt or rsiValue < obLevel
+notExtremeShort = not useAvoidExt or rsiValue > osLevel
+
+// ── Confluence + triggers ──
+longState  = bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK
+shortState = bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK
+longTrig   = longState  and not longState[1]
+shortTrig  = shortState and not shortState[1]
+
+confirmed = not confirmClose or barstate.isconfirmed
+var int lastSigBar = na
+cooled = na(lastSigBar) or (bar_index - lastSigBar) >= minBarsBetween
+
+emaFast   = ta.ema(close, pullbackEMA)
+pullLong  = usePullback and bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK and ta.crossover(close, emaFast)
+pullShort = usePullback and bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK and ta.crossunder(close, emaFast)
+
+priceAbove = close > trendMA + buf
+priceBelow = close < trendMA - buf
+macdRevUp = macdHist > macdHist[1]
+macdRevDn = macdHist < macdHist[1]
+rsiTurnUp = rsiValue > rsiValue[1] and rsiValue > revRsiFloor
+rsiTurnDn = rsiValue < rsiValue[1] and rsiValue < (100 - revRsiFloor)
+revVolOK  = not useVol_e or na(volume) or volume >= revVolMult * volAvg
+revFiltersOK = revVolOK and inSess and atrPctOK
+revLong  = useReversals and priceBelow and ta.crossover(close, emaFast)  and macdRevUp and rsiTurnUp and rsiValue < obLevel and revFiltersOK
+revShort = useReversals and priceAbove and ta.crossunder(close, emaFast) and macdRevDn and rsiTurnDn and rsiValue > osLevel and revFiltersOK
+
+stLong  = useStateEntry and longTrig
+stShort = useStateEntry and shortTrig
+trendBuy  = (stLong  or pullLong)  and mktLongOK
+trendSell = (stShort or pullShort) and mktShortOK
+revBuy  = revLong  and notExtremeLong
+revSell = revShort and notExtremeShort
+
+// ── Day-trade gating ──
+inEOD  = not na(time(timeframe.period, eodFlat))
+inLate = not na(time(timeframe.period, noNewWin))
+blockNew = useEOD_e and inLate
+
+goLong  = allowLongs  and (trendBuy  or revBuy)  and cooled and candleBuyOK  and inWindow and not blockNew
+goShort = allowShorts and (trendSell or revSell) and cooled and candleSellOK and inWindow and not blockNew
+
+// ── Position bookkeeping ──
+var int   lastDir  = 0
+var bool  posRev   = false
+var float slLong   = na
+var float tpLong   = na
+var float slShort  = na
+var float tpShort  = na
+var float riskLong = na
+var float riskShort = na
+var float entryPx  = na
+var bool  beDone   = false
+
+isLong  = strategy.position_size > 0
+isShort = strategy.position_size < 0
+exitRef = (revExitFast and posRev) ? emaFast : trendMA
+exitLongCond  = (exitOnMACD and macdBear) or (exitOnTrend and close < exitRef) or (exitOnRSI and ta.crossunder(rsiValue, 50))
+exitShortCond = (exitOnMACD and macdBull) or (exitOnTrend and close > exitRef) or (exitOnRSI and ta.crossover(rsiValue, 50))
+
+canLong  = goLong  and (allowReentry or lastDir != 1)
+canShort = goShort and (allowReentry or lastDir != -1)
+doLong  = longWinsOnConflict ? canLong : (canLong  and not canShort)
+doShort = longWinsOnConflict ? (canShort and not canLong) : (canShort and not canLong)
+
+buy       = false
+sell      = false
+exitLong  = false
+exitShort = false
+
+if confirmed
+    if isLong and exitLongCond and not doShort
+        strategy.close("Long", comment="exitL")
+        exitLong := true
+    if isShort and exitShortCond and not doLong
+        strategy.close("Short", comment="exitS")
+        exitShort := true
+    if doLong
+        strategy.entry("Long", strategy.long)
+        buy := true
+        posRev := revLong and not (stLong or pullLong)
+        lastDir := 1
+        lastSigBar := bar_index
+        rawRiskL = close - (swingLow - structBufATR * atr)
+        rL = (useStructStop and rawRiskL > 0) ? math.max(rawRiskL, atrStopMult * atr * 0.5) : atrStopMult * atr
+        riskLong := rL
+        slLong := close - rL
+        tpLong := close + rrRatio * rL
+        entryPx := close
+        beDone := false
+    if doShort
+        strategy.entry("Short", strategy.short)
+        sell := true
+        posRev := revShort and not (stShort or pullShort)
+        lastDir := -1
+        lastSigBar := bar_index
+        rawRiskS = (swingHigh + structBufATR * atr) - close
+        rS = (useStructStop and rawRiskS > 0) ? math.max(rawRiskS, atrStopMult * atr * 0.5) : atrStopMult * atr
+        riskShort := rS
+        slShort := close + rS
+        tpShort := close - rrRatio * rS
+        entryPx := close
+        beDone := false
+
+if useBreakeven and isLong  and not na(entryPx) and high >= entryPx + beTriggerR * riskLong
+    beDone := true
+if useBreakeven and isShort and not na(entryPx) and low  <= entryPx - beTriggerR * riskShort
+    beDone := true
+
+if exitOnTarget and isLong and not na(slLong)
+    stopL = (useBreakeven and beDone) ? entryPx : slLong
+    if usePartial
+        strategy.exit("L-TP1", from_entry="Long", qty_percent=partialPct, limit=entryPx + partialR * riskLong, stop=stopL)
+    strategy.exit("L-Exit", from_entry="Long", limit=tpLong, stop=stopL)
+if exitOnTarget and isShort and not na(slShort)
+    stopS = (useBreakeven and beDone) ? entryPx : slShort
+    if usePartial
+        strategy.exit("S-TP1", from_entry="Short", qty_percent=partialPct, limit=entryPx - partialR * riskShort, stop=stopS)
+    strategy.exit("S-Exit", from_entry="Short", limit=tpShort, stop=stopS)
+
+// Day-trade auto-flat (only when enabled / US-stocks mode)
+if useEOD_e and inEOD
+    strategy.close_all(comment="EOD flat")
+
+// ── Optional SL/TP labels ──
+if showRiskLbl and buy
+    label.new(bar_index, low,  "SL " + str.tostring(slLong,  format.mintick) + "  TP " + str.tostring(tpLong,  format.mintick), style=label.style_label_up,   color=color.new(color.green, 60), textcolor=color.white, size=size.small)
+if showRiskLbl and sell
+    label.new(bar_index, high, "SL " + str.tostring(slShort, format.mintick) + "  TP " + str.tostring(tpShort, format.mintick), style=label.style_label_down, color=color.new(color.red, 60),   textcolor=color.white, size=size.small)
+
+// ── On-chart signals ──
+trendCol = slopeFlat ? color.new(color.gray, 0) : (bull ? color.new(color.teal, 0) : color.new(color.red, 0))
+plot(showTrend ? trendMA : na, "Trend MA", color=trendCol, linewidth=2)
+
+if showSignals and allowLongs and buy
+    label.new(bar_index, na, buyTag,  yloc=yloc.belowbar, style=label.style_label_up,   color=buyMarkerCol,  textcolor=color.white, size=sizeOpt)
+if showSignals and allowShorts and sell
+    label.new(bar_index, na, sellTag, yloc=yloc.abovebar, style=label.style_label_down, color=sellMarkerCol, textcolor=color.white, size=sizeOpt)
+// Every LONG exit (partial TP, full target, stop, condition exit, or EOD flat) reduces the
+// position — treat ALL of them as a sell-to-close and mark a SELL. Short covers stay distinct.
+longSold     = strategy.position_size[1] > 0 and strategy.position_size < strategy.position_size[1]
+shortCovered = strategy.position_size[1] < 0 and strategy.position_size > strategy.position_size[1]
+plotshape(showSignals and showExits and longSold,     "Sell (exit long)",   shape.labeldown, location.abovebar, sellMarkerCol, text="SELL",  textcolor=color.white,  size=size.normal)
+plotshape(showSignals and showExits and shortCovered, "Cover (exit short)", shape.xcross,    location.belowbar, exitMarkerCol, text="COVER", textcolor=exitMarkerCol, size=size.small)
+
+// ── Alerts ──
+alertcondition(buy,          "Swing Buy",         "[SWING_PRO] BUY {{ticker}} @ {{close}}")
+alertcondition(sell,         "Swing Sell",        "[SWING_PRO] SELL (short) {{ticker}} @ {{close}}")
+alertcondition(longSold,     "Sell (exit long)",  "[SWING_PRO] SELL / EXIT LONG {{ticker}} @ {{close}}")
+alertcondition(shortCovered, "Cover Short",       "[SWING_PRO] COVER SHORT {{ticker}} @ {{close}}")
+alertcondition(buy or sell or longSold or shortCovered, "Any signal", "[SWING_PRO] signal {{ticker}} @ {{close}}")
+
+// ── Win rate over the currently-visible chart range (updates as you scroll / zoom) ──
+var table wrTable = table.new(position.top_right, 1, 2, frame_width=1, frame_color=color.new(color.gray, 50))
+if barstate.islast
+    int wins = 0
+    int tot  = 0
+    leftT  = chart.left_visible_bar_time
+    rightT = chart.right_visible_bar_time
+    if strategy.closedtrades > 0
+        for i = 0 to strategy.closedtrades - 1
+            et = strategy.closedtrades.entry_time(i)
+            if et >= leftT and et <= rightT
+                tot += 1
+                if strategy.closedtrades.profit(i) > 0
+                    wins += 1
+    wrTxt = tot > 0 ? str.tostring(100.0 * wins / tot, "#.#") + "%" : "—"
+    table.cell(wrTable, 0, 0, "Win rate (visible)", text_color=color.white, bgcolor=color.new(color.teal, 20), text_size=size.normal)
+    table.cell(wrTable, 0, 1, wrTxt + "   " + str.tostring(wins) + "/" + str.tostring(tot) + " trades", text_color=color.white, bgcolor=color.new(color.black, 0), text_size=size.normal)

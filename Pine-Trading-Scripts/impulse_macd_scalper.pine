@@ -1,0 +1,92 @@
+// Impulse MACD Scalper — strategy() conversion of the Impulse MACD (LazyBear) indicator
+// Pine Script v5
+//
+// Design choices (per request):
+//   • Style:     Scalping — always-in-the-market reversal system (flips long<->short)
+//   • Entry:     Signal-line cross  (md crossing its SMA signal). Easy to swap — see ENTRY MODE below.
+//   • Direction: Long AND short
+//   • Exit:      Opposite signal only — no stop-loss / take-profit. You exit because you reverse.
+//
+// NOTE: scalping is extremely sensitive to fees + slippage. Realistic costs are baked into the
+// strategy() header below — tune commission_value/slippage to match YOUR broker/exchange before
+// trusting any backtest. With zero costs these results will look far better than reality.
+
+//@version=5
+strategy("Impulse MACD Scalper", shorttitle="IMACD_Scalp", overlay=true,
+     default_qty_type     = strategy.percent_of_equity,
+     default_qty_value    = 100,            // 100% of equity per trade (no leverage). Lower for safety.
+     pyramiding           = 0,              // one position at a time
+     process_orders_on_close = true,        // fill on close of the signal bar (typical for scalp signals)
+     commission_type      = strategy.commission.percent,
+     commission_value     = 0.04,           // ~taker fee per side. CHANGE to your venue's rate.
+     slippage             = 2)              // ticks of slippage per fill
+
+// ───────────────────────── Inputs ─────────────────────────
+lengthMA     = input.int(34, "MA / Channel length", minval=1, tooltip="Original Impulse MACD uses 34. Scalpers often drop this (e.g. 10–21) on 1–5 min charts.")
+lengthSignal = input.int(9,  "Signal length",       minval=1)
+
+entryMode    = input.string("Signal cross", "ENTRY MODE", options=["Signal cross", "Zero cross"], tooltip="Signal cross = md crosses its signal line. Zero cross = md crosses 0 (slower, fewer trades).")
+
+tradeLong    = input.bool(true, "Allow longs")
+tradeShort   = input.bool(true, "Allow shorts")
+
+useSession   = input.bool(false, "Restrict to a session")
+sess         = input.session("0930-1600", "Session (exchange time)")
+
+// ───────────────────────── Functions ─────────────────────────
+// Smoothed Moving Average (Wilder's / RMA): seed with SMA, then recursively smooth.
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+
+// Zero-Lag EMA: EMA of EMA gives the lag (d), add it back to cancel most of the delay.
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    d    = ema1 - ema2
+    ema1 + d
+
+// ───────────────────────── Impulse MACD core (unchanged math) ─────────────────────────
+src = hlc3
+hi  = calc_smma(high, lengthMA)            // smoothed high  → top of channel
+lo  = calc_smma(low,  lengthMA)            // smoothed low   → bottom of channel
+mi  = calc_zlema(src, lengthMA)            // zero-lag mean of typical price
+
+// Impulse value: 0 inside the channel, +/- only on a breakout of the band.
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)             // signal line
+
+// ───────────────────────── Signals ─────────────────────────
+longSignal  = entryMode == "Signal cross" ? ta.crossover(md, sb)  : ta.crossover(md, 0)
+shortSignal = entryMode == "Signal cross" ? ta.crossunder(md, sb) : ta.crossunder(md, 0)
+
+// Session gate (optional). True when we're allowed to trade.
+inSession = not useSession or not na(time(timeframe.period, sess))
+
+// ───────────────────────── Strategy logic ─────────────────────────
+// Always-in reversal: a strategy.entry in the opposite direction auto-closes the current
+// position and opens the new one, so the "exit" IS the opposite signal.
+if inSession
+    if longSignal and tradeLong
+        strategy.entry("Long", strategy.long)
+    if shortSignal and tradeShort
+        strategy.entry("Short", strategy.short)
+
+// If a direction is disabled, still EXIT to flat on its signal (so we're not stuck in a trade).
+if shortSignal and not tradeShort
+    strategy.close("Long")
+if longSignal and not tradeLong
+    strategy.close("Short")
+
+// Flatten when the session window closes.
+if useSession and not inSession
+    strategy.close_all(comment="Session end")
+
+// ───────────────────────── Plots (channel on the price chart) ─────────────────────────
+plot(hi, "Upper band (SMMA high)", color=color.new(color.teal,   0))
+plot(lo, "Lower band (SMMA low)",  color=color.new(color.maroon, 0))
+plot(mi, "ZLEMA (hlc3)",           color=color.new(color.blue,   0), linewidth=2)
+
+// Shade bars where trading is paused by the session filter.
+bgcolor(useSession and not inSession ? color.new(color.gray, 90) : na, title="Out of session")

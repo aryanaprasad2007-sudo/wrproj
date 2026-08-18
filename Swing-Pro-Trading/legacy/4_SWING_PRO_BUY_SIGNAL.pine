@@ -1,0 +1,28 @@
+//@version=6
+// SWING_PRO — BUY SIGNAL  •  the visible TRIGGER layer for the BUY engine.
+// HOW TO USE: 1) add "SWING_PRO — BUY [RTH]" (engine).  2) add this.
+//   3) settings -> set "Connect to" = SWING_BUY: Buy signal.
+// Draws the BUY arrow, tints the bar, fires the alert when that line = 1.
+// Until wired, source = close and it fires every bar. Not financial advice.
+indicator("SWING_PRO — BUY SIGNAL", shorttitle="BUY SIGNAL", overlay=true)
+
+// ── Wiring ──
+gW  = "Connection"
+src = input.source(close, "Connect to: SWING_BUY → Buy signal", group=gW, tooltip="Click and pick the BUY engine's '→ Buy signal' output. Required — leaving it on 'close' makes it fire every bar.")
+lvl = input.float(0.5, "Active when the connected line is above", step=0.1, group=gW, tooltip="The engine outputs 1 when a buy is active and 0 otherwise, so 0.5 is correct. Leave as-is.")
+buyOn = src > lvl
+
+// ── Display ──
+gD     = "Display"
+col    = input.color(#26a69a, "Buy marker colour", group=gD)
+showBg = input.bool(true, "Tint the signal bar", group=gD)
+
+// Price-anchored arrow: plots on every bar, stays pinned to the candle, scales with the chart.
+// NOTE: plotshape's size= must be a constant — change size.normal below to size.small / size.large
+// / size.huge if you want a different size (it can't be a dropdown input).
+plotshape(buyOn, title="BUY", style=shape.labelup, location=location.belowbar, color=col, text="BUY", textcolor=color.white, size=size.normal)
+bgcolor(showBg and buyOn ? color.new(col, 85) : na, title="Buy tint")
+
+// ── Alert + pass-through output (so you can chain this further if you want) ──
+alertcondition(buyOn, "Buy signal", "[BUY SIGNAL] BUY {{ticker}} @ {{close}}")
+plot(buyOn ? 1 : 0, "→ Buy trigger", color=color.new(color.green, 100), display=display.none)

@@ -1,0 +1,29 @@
+# EXAMPLE character. Replace with your own design.
+#
+# Consistency comes from three stacked mechanisms, weakest to strongest:
+#   trigger + description  ->  always on, costs nothing, drifts over a film
+#   ref_images             ->  IP-Adapter, no training, locks palette + face
+#   lora_path              ->  strongest; train once (see README)
+#
+# Drop 15-30 reference images in refs/ before training.
+
+name: Mira
+kind: full
+
+# A rare token the base model has no strong prior for. Real words ("mira",
+# "fox") bind to what the model already thinks they mean and fight your design.
+trigger: mirafx
+
+# Only STABLE traits. No pose, no camera, no setting -- those come from the
+# shot, and repeating them here drags the turnaround pose into every scene.
+description: >-
+  small fox spirit, cream and rust fur, oversized amber eyes,
+  two tails, moss-green scarf, soft cel shading
+
+negative: realistic photo, human ears, three tails
+
+lora_path: null          # -> lora/mira_r16_s1200.safetensors after training
+lora_weight: 0.85
+ipadapter_weight: 0.6    # above ~0.75 it starts copying the ref's composition
+
+palette: ["#F0DDC4", "#C4633A", "#F5B841", "#5E7A4F"]

@@ -1,0 +1,13 @@
+{
+ "sizing_pct": 22.0,
+ "max_positions": 10,
+ "max_notional_usd": 0.0,
+ "daily_loss_limit_usd": 0.0,
+ "tracks": {
+  "intraday": true,
+  "daily": true
+ },
+ "focus_symbols": [],
+ "webull_sizing_equity": 2000.0,
+ "alpaca_sizing_equity": 0.0
+}

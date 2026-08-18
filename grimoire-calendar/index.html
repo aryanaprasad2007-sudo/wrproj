@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grimoire</title>
+<meta name="description" content="A starry calendar — Google's events, your margins.">
+<meta name="theme-color" content="#0d0719">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./fonts/fonts.css">
+<link rel="stylesheet" href="./css/grimoire.css">
+</head>
+<body data-foil="gold">
+
+  <div class="sky-photo" aria-hidden="true"></div>
+  <div class="sky-stars" aria-hidden="true"></div>
+  <div class="sky-veil"  aria-hidden="true"></div>
+
+  <main class="shell">
+
+    <header class="topbar">
+      <h1 class="wordmark">
+        Grimoire
+        <span class="sub">a record of days</span>
+      </h1>
+
+      <div class="toolbar" id="toolbar">
+        <button class="btn" type="button" data-action="foil" aria-pressed="false">Foil</button>
+        <button class="btn" type="button" data-action="sync">Sync</button>
+        <button class="btn" type="button" data-action="export">Export notes</button>
+      </div>
+    </header>
+
+    <p class="sr-only">
+      A month calendar of your Google Calendar events, with a moon phase on each
+      day and a private note and mood you can attach to any day. Use the arrow
+      keys to move between days, T for today, R to re-sync.
+    </p>
+
+    <div class="body-grid">
+      <div class="col-main">
+        <section class="panel month" id="month" aria-label="Month grid"></section>
+        <section class="panel countdown-card" id="countdown" aria-label="Next event countdown"></section>
+      </div>
+      <aside class="rail" id="rail" aria-label="Selected day"></aside>
+    </div>
+
+    <div class="statusline" id="status" role="status" aria-live="polite">
+      <span class="pip"></span><span>Starting…</span>
+    </div>
+
+  </main>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

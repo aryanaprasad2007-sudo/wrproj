@@ -1,0 +1,6 @@
+# wrproj coding brain (fast). See Modelfile.coder-30b for why num_ctx is here.
+# 24576 not 32768: at q4 this 7B needs ~1.4GB of KV cache at 24k, keeping
+# weights+cache under the 4060's 8GB so it stays 100% GPU. Verify with
+# `ollama ps` -- if PROCESSOR is not 100% GPU, lower this.
+FROM qwen2.5-coder:7b
+PARAMETER num_ctx 24576

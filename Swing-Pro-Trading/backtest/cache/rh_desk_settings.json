@@ -1,0 +1,8 @@
+{
+ "book_usd": 75.37,
+ "sizing_pct": 20.0,
+ "max_positions": 5,
+ "min_ticket_usd": 1.0,
+ "universe": "daily",
+ "symbols": []
+}

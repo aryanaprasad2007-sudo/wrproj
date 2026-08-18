@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import datetime; print\\(datetime.date\\(2026,7,7\\).strftime\\('%A'\\)\\)\")",
+      "mcp__f8f8675f-d173-480c-a4aa-70563862fbc4__list_events",
+      "mcp__8062f5ab-72a8-442f-ba79-d25da259fb37__search_threads",
+      "mcp__bcfd450e-dc9b-4089-8ceb-a25de1da3841__notion-query-data-sources",
+      "Bash(py build_docket.py)",
+      "mcp__8062f5ab-72a8-442f-ba79-d25da259fb37__create_draft",
+      "mcp__bcfd450e-dc9b-4089-8ceb-a25de1da3841__notion-update-page",
+      "Bash(node -e \"console.log\\(new Date\\('2026-07-11T12:00:00'\\).toLocaleDateString\\('en-US',{weekday:'long'}\\)\\)\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-07-22\" \"+%A, %B %d, %Y\")",
+      "mcp__scheduled-tasks__list_scheduled_tasks",
+      "Bash(powershell -NoProfile -Command \"Get-Date -Format 'dddd, MMMM d, yyyy'\")",
+      "mcp__8062f5ab-72a8-442f-ba79-d25da259fb37__get_thread",
+      "Read(//c/Users/aware/AppData/Local/Temp/claude/C--Users-aware-OneDrive-Desktop-wrproj/8657473f-8980-4da6-a6ec-619b084081a3/scratchpad/**)",
+      "Bash(rm -rf tpl)",
+      "Bash(mkdir -p tpl)",
+      "Bash(tar -xzf \"/c/Program Files/Unity/Hub/Editor/6000.0.81f1/Editor/Data/Resources/PackageManager/ProjectTemplates/com.unity.template.3d-cross-platform-17.0.12.tgz\" -C tpl)",
+      "Bash(Get-ChildItem -Directory -Name)",
+      "Bash(Sort-Object)"
+    ]
+  },
+  "skillOverrides": {
+    "rerank-top5": "off"
+  }
+}

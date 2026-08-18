@@ -1,0 +1,114 @@
+{
+  "fetchedAt": "2026-08-17T14:43:01.855225",
+  "fetchedAtLocal": "14:43",
+  "tasks": [
+    {
+      "title": "Secure primary email \u2014 new password + 2FA, remove parent recovery email/phone",
+      "area": "Admin",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-17",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe8581529a9cd9943dac1305"
+    },
+    {
+      "title": "Freeze credit at Equifax, Experian, and TransUnion",
+      "area": "Admin",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-17",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe8581f38fb1df4c44f8d3d4"
+    },
+    {
+      "title": "CHEM 3A \u2014 Appendix A (PhET Simulations), 9 pages \u2014 Appendix B done",
+      "area": "School",
+      "status": "In Progress",
+      "priority": "Medium",
+      "due": "2026-08-17",
+      "overdue": false,
+      "url": "https://app.notion.com/3bd7cd99fe8581fc9699db09bbc6cdb4"
+    },
+    {
+      "title": "Documents go-bag \u2014 ID, Social Security card, birth certificate, debit card",
+      "area": "Personal",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-18",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe8581d9814ac11695699d26"
+    },
+    {
+      "title": "Interview \u2014 Experienced Caregiver, Visiting Angels (video, 15 min)",
+      "area": "Personal",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-18",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe8581ba9fc7f651577b5808"
+    },
+    {
+      "title": "MCD Biology frosh course \u2014 optional Fall 2026 planning items",
+      "area": "School",
+      "status": "In Progress",
+      "priority": "Low",
+      "due": "2026-08-18",
+      "overdue": false,
+      "url": "https://app.notion.com/3aa7cd99fe8581239d3afe882e80e559"
+    },
+    {
+      "title": "Reset MyUCSC + financial aid passwords, remove parent recovery email",
+      "area": "School",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-19",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe858140a2ffd519631c4ab6"
+    },
+    {
+      "title": "Open new checking account at a different bank, sole name",
+      "area": "Admin",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-19",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe8581fdbe86de8b55de2d33"
+    },
+    {
+      "title": "Ask UCSC Financial Aid what a dependency override requires",
+      "area": "School",
+      "status": "To Do",
+      "priority": "High",
+      "due": "2026-08-19",
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe858110a2c5f2923533d499"
+    },
+    {
+      "title": "Sign & mail California State Application (LIC 441-9) to RLC",
+      "area": "Admin",
+      "status": "To Do",
+      "priority": "Medium",
+      "due": "2026-08-19",
+      "overdue": false,
+      "url": "https://app.notion.com/3b97cd99fe85813da4a3d4f63f3a8fd8"
+    },
+    {
+      "title": "CHEM 3A \u2014 Catch-up plan for overdue checkpoints (post-cruise)",
+      "area": "School",
+      "status": "To Do",
+      "priority": "Medium",
+      "due": "2026-08-20",
+      "overdue": false,
+      "url": "https://app.notion.com/3bc7cd99fe85814bb4e0e3f89110f02d"
+    },
+    {
+      "title": "Reach Slug Support IN PERSON \u2014 request a case manager",
+      "area": "Personal",
+      "status": "To Do",
+      "priority": "High",
+      "due": null,
+      "overdue": false,
+      "url": "https://app.notion.com/3bf7cd99fe8581d28e0df8bf667cc077"
+    }
+  ]
+}

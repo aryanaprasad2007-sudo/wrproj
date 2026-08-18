@@ -1,0 +1,32 @@
+# Heavy, regenerable, or captured data -- 5.6GB of the project.
+# git init without this would try to hash 4.4GB of .MOV footage.
+sessions/
+generated/
+backups/
+beat-saber-backup-*/
+nightowl_backup_*/
+web/moments/
+
+# Model weights
+*.pt
+*.safetensors
+*.gguf
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Runtime output
+logs/*.jsonl
+*.bak-*
+
+# Nested git repos (own history, not submodules) -- git add -A chokes on these
+enchanted-night-garden-xr/EnchantedNightGarden/
+enchanted-night-garden-xr/EnchantedNigtGarden/
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store

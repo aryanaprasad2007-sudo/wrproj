@@ -1,0 +1,168 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iAPE — Combined Cockpit</title>
+<style>
+:root{--bg:#0b0e14;--panel:#141922;--panel2:#1b2230;--ink:#e6edf3;--dim:#8b98a9;
+--line:#232c3b;--amber:#f0a848;--teal:#3fd0c9;--green:#4ec97a;--red:#e5646e;--blue:#6ea8fe;}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#12203a 0,transparent 60%),var(--bg);
+color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:26px}
+h1{font-size:20px;margin:0;letter-spacing:.3px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:18px}
+.sub{color:var(--dim);font-size:12.5px;margin-top:4px}
+.kpis{display:flex;gap:22px;flex-wrap:wrap}
+.kpi .v{font-size:19px;font-weight:600} .kpi .l{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+.thesis{background:linear-gradient(90deg,rgba(78,201,122,.10),rgba(240,168,72,.06));
+border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px;
+padding:13px 16px;margin:0 0 18px;font-size:13px}
+.thesis b{color:var(--green)}
+.banner{background:rgba(229,100,110,.12);border:1px solid rgba(229,100,110,.4);
+border-radius:8px;padding:9px 13px;margin-bottom:14px;font-size:12.5px;color:#ffd7da}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+border-radius:14px;padding:16px 16px 14px;border-top:3px solid var(--line)}
+.card.mom5m{border-top-color:var(--amber)} .card.momD{border-top-color:var(--teal)}
+.card.mr{border-top-color:var(--green)}
+.chead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.cname{font-size:16px;font-weight:650} .csub{color:var(--dim);font-size:11.5px;margin-top:2px}
+.ctags{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.pill{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill.real{background:rgba(110,168,254,.16);color:var(--blue)}
+.pill.shadow{background:rgba(139,152,169,.16);color:var(--dim)}
+.st-audit{background:rgba(240,168,72,.16);color:var(--amber)}
+.st-ok{background:rgba(78,201,122,.16);color:var(--green)}
+.st-soft{background:rgba(110,168,254,.16);color:var(--blue)}
+.st-fail{background:rgba(229,100,110,.18);color:var(--red)}
+.edge{margin:12px 0 12px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10.5px;padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--ink)}
+.tag.ghost{background:transparent;border:1px dashed var(--line);color:var(--dim)}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.metric{background:var(--panel);padding:10px 12px}
+.metric:first-child{grid-column:1/3;background:rgba(255,255,255,.02)}
+.metric:first-child .mval{font-size:30px}
+.mlbl{color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px}
+.mval{font-size:18px;font-weight:650;margin-top:2px}
+.mbench{color:var(--dim);font-size:10.5px;margin-top:1px}
+.open{color:var(--dim);font-size:11.5px;margin:11px 0 8px}
+.cnote{font-size:12px;color:#c6d2e0;border-top:1px solid var(--line);padding-top:9px}
+.cbook{font-size:10.5px;color:var(--dim);margin-top:6px;font-style:italic}
+.foot{margin-top:20px;color:var(--dim);font-size:11.5px;border-top:1px solid var(--line);padding-top:12px}
+.foot code{background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--ink)}
+.refbanner{background:linear-gradient(90deg,rgba(110,168,254,.13),rgba(63,208,201,.05));
+border:1px solid rgba(110,168,254,.4);border-left:3px solid var(--blue);border-radius:10px;
+padding:12px 16px;margin:0 0 18px;font-size:13px}
+.refbanner b{color:var(--blue)}
+.section-h{font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);
+margin:8px 0 10px;font-weight:600}
+.board-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.board{width:100%;border-collapse:collapse;background:var(--panel);font-size:13px;min-width:640px}
+.board th{text-align:left;color:var(--dim);font-size:10px;text-transform:uppercase;
+letter-spacing:.5px;padding:9px 12px;border-bottom:1px solid var(--line);
+background:rgba(255,255,255,.02);white-space:nowrap}
+.board td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.board tr:last-child td{border-bottom:none}
+.board td.sym{font-weight:700;font-size:14px}
+.board td.dim{color:var(--dim)}
+.board td.num{text-align:right;font-variant-numeric:tabular-nums}
+.board td.stop{color:var(--red)} .board td.tgt{color:var(--green)}
+.kp{font-size:9.5px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.kp.open{background:rgba(78,201,122,.16);color:var(--green)}
+.kp.queued{background:rgba(240,168,72,.16);color:var(--amber)}
+.board-empty{background:var(--panel);border:1px dashed var(--line);border-radius:12px;
+padding:18px;color:var(--dim);font-size:13px}
+</style></head><body>
+
+<div class="top">
+  <div><h1>iAPE — Combined Cockpit</h1>
+       <div class="sub">Reference dashboard · places no orders · updated 2026-08-12 23:45</div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="v">$2,000</div><div class="l">Paper account (2 momentum tracks)</div></div>
+    <div class="kpi"><div class="v">$102,549</div><div class="l">MR shadow book</div></div>
+    <div class="kpi"><div class="v">5</div><div class="l">Closed trades (all tracks)</div></div>
+  </div>
+</div>
+
+
+
+<div class="refbanner">
+  <b>Reference only — this dashboard does not trade.</b> It reads the validated
+  system's live book and shows you the exact levels it is working. Nothing here
+  sends an order; you decide what to place, and you place it yourself in your own
+  broker. The levels below are what the tracked strategies are acting on right now.
+</div>
+
+<div class="section-h">What the system says right now</div>
+<div class='board-wrap'><table class='board'><thead><tr><th></th><th>Symbol</th><th>Track</th><th>Timing</th><th>Entry</th><th>Stop</th><th>Target</th><th>Risk</th><th>R:R</th><th>Bot qty*</th></tr></thead><tbody><tr><td><span class="kp open">HOLDING</span></td><td class='sym'>AAPL</td><td class='dim'>5m Momentum</td><td class='dim'>holding</td><td class='num'>$335.72</td><td class='num stop'>$335.72 · BE</td><td class='num tgt'>$347.99</td><td class='num'>0.0%</td><td class='num'>nanR</td><td class='num dim'>1</td></tr><tr><td><span class="kp open">HOLDING</span></td><td class='sym'>CVX</td><td class='dim'>Daily Momentum</td><td class='dim'>holding</td><td class='num'>$192.54</td><td class='num stop'>$184.56</td><td class='num tgt'>$216.49</td><td class='num'>4.1%</td><td class='num'>3.0R</td><td class='num dim'>3</td></tr><tr><td><span class="kp open">HOLDING</span></td><td class='sym'>JPM</td><td class='dim'>Daily Momentum</td><td class='dim'>holding</td><td class='num'>$347.02</td><td class='num stop'>$323.26</td><td class='num tgt'>$418.32</td><td class='num'>6.8%</td><td class='num'>3.0R</td><td class='num dim'>1</td></tr></tbody></table></div>
+<div class="sub" style="margin:8px 0 4px">
+  Entry / stop / target are the system's levels. <b>Risk</b> is the stop distance
+  as a % of entry — size each trade to your own account off that, not the bot's
+  share count. <span style="color:var(--dim)">* Bot qty is the paper-account size;
+  shown for reference only.</span>
+</div>
+
+<div class="thesis">
+  <b>Where your win rate comes from:</b> 5m 0.0% · Daily 43.1%* · Mean-Reversion 50.0%. The high win rate lives in
+  <b>mean-reversion</b>, by construction — not in the momentum tracks, whose edge
+  is their fat-tail winners. Raising win rate on momentum (comfort exits) was
+  measured at <b>−$5,000</b>. This cockpit grows your green by <b>running the
+  high-win-rate edge alongside</b> the momentum core — the validated 50/50 stack
+  (SP-D + MR) had the best MAR of anything tested (0.30 vs 0.18 / 0.27 solo).
+  Portfolio unlocks when MR-1 clears its audition (≥30 shadow trades).
+  <span style="color:var(--dim)">* benchmark shown until live trades accrue.</span>
+</div>
+
+<div class="grid">
+
+    <div class="card mom5m">
+      <div class="chead">
+        <div><div class="cname">5m Momentum</div>
+             <div class="csub">v2.2 · intraday · stop + 3R</div></div>
+        <div class="ctags"><span class="pill real">REAL ORDERS</span><span class="pill st-audit">AUDITING · 1/30</span></div>
+      </div>
+      <div class="edge"><span class="tag">Fat-tail momentum</span>
+           <span class="tag ghost">Big winners, low hit-rate</span></div>
+      <div class="metrics"><div class="metric"><div class="mlbl">WIN RATE</div><div class="mval">0.0%</div><div class="mbench">bench 48.0%</div></div><div class="metric"><div class="mlbl">Profit factor</div><div class="mval">0.00</div><div class="mbench">bench 1.30</div></div><div class="metric"><div class="mlbl">Expectancy</div><div class="mval">$-6</div><div class="mbench">bench positive</div></div><div class="metric"><div class="mlbl">Trades</div><div class="mval">1</div><div class="mbench">bench ≥30</div></div><div class="metric"><div class="mlbl">Net P/L</div><div class="mval">$-6</div><div class="mbench">bench —</div></div></div>
+      <div class="open">open now: NVDA, AAPL</div>
+      <div class="cnote">Wins less than half the time on purpose — 3R targets let winners run 3x the losers.</div>
+      <div class="cbook">shared paper account</div>
+    </div>
+
+    <div class="card momD">
+      <div class="chead">
+        <div><div class="cname">Daily Momentum</div>
+             <div class="csub">iAPE-D · daily · stop + 3R</div></div>
+        <div class="ctags"><span class="pill real">REAL ORDERS</span><span class="pill st-audit">AUDITING · 0/30</span></div>
+      </div>
+      <div class="edge"><span class="tag">Fat-tail momentum</span>
+           <span class="tag ghost">30y / 22-symbol flagship</span></div>
+      <div class="metrics"><div class="metric"><div class="mlbl">WIN RATE</div><div class="mval">—</div><div class="mbench">bench 43.1%</div></div><div class="metric"><div class="mlbl">Profit factor</div><div class="mval">—</div><div class="mbench">bench 1.72</div></div><div class="metric"><div class="mlbl">Expectancy</div><div class="mval">—</div><div class="mbench">bench positive</div></div><div class="metric"><div class="mlbl">Trades</div><div class="mval">0</div><div class="mbench">bench ≥30</div></div><div class="metric"><div class="mlbl">Net P/L</div><div class="mval">$0</div><div class="mbench">bench —</div></div></div>
+      <div class="open">open now: UNH, JPM, CVX</div>
+      <div class="cnote">Slow by design (~0.4/wk) — the ≥30-trade verdict is months out. Queued 5 · filled 3 · expired 1.</div>
+      <div class="cbook">shared paper account</div>
+    </div>
+
+    <div class="card mr">
+      <div class="chead">
+        <div><div class="cname">Mean-Reversion</div>
+             <div class="csub">MR-1 · daily · RSI(3) dip-buy</div></div>
+        <div class="ctags"><span class="pill shadow">SHADOW</span><span class="pill st-audit">AUDITING · 4/30</span></div>
+      </div>
+      <div class="edge"><span class="tag">Mean reversion</span>
+           <span class="tag ghost">YOUR HIGH-WIN-RATE ENGINE</span></div>
+      <div class="metrics"><div class="metric"><div class="mlbl">WIN RATE</div><div class="mval">50.0%</div><div class="mbench">bench 64.0%</div></div><div class="metric"><div class="mlbl">Profit factor</div><div class="mval">0.21</div><div class="mbench">bench 1.21</div></div><div class="metric"><div class="mlbl">Expectancy</div><div class="mval">$-238</div><div class="mbench">bench positive</div></div><div class="metric"><div class="mlbl">Trades</div><div class="mval">4</div><div class="mbench">bench ≥30</div></div><div class="metric"><div class="mlbl">Net P/L</div><div class="mval">$-951</div><div class="mbench">bench —</div></div></div>
+      <div class="open">no open positions</div>
+      <div class="cnote">Wins ~64-66% by construction — sells into strength fast. Small winners, but its green is smooth and uncorrelated with the momentum core.</div>
+      <div class="cbook">shadow — no real orders yet</div>
+    </div>
+</div>
+
+<div class="foot">
+  Feed health: 0 TICK_ERROR today (SSL/reset at wake — benign unless bursting) · 1 DAILY_SCAN_ERROR (last: SPY 2026-07-05 — watch today&#x27;s 13:05 scan)<br>
+  This dashboard is <b>read-only</b>: it reads <code>forward_state.json</code> and
+  the event log and places no orders. Metric math reused from
+  <code>forward_review.py</code> (the Friday referee) so this view can't disagree
+  with the official verdict. MR-1 is SHADOW — no real orders — until it graduates.
+  Regenerate anytime: <code>py cockpit.py</code>. Not financial advice.
+</div>
+</body></html>
