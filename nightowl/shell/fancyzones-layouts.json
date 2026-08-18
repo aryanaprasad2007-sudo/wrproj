@@ -1,0 +1,35 @@
+{
+  "custom-layouts": [
+    {
+      "uuid": "{8e9a1c40-5b2d-4f71-9e33-a1b2c3d4e5f6}",
+      "name": "NightOwl Desk",
+      "type": "canvas",
+      "info": {
+        "ref-width": 2560,
+        "ref-height": 1400,
+        "zones": [
+          { "X": 0,    "Y": 0,   "width": 640,  "height": 1400 },
+          { "X": 640,  "Y": 0,   "width": 1120, "height": 1400 },
+          { "X": 1760, "Y": 0,   "width": 800,  "height": 700  },
+          { "X": 1760, "Y": 700, "width": 800,  "height": 700  }
+        ],
+        "sensitivity-radius": 20
+      }
+    },
+    {
+      "uuid": "{7d4b2e10-3c9a-4a55-8b21-f6e5d4c3b2a1}",
+      "name": "NightOwl Focus",
+      "type": "canvas",
+      "info": {
+        "ref-width": 2560,
+        "ref-height": 1400,
+        "zones": [
+          { "X": 0,    "Y": 0, "width": 512,  "height": 1400 },
+          { "X": 512,  "Y": 0, "width": 1536, "height": 1400 },
+          { "X": 2048, "Y": 0, "width": 512,  "height": 1400 }
+        ],
+        "sensitivity-radius": 20
+      }
+    }
+  ]
+}

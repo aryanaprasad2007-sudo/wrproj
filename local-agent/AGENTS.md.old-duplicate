@@ -1,0 +1,407 @@
+# wrproj lifestyle tracker
+
+Project: `C:\Users\aware\OneDrive\Desktop\wrproj` (not a git repo)
+
+## Critical environment gotchas
+
+- **Never use bare `python`.** It resolves to a 3.14 install with none of the
+  packages; it starts fine then dies with `ModuleNotFoundError: No module named
+  'cv2'`, which looks like a missing package but is the wrong interpreter.
+  Use **`py -3.12`** (= `%LOCALAPPDATA%\Programs\Python\Python312\python.exe`,
+  has cv2 4.13.0 / ultralytics / psutil / numpy).
+- `.ps1` files are blocked — CurrentUser execution policy is Undefined, so it
+  falls back to Restricted. Either run `py -3.12 src/....py` directly, or the
+  user sets `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` (his call).
+- `run.ps1` is a launcher that finds a working interpreter by *importing cv2*,
+  not by checking PATH. `.\run.ps1 doctor | log | today | validate | analyze`.
+- torch here is the **CPU-only** build. No GPU inference. (Ollama *does* use
+  the 4060 — that is a separate runtime, not torch.)
+- **The console is cp1252**, and `profile.json` is deliberately full of emoji.
+  Printing a block name dies with `UnicodeEncodeError` in the *reporting* path,
+  which is a miserable way to lose a working run. Every script with a `__main__`
+  that prints profile text calls `sys.stdout.reconfigure(encoding="utf-8",
+  errors="replace")` first.
+
+## What this is
+
+A whole-life activity tracker, NOT the original productivity punisher. It
+writes a timeline of what he was doing all day. Three inputs, none sufficient
+alone:
+
+- **camera** → WHERE he is + HOW he's sitting (desk / bed / gone; posture)
+- **screen** → WHAT is in front of him (VS Code, Canvas, Steam, Crunchyroll)
+- **clock** → WHETHER THAT'S FINE (bed + anime at 23:30 is `recovery`; the
+  identical camera frame and window title at 14:00 is `watching_in_bed`)
+
+Both sensors report **facts, not judgments** — e.g. the screen sensor keeps
+`category` and `idle` separate, because "no input for 5 min" means opposite
+things for a playing video vs an open editor, and only the camera can tell
+those apart. Ground truth for "on plan" is **The Docket's plan**.
+
+## Built and tested
+
+Every file above has a module-level docstring stating its own role — `ls src/`
+plus a quick read gets you the same map this table used to give.
+
+Logs are one JSONL line per **run** (contiguous stretch in a mode), not per
+sample, in `logs/modes-YYYY-MM-DD.jsonl`. Debounce (`min_run_seconds: 90`)
+stops an 8-second Discord glance from splitting a work block; committed runs
+are **backdated to when the mode actually began**, not when it was confirmed
+(tested — runs must be contiguous with no gap).
+
+## Measured facts — do not re-derive
+
+### Detectors
+
+- Pose is **both faster and better** than Haar: ~32ms vs ~75ms per frame at
+  720p. Haar on 4K was 523ms with *lower* confidence, hence the downscale to
+  `MAX_WIDTH = 1280` in `analyze_session.py`.
+- Person/bed **box overlap was 0.25 while sitting at the desk** — no threshold
+  can separate bed from desk that way. Torso angle (shoulder→hip vector)
+  replaced it. `UPRIGHT_MAX=35°`, `RECLINED_MAX=65°`.
+- A frontal Haar cascade matched a **photo collage on the wall**, scoring an
+  empty room as productive. Faces are searched with the *profile* cascade and
+  only *inside* YOLO's person box.
+- Burst voting thresholds are deliberately asymmetric: presence takes a plain
+  majority (YOLO is stable both ways), head_up needs only 1-in-3 (the cascade
+  has high precision, poor recall — a hit is strong evidence, a miss is weak).
+- Window-title matching: browser needles match the **page title, not the URL**.
+  `notion.so` never appears in a window title; `Command Center - Notion` does.
+
+### Scored against ground truth (2026-08-12)
+
+IMG_9874 (24:21), labelled blind by Codex from contact sheets, 287 scorable
+bursts — `sessions/IMG_9874_analysis/labels.json` + `score.json`:
+
+| detector | correct | remaining errors |
+|---|---|---|
+| haar | **66%** | 88 at_desk→`present_unclear`, 9 at_desk→`absent` |
+| pose | **91%** | 24 at_desk→`reclined`, 1 at_desk→`lying_down` |
+
+**That session contains exactly one true class.** It proves the detector does
+not hallucinate absence during desk work; it validates *nothing* about bed,
+absence, or phone. Do not quote 91% as general accuracy.
+
+### Three bugs, one pattern
+
+All three are **a sensor failure wearing a state's name** — the exact thing the
+facts-not-judgments rule exists to prevent. Expect more of these; the tell is a
+`Counter((output, upstream_flag))` that collapses to a diagonal.
+
+0. **`posture` never reached `place()` in production.** FIXED 2026-08-12.
+   Posture was voted in `analyze_session.reduce_burst()` and nowhere else,
+   while `CameraState.reduce()` — the only reducer the *live* path used —
+   never returned a `posture` key at all. `pose_detector.place()` reads
+   `state.get("posture")`, so it was permanently `"unknown"`: **`reclined` and
+   `lying_down` were unreachable in `mode_log.py` and the dashboard**, and the
+   whole bed-at-night branch of `resolve_mode()` was dead at runtime while
+   looking alive in the code *and* in the scored replays. Two reducers meant
+   the thing being scored was not the thing being run. The logic now lives in
+   `CameraState.reduce` and `reduce_burst` is a thin alias; verified
+   behaviour-identical on 4000/4000 randomised bursts.
+
+1. **`present_unclear` ⟺ `head_up == False`, exactly.** 1:1 across all 293
+   bursts, zero exceptions — it carries no independent information, it is a
+   rename of "the profile cascade missed." 93/293 = 32% of that session, and
+   pose calls 74 of those 93 (80%) `at_desk`. Fixed by using pose.
+
+2. **A dead Iriun feed logs as `away`.** FIXED 2026-08-12. When the phone drops
+   off WiFi, Iriun does *not* fail the read — it streams a placeholder card (a
+   cartoon cat on black, "Looking for the phone"). So `grab()` returns a valid
+   frame, `frame is None` never fires, **`reconnect()` never runs**, YOLO
+   truthfully reports no person → `place()`=`absent` → `resolve_mode()`=`away`.
+   An hour of dropout reads as an hour of him being out, and nothing in the log
+   distinguishes it. Now detected in `capture.py` (`Camera.stalled`) and
+   surfaced as its own `camera_lost` state that **must never collapse into
+   `absent`** — `absent` is a claim about *him*, `camera_lost` about *the rig*.
+   The screen sensor still gets a say, since typing proves a human regardless
+   of the camera.
+   - A real sensor cannot **emit** two byte-identical frames. Consecutive
+     *exposures* of a motionless scene differ by ~0.5 mean absolute value
+     (shot/thermal noise, measured on this rig).
+   - **That is NOT the same as two identical READS, and the original
+     "needs no threshold" claim here was wrong.** `grab()` compares reads, and
+     the tracker loop polls every ~30ms to keep the MJPEG stream fed. Measured
+     2026-08-17 at the 4K the capture now requests: Iriun delivers **4.6 fps**,
+     so **68% of reads are byte-identical**, longest run 7, and `STALL_FRAMES=3`
+     tripped **1.7 seconds** into a working session. Ari saw `camera_lost`
+     stamped over a live feed of himself. Raising the resolution to 4K — a
+     documented improvement elsewhere in this file — is what broke it, by
+     cutting delivered fps far below the poll rate.
+   - Fixed by adding `STALL_SECONDS = 3.0`: the streak must hold **and** the
+     image must have been unchanged that long. Wall-clock is the
+     poll-rate-independent form of the same question, so it survives future
+     resolution/fps/burst changes. `Camera.clock` is injectable purely so
+     `test_stall.py` can move time; test `[1b]` reproduces the false positive
+     at the measured numbers and asserts it stays quiet.
+   - Burst voting makes it *worse*, not better — 5 votes on 5 copies of one
+     frame return the single-frame answer at 5× apparent confidence.
+
+3. **`posture_from_angle()` discarded lean direction.** FIXED 2026-08-12, but
+   not the way it first looked. `torso_angle()` has a whole docstring on why
+   the sign must be preserved; `posture_from_angle()` threw it away one
+   function later with `dev = abs(angle - upright)`, so leaning *forward* over
+   the keyboard and leaning *back* produced the same number. All 25 pose errors
+   deviated in the **same direction**: median −6.1° against the −47.0°
+   baseline = +40.9°, consistently positive, never negative.
+   - Ruled out first: it is *not* the `_mid()` single-keypoint fallback. All 25
+     misclassified frames had **both** hips visible at `KP_CONF`. Don't re-test.
+   - The real fix was to delete the middle class rather than sharpen it — see
+     "Posture is self-calibrating" below. `reclined` was what demanded a
+     precise baseline *and* what routed a desk-chair lean to
+     `watching_in_bed`. With two classes ~90° apart the sign stops mattering.
+
+### Posture is self-calibrating — do not add a calibration step back
+
+`src/torso_baseline.py`. **There is no `UPRIGHT_TORSO_ANGLE` to set any more**,
+and `--calibrate` is superseded for the live path.
+
+Ari's own argument, and it is correct: the camera is a phone he picks up for
+unrelated reasons several times a day, so an absolute baseline is stale within
+hours and there is no moment at which it is reliably right. Worse, it fails
+*silently* — every posture reading is simply wrong and nothing says so.
+
+So the system stores a habit instead of an angle: he is upright the
+overwhelming majority of the time he is in frame (IMG_9874: 100% at_desk over
+24 minutes), therefore **the running median of observed torso angles IS his
+upright posture**. Move the camera and the median follows within about an hour
+of use. Verified in simulation: baseline relearned −35.6 → 11.9 after a +50°
+shift with no intervention.
+
+- **Median, not mean** — a genuine lying-down stretch must not drag the
+  baseline; the median of a mostly-upright window ignores the tail.
+- **Every angle is fed in, including ones judged `lying`.** Filtering to
+  "frames that already look upright" would make the baseline confirm whatever
+  it currently believes — the circularity that lets a wrong baseline persist.
+- **Two classes, 55° gate.** `reclined` is deleted. It was the class that
+  demanded precision (a narrow band in the middle) *and* the one that logged a
+  desk-chair lean as `watching_in_bed`. Upright vs horizontal is ~90° apart,
+  so 55° cannot be confused by drift. `UPRIGHT_MAX`/`RECLINED_MAX` still exist
+  as aliases of `LYING_MIN` so old references don't break.
+- Under 12 samples it reports `unknown`, never a shaky guess.
+- Read it with `py -3.12 src/torso_baseline.py` or `GET /api/baseline`.
+
+### The rig itself
+
+- **Resolution has to be ASKED FOR, and for weeks nothing did.** `cv2.Video
+  Capture` takes the driver default (640×480 here) no matter what the device
+  supports; `capture.py` never called `CAP_PROP_FRAME_WIDTH/HEIGHT`. The rig
+  was always capable of 4K at 30fps on both MSMF and DSHOW. Now requested via
+  `DEFAULT_WIDTH/HEIGHT`. (Supersedes an earlier note in this file claiming the
+  live feed "is 640×480" — it was, but only by omission.)
+- **Iriun pads every 16:9 mode**: the real image is exactly 75% of the
+  requested width *and* height, centred, black on all four sides — so 43% of a
+  4K frame is nothing. 4:3 modes are not padded. Measured across the ladder:
+
+  | asked | got | real content | used |
+  |---|---|---|---|
+  | 3840×2160 | 3840×2160 | 2880×1624 | 56.4% |
+  | 2560×1440 | 2560×1440 | 1920×1082 | 56.4% |
+  | 1920×1080 | 1920×1080 | 1440×812 | 56.4% |
+  | 1600×900 | 1280×960 | 1280×722 | 75.2% |
+  | 640×480 | 640×480 | 640×360 | 75.0% |
+
+  4K still carries the most real detail, so `capture.py` keeps 4K and
+  **auto-crops** the border (`AUTOCROP`), giving a clean 2880×1624. That turns
+  the 1280px detection input from 960px of content into a full 1280 — a free
+  1.33×. The box is detected from the per-pixel *max* across several frames,
+  never one: a dark corner of the room reads as padding in a single exposure,
+  but real pixels carry sensor noise and padding is identically black. It
+  refuses to crop unless the result is a clean border ≥35% of the frame,
+  because cropping away part of the room is worse than leaving it black.
+- **Pose at 4K costs only 3.5 ms more than at 1280** (24.2 vs 20.7), because
+  YOLO resizes to 640×640 internally and both paths converge before inference.
+  The 523 ms 4K figure elsewhere in this file is **Haar**, which ran on the
+  full-resolution person crop. `MAX_WIDTH` was never about YOLO.
+- Detection is pinned to 1280 anyway (`camera_state.DETECT_WIDTH`), matching
+  `analyze_session.py`'s `MAX_WIDTH`, so the 91% score describes what is
+  actually running. This is about comparability, not speed — and it lives in
+  `CameraState.raw_burst` so every consumer inherits it rather than each
+  caller remembering.
+- Streaming is where 4K genuinely hurts: **462 KB/frame at q78 vs 97 KB at
+  1280** (5.5 MB/s vs 1.2 at 12fps), plus a 4× heavier decode in the browser.
+- **Changing resolution changes the FRAMING, not just the pixel count** —
+  640×480 is 4:3 and 4K is 16:9, a different sensor crop. This used to
+  invalidate `UPRIGHT_TORSO_ANGLE`; the self-calibrating baseline now absorbs
+  it automatically, which is most of why that design was worth it.
+- `src/test_stall.py`'s `camera_with()` builds a `Camera` via `__new__`, so
+  every new attribute `grab()` touches must be added there too. It is meant to
+  break — it caught `crop`.
+- **The camera angle changes drastically between sessions.** IMG_9874 is a high
+  overhead shot looking down at the desk (~45° tilt); the live 2026-08-12 rig
+  was a low wide room shot. `UPRIGHT_TORSO_ANGLE` is per-mount and must be
+  recalibrated whenever the phone is remounted — `analyze_session.py --calibrate`.
+- The **bed sits directly behind him in frame**, which is the geometric reason
+  the person/bed box overlap could never have worked.
+- IMG_9874 is badly **overexposed** (large window behind the desk) — the
+  opposite of the unsolved purple-night problem.
+
+### Codex-as-detector economics
+
+- A frame read in chat costs ~1.1k tokens at 960px. At the production 15s
+  interval that is ~260k tokens/hour of pure image before any reasoning, so
+  **frame-at-a-time judging is permanently off the table**, not just expensive.
+  `src/claude_judge.py` (one frame → one word, over the API) is the old shape.
+- What *is* cheap is breadth: a contact sheet puts 30–49 timestamps in one read
+  for roughly the price of one frame. So Codex never runs the timeline — it
+  **labels** it, and the labels become permanent ground truth.
+- Sheet density measured: 8×8 at 200×150 is readable for presence/place but
+  marginal for posture. `claude_eyes.py` defaults to 6×5 at 320×240.
+- **Ground-truth sheets must be blind.** A tile pre-printed with `at_desk`
+  anchors the judgement, and truth contaminated by the thing it scores is
+  worthless. The colour bar has to go too — the detector's answer is readable
+  off a sheet without reading a word. `--audit` shows the guess, and is the
+  right mode for hunting *where* it's wrong.
+- Codex's label vocabulary deliberately excludes `present_unclear`. When the
+  image genuinely cannot settle it that is `unsure`, a different claim.
+
+## PSYCHOWL — the federation (2026-08-12)
+
+The tracker process IS the psychowl server. One process, one origin, because
+(a) the camera has exactly one owner, and (b) DATA-CONTRACT.md proves the
+browser-side alternative impossible — localStorage is per-origin, Google iCal
+has no CORS header. Federation, not a rewrite: every sibling project keeps
+working standalone; `src/psychowl_data.py` is the read layer (disk only,
+absence-tolerant). `src/dashboard.py`'s `do_GET` is the route reference now —
+every route is commented there (`/`, `/tracker`, `/focus`, `/grimoire/`,
+`/ics?cal=n`, `/brief`, `/solo`, `/api/psychowl`); the one thing worth
+restating here is that `/focus` serves FocusFlow **v1**
+(`FocusFlow-and-Art/focusflow.html`), NOT v2 — that was his explicit call, not
+an accident, and it's the one route decision the code comment alone wouldn't
+flag as deliberate.
+
+The old NightOwl static hub is **retired**: `no hub` now probes
+`/api/psychowl`, starts the server headless via pythonw if down (resolved from
+`py -3.12`'s own executable — the `pyw` PATH shim no-ops under Start-Process),
+and opens the URL. `no sync` still rebuilds the legacy `hub/index.html`;
+harmless, unused. Aria stays her own server — psychowl shows her line from
+`/api/state`, never absorbs her. Solo Leveling's EXP bridge still reads the
+retired `activity_log.csv` → repointing it at `logs/modes-*.jsonl` is OPEN.
+
+## The dashboard (`py -3.12 src/dashboard.py` → 127.0.0.1:8787)
+
+Left column is live MJPEG on top, a strip of moments underneath; right column
+is the deviation from Perfect Ari right now, plus Aria's line. All local.
+
+- **Python owns the camera, the browser does not.** A webcam has one owner, so
+  `getUserMedia` on the same device would fight the detector. The page gets
+  MJPEG from this process instead, which also guarantees the pane shows the
+  exact frame that was judged.
+- **Stored frames are a deliberate, narrow exception** to the project's
+  no-frames-stored promise: one thumbnail per *mode change*, capped at 40,
+  oldest deleted, `web/moments/`, wiped by `--reset`.
+- **`absent` is often the plan working.** Roughly half of Perfect Ari's day is
+  away from the desk (gym, dance, shower, lunch, meal prep), so `profile.json`
+  carries `away_ok` per block. Without it the panel would flag him hardest at
+  the moments he was most on plan.
+- Blocks tile the day half-open and wrap past midnight, so 01:00 Night ritual
+  covers 01:00–07:00 and sleeping never reads as drift.
+- Aria is rate-limited to one turn per 120s, so her line can lag the verdict.
+  The UI marks a stale line with the status she was actually reacting to —
+  unmarked, "back on track!" under a DRIFTING banner reads as her being wrong.
+
+### Which model is allowed to claim what
+
+| | sees | may assert |
+|---|---|---|
+| pose detector | frames | place + posture (91% scored) |
+| window sensor | foreground window | app, category, idle |
+| Aria (qwen2.5:7b) | **a facts table, never an image** | one line about the gap |
+| moondream | the frame | tile caption only, marked unverified, **OFF** |
+
+Aria runs through her own server (`aria-assistant/run_server.py`, port 8000) on
+session id `lifestyle-tracker` so tracker pings never pollute the conversation
+he actually has with her. `server.py`'s own design note is "one brain, many
+thin clients" — this is another thin client, not a second personality. Her
+`modes` (study/gym/dance/gamer) already answer "how hard should this push":
+study mode says the bit gets one line at most because every joke costs him
+re-entry. Do NOT auto-switch her mode — `assistant/modes.py` is explicit that
+an inferred mode is worse than none. Her reply returns the emotion in a `tag`
+field; the engine has already stripped it from the text.
+
+If her server is down the page degrades to facts-only. It must never
+substitute a generic message — a line attributed to her that she did not say
+is worse than no line.
+
+### moondream: measured, and switched off
+
+`VISION_CAPTIONS = False` in `dashboard.py` is a result, not an unfinished
+feature. On 2026-08-12, given a live frame where he was **standing across the
+room with an empty chair**, moondream answered:
+
+> "a person sitting in an office chair... working on their computer...
+> requires focus and concentration."
+
+It inverted the single most important fact and then invented a mental state.
+Other findings from the same session: yes/no questions return empty strings
+entirely; open captions are object lists that never mention the person
+("urns on a wooden table, black mouse and keyboard..."); and it appends
+unfalsifiable mood claims ("likely taking a break or relaxing") unprompted.
+`num_predict: 40` was also truncating those object lists into nonsense.
+It does genuinely see images — it described a solid red square correctly — the
+failure is action recognition, not plumbing. The pose detector scores 91% on
+exactly this question. Re-test with llava:7b before turning captions on.
+
+Turning a new recording into a scored regression test is now the
+`label-footage` skill (`.claude/skills/label-footage/`), not inline here —
+it's a task-specific procedure, not something every session needs loaded.
+
+## Open items
+
+1. **A ~90 min class recording is still needed** — desk work, breaks, walking
+   around, and lying in bed replicating anime-watching. Sharper reason now:
+   IMG_9874 is 100% `at_desk`, so it can score exactly one class. Nothing
+   validates `lying_down` / `absent` / `on_phone` yet.
+2. **Purple night lighting is an unsolved problem.** His room lights are mainly
+   purple at night. `cv2.BGR2GRAY` is BT.601 (`0.299R + 0.587G + 0.114B`) —
+   green carries 59% of luminance and purple LEDs starve it, so the Haar
+   cascade's input loses most of its contrast while the frame still looks
+   bright. Pose (CNN, takes BGR) should degrade far more gracefully. Worst
+   part: the only mode that occurs under purple light is `recovery`. Needs
+   **night footage**, then compare alternative grayscale conversions (HSV V
+   channel, LAB L, red-channel-only, + CLAHE). `src/lighting.py` NOT built yet.
+3. **Phone detection is off** (`trust_phone_detection: false`) because his
+   phone IS the camera (Iriun) — phone-in-hand is undetectable by construction,
+   so any firing is necessarily a false positive. **Still to do:** `PoseDetector`
+   defaults to `phone_model="yolov8n.pt"` and runs a *second* full YOLO per
+   frame for it. Pass `phone_model=None` to halve pose inference cost.
+4. **`should_intervene()` in `src/mode_log.py` is a deliberate stub** — left for
+   him to write, because it's a values decision. Open questions he was given:
+   how long is too long, which modes qualify (`work_paused` is risky — that may
+   be thinking), night exemption, and a repeat-rate guard so the card doesn't
+   fire every 15s. House rule for the card: **every claim in `-Message` must
+   come from recorded data**; one invented observation and it reads as a gimmick
+   forever.
+5. **Recurring footage loop.** PARTLY DONE — `claude_eyes.py` closes the label
+   half: IMG_9874 now has `labels.json` + `score.json` and is a live regression
+   test. Remaining: run it on each new video as it arrives, and keep the `.MOV`
+   in `sessions/` (IMG_9874 was originally left in `Downloads/`, so the sheets
+   could not be rebuilt from it).
+6. **`arbitrate()` in `src/claude_eyes.py` is a stub** — decides whether
+   Codex's label (better, but stale by minutes) or the local detector's
+   (worse, but current) goes in today's log. Local wins until he chooses. Three
+   sketched policies are in the docstring; `tie-break` alone would fix most of
+   the `present_unclear` damage.
+7. ~~Sign fix for `posture_from_angle()`~~ DONE — resolved by deleting the
+   `reclined` class and self-calibrating the baseline, not by fixing the sign.
+   Do not reintroduce a middle posture class or a manual calibration step.
+8. ~~`plan_for_now()` returns `None`~~ DONE — `src/profile_plan.py` answers it
+   from `profile.json` (Perfect Ari's day). The Docket is still not wired; when
+   it is, it should override the profile rather than replace it. `None` must
+   still mean *unknown*, never *off-plan*.
+9. Health data integration — format never established.
+10. `src/main.py` (has a `NotImplementedError` stub) and `src/reinforcement.py`
+    (tkinter screen flash) are from the abandoned punisher design. Superseded by
+    `mode_log.py`, not yet removed. `src/claude_judge.py` joins them —
+    superseded by `claude_eyes.py`, and its productive/lazy vocabulary is from
+    the punisher era.
+
+## Working style
+
+Concise for work. He wants insight into *why* choices are made, not just code.
+Prefer measuring over guessing — the whole record-then-replay architecture
+exists so detector changes are scored on identical footage instead of vibes.
+
+## Imported Claude Cowork project instructions
+
+Scan for better ideas.

@@ -1,0 +1,29 @@
+{
+  "lastSweep": "2026-08-17",
+  "section": "general_chemistry_0tuo5",
+  "courses": [
+    "CHEM 3A - General Chemistry (proton.oli.cmu.edu/sections/general_chemistry_0tuo5)"
+  ],
+  "assignments": {
+    "total": 28,
+    "completed": 19,
+    "notStarted": 8,
+    "unscheduled": 1
+  },
+  "pages": {
+    "completed": 49,
+    "total": 251,
+    "percent": 20
+  },
+  "policy": {
+    "timezone": "America/Los_Angeles",
+    "dueTime": "11:59 PM PDT",
+    "scoring": "best attempt of N",
+    "lateAttempts": "accepted, flagged late",
+    "verifiedOn": [
+      "lewis_structures_module_checkp_w239f",
+      "chemical_bonding_and_molecular_6dwqi"
+    ]
+  },
+  "note": "First real Torus sweep. 12 Notion rows corrected/created, 0 duplicates. NOTE: nothing reads this file yet - build_docket.py has no Torus staleness check the way it has one for canvas_state.json. Wiring that is the open item."
+}

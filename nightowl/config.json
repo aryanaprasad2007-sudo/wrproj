@@ -1,0 +1,128 @@
+{
+  "profileName": "Night Owl",
+  "wake": "07:30",
+  "bedtime": "01:30",
+  "windDownMinutes": 60,
+  "eyeBreakMinutes": 25,
+  "postureBreakMinutes": 60,
+  "idleSkipSeconds": 180,
+  "deepWorkMinutes": 50,
+  "gameBudgetMinutes": 120,
+
+  "warmth": {
+    "dayKelvin": 6500,
+    "eveKelvin": 5200,
+    "nightKelvin": 3300,
+    "lateKelvin": 2500,
+    "animeKelvin": 4800
+  },
+
+  "paths": {
+    "wallpaperEngine": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\wallpaper64.exe",
+    "brave":    "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
+    "vlc":      "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe",
+    "steam":    "C:\\Program Files (x86)\\Steam\\steam.exe",
+    "obsidian": "C:\\Program Files\\Obsidian\\Obsidian.exe",
+    "vscode":   "C:\\Users\\aware\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+    "notion":   "C:\\Users\\aware\\AppData\\Local\\Programs\\Notion\\Notion.exe",
+    "hoyoplay": "C:\\Program Files\\HoYoPlay\\launcher.exe",
+    "battlenet":"C:\\Program Files (x86)\\Battle.net\\Battle.net.exe",
+    "obs":      "C:\\Program Files\\obs-studio\\bin\\64bit\\obs64.exe",
+    "govee":    "C:\\Program Files\\Govee\\Govee Desktop\\GoveeDesktop.exe"
+  },
+
+  "calendarAwareness": {
+    "_note": "Matched with -like *keyword* against the live calendar event title. Reviewed 2026-08-17 against what is actually on the calendar now - the original list (Deep Work / Homework) matched nothing on a current week, so the do-not-interrupt rule was silently never firing. Keep this list honest with the calendar, or it quietly stops protecting anything.",
+    "protectedBlockKeywords": [
+      "Deep Work", "Homework", "Protected", "Study",
+      "CHEM", "Lecture", "Discussion", "Exam", "Primerica",
+      "Secure", "Freeze credit", "Slug Support", "Interview",
+      "Financial Aid", "Appendix"
+    ],
+    "quietBlockKeywords": ["Prayer Closet", "Prayer", "Night Ritual", "Skincare"]
+  },
+
+  "gameProcesses": [
+    "cs2", "Cyberpunk2077", "BladeAndSorcery", "GeometryDash", "MarvelRivals",
+    "helldivers2", "ReadyOrNot", "ULTRAKILL", "HaloInfinite", "destiny2",
+    "Splitgate2", "GenshinImpact", "StarRail", "ZenlessZoneZero",
+    "BlackOps3", "t6mp", "javaw", "Minecraft", "hl2"
+  ],
+
+  "steamGames": [
+    { "id": "730",     "name": "Counter-Strike 2" },
+    { "id": "1091500", "name": "Cyberpunk 2077" },
+    { "id": "629730",  "name": "Blade & Sorcery" },
+    { "id": "322170",  "name": "Geometry Dash" },
+    { "id": "202970",  "name": "Black Ops II" },
+    { "id": "250820",  "name": "SteamVR" }
+  ],
+
+  "anime": {
+    "syncSeasonal": true,
+    "maxSeasonalShown": 14,
+    "watchlist": []
+  },
+
+  "nightRoutine": {
+    "lightsOutTime": "00:45",
+    "stillAwake": "If sleep isn't coming, that's okay - it's not a failure, and you don't have to win it tonight. Get up rather than lie there wrestling. Dim room, paper book, no screens, until your eyes feel heavy on their own. Then come back. No need to check the clock; it only ever makes it worse.",
+    "steps": [
+      {
+        "time": "21:45",
+        "title": "Close the loops",
+        "items": [
+          "Park any loose ideas in the Notion Command Center. They'll be waiting tomorrow - you don't have to hold them.",
+          "Jot tomorrow's top 3. Written down, they stop circling.",
+          "Charts and Canvas tabs can close now. Whatever's unfinished is allowed to be unfinished.",
+          "Phone on DND, charging across the room if you can manage it."
+        ]
+      },
+      {
+        "time": "22:00",
+        "title": "Creative anchor",
+        "items": [
+          "One thing from the rotation, just because you enjoy it. Screens are fine here.",
+          "Mon sketch · Tue Japanese · Wed read · Thu design play · Fri watch.",
+          "When the hour's up, stopping mid-thought is a good thing - it's tomorrow's running start."
+        ]
+      },
+      {
+        "time": "23:00",
+        "title": "Dim + drop temp",
+        "items": [
+          "Overheads off, lamps only. Low and warm.",
+          "A hot shower if you have the energy - the cool-down afterward is what actually brings the sleepiness.",
+          "Skincare, easy stretching. Nothing that gets the heart going.",
+          "Set the room up kindly: cool, dark, fan or white noise."
+        ]
+      },
+      {
+        "time": "23:30",
+        "title": "Analog only",
+        "items": [
+          "Good point to set the screens down.",
+          "Paper reading (manga absolutely counts), journaling, or something quiet and instrumental.",
+          "Last glass of water around now, so 3 AM stays asleep."
+        ]
+      },
+      {
+        "time": "00:15",
+        "title": "Prayer + lights lowest",
+        "items": [
+          "Prayer closet. Three specific things from today - small ones count.",
+          "Anything still spinning: one line in the journal is enough to set it down."
+        ]
+      },
+      {
+        "time": "00:35",
+        "title": "In bed",
+        "items": [
+          "Bed when you're ready for it. No rush, and no scoring how the day went.",
+          "Breathe: in 4, hold 7, out 8. Ten rounds, exhale longer than the inhale.",
+          "Body scan from the feet up. If your mind wanders, just start again - the starting again IS the exercise."
+        ]
+      }
+    ]
+  }
+}

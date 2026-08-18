@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SYSTEM — Hunter Progression</title>
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#070b16;
+    --bg2:#0a1124;
+    --panel:rgba(14,24,48,0.72);
+    --panel-solid:#0c1730;
+    --line:rgba(86,168,255,0.30);
+    --line-bright:rgba(120,200,255,0.55);
+    --cyan:#4fc3ff;
+    --cyan-b:#9be4ff;
+    --glow:rgba(79,195,255,0.55);
+    --text:#dbe9ff;
+    --muted:#8197c2;
+    --muted2:#5d6f96;
+    --gold:#ffd877;
+    --good:#5fe3a1;
+    --warn:#ffb454;
+    --danger:#ff6b81;
+    --str:#ff7d7d; --vit:#62e58a; --agi:#ffd86b; --int:#6bb8ff; --per:#c08bff; --sen:#ff9ad1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1100px 620px at 50% -8%, rgba(40,90,170,0.30), transparent 60%),
+      radial-gradient(900px 700px at 110% 110%, rgba(70,40,150,0.18), transparent 60%),
+      linear-gradient(180deg, var(--bg2), var(--bg) 60%);
+    background-attachment: fixed;
+    min-height:100vh;
+    padding:22px 16px 60px;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.5;
+    background-image:
+      linear-gradient(rgba(90,160,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(90,160,255,0.045) 1px, transparent 1px);
+    background-size:46px 46px;
+    mask-image: radial-gradient(circle at 50% 22%, #000 0%, transparent 78%);
+  }
+  .wrap{max-width:1000px;margin:0 auto;position:relative;z-index:1}
+  .mono{font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;}
+
+  /* ---- system window framing ---- */
+  .panel{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 20px;
+    margin-bottom:18px;
+    backdrop-filter: blur(7px);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset, 0 10px 40px rgba(0,0,0,0.45), 0 0 26px rgba(50,120,220,0.10);
+    animation: rise .5s ease both;
+  }
+  .panel::before, .panel::after{
+    content:""; position:absolute; width:16px; height:16px; pointer-events:none;
+    border-color:var(--cyan); opacity:.85;
+  }
+  .panel::before{ top:8px; left:8px; border-top:2px solid var(--cyan); border-left:2px solid var(--cyan); border-top-left-radius:6px;}
+  .panel::after{ bottom:8px; right:8px; border-bottom:2px solid var(--cyan); border-right:2px solid var(--cyan); border-bottom-right-radius:6px;}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  .ptitle{
+    display:flex;align-items:center;gap:9px;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan-b);
+    margin:0 0 14px; font-weight:700;
+  }
+  .ptitle .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--glow)}
+  .ptitle .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line-bright),transparent)}
+
+  /* ---- header / system banner ---- */
+  .sysbanner{
+    text-align:center;margin:4px 0 20px;
+  }
+  .sysbanner .t{
+    font-size:13px;letter-spacing:.5em;color:var(--cyan-b);text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:14px;
+  }
+  .sysbanner .t span{opacity:.7}
+  .sysbanner h1{
+    margin:8px 0 4px;font-size:30px;letter-spacing:.16em;font-weight:800;
+    background:linear-gradient(180deg,#eaf6ff,#7cc4ff);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 30px rgba(79,195,255,0.25);
+  }
+  .sysbanner .sub{color:var(--muted);font-size:12.5px;letter-spacing:.04em}
+
+  /* ---- player card ---- */
+  .player{display:grid;grid-template-columns:1.1fr 0.9fr;gap:22px}
+  @media(max-width:760px){.player{grid-template-columns:1fr}}
+  .pname-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .rankbadge{
+    font-family:ui-monospace,monospace;font-weight:800;font-size:13px;letter-spacing:.12em;
+    padding:5px 11px;border-radius:8px;border:1px solid var(--line-bright);
+    color:#04101f;background:linear-gradient(180deg,var(--cyan-b),var(--cyan));
+    box-shadow:0 0 18px var(--glow);white-space:nowrap;
+  }
+  input.nameinput{
+    background:transparent;border:none;border-bottom:1px dashed transparent;outline:none;
+    color:#fff;font-size:23px;font-weight:800;letter-spacing:.04em;max-width:100%;
+    font-family:inherit;padding:2px 2px 3px;min-width:90px;width:auto;transition:border-color .2s;
+  }
+  input.nameinput:hover{border-bottom-color:var(--line)}
+  input.nameinput:focus{border-bottom-color:var(--cyan)}
+  .titleline{margin-top:4px;color:var(--gold);font-size:13px;letter-spacing:.04em;font-weight:600}
+  .titleline .lbl{color:var(--muted2);font-weight:500;letter-spacing:.12em;text-transform:uppercase;font-size:10px;margin-right:6px}
+
+  .levelblock{display:flex;align-items:baseline;gap:12px;margin:16px 0 6px}
+  .levelblock .lvlbig{font-family:ui-monospace,monospace;font-size:54px;font-weight:800;line-height:1;color:#fff;text-shadow:0 0 26px var(--glow)}
+  .levelblock .lvllbl{font-size:11px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+  .levelblock .lvllbl b{display:block;color:var(--cyan-b);font-size:13px;letter-spacing:.18em}
+
+  .bar{position:relative;height:13px;border-radius:7px;background:rgba(8,16,34,0.9);border:1px solid var(--line);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.6)}
+  .bar > i{position:absolute;inset:0;display:block;width:0;border-radius:7px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+  .bar.xp > i{background:linear-gradient(90deg,#2f8fff,#7ad6ff);box-shadow:0 0 14px rgba(79,195,255,.6)}
+  .bar.hp > i{background:linear-gradient(90deg,#ff5b6e,#ff9aa6)}
+  .bar.mp > i{background:linear-gradient(90deg,#3f7bff,#8ab6ff)}
+  .bar .shine{position:absolute;top:0;left:0;height:100%;width:40px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);filter:blur(2px);animation:sweep 2.6s linear infinite}
+  @keyframes sweep{0%{transform:translateX(-50px)}100%{transform:translateX(560px)}}
+  .barrow{margin:11px 0}
+  .barrow .cap{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.08em;margin-bottom:5px;color:var(--muted)}
+  .barrow .cap b{color:var(--text);font-family:ui-monospace,monospace}
+  .hpmp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+
+  /* ---- stats / hexagon ---- */
+  .statswrap{display:grid;grid-template-columns:248px 1fr;gap:20px;align-items:center}
+  @media(max-width:760px){.statswrap{grid-template-columns:1fr}}
+  .hex{display:flex;align-items:center;justify-content:center}
+  .hex svg{width:100%;max-width:248px;height:auto;filter:drop-shadow(0 0 12px rgba(79,195,255,.25))}
+  .statlist{display:flex;flex-direction:column;gap:9px}
+  .statrow{display:grid;grid-template-columns:42px 1fr 34px 30px;align-items:center;gap:11px}
+  .stag{font-family:ui-monospace,monospace;font-weight:800;font-size:13px;text-align:center;padding:5px 0;border-radius:7px;border:1px solid var(--line);background:rgba(10,20,40,.7)}
+  .smeta{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .smeta .nm{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .smeta .sb{font-size:10.5px;color:var(--muted2);letter-spacing:.04em}
+  .sbar{height:6px;border-radius:4px;background:rgba(8,16,34,.9);border:1px solid var(--line);overflow:hidden;margin-top:4px}
+  .sbar > i{display:block;height:100%;width:0;transition:width .6s ease}
+  .sval{font-family:ui-monospace,monospace;font-weight:800;font-size:16px;text-align:right;color:#fff}
+  .plus{width:28px;height:28px;border-radius:7px;border:1px solid var(--line-bright);background:rgba(79,195,255,.12);color:var(--cyan-b);font-size:17px;font-weight:700;cursor:pointer;line-height:1;transition:.15s}
+  .plus:hover{background:var(--cyan);color:#04101f;box-shadow:0 0 14px var(--glow)}
+  .plus:disabled{opacity:.18;cursor:not-allowed;background:transparent;box-shadow:none;color:var(--muted2)}
+  .spoints{font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+  .spoints b{font-family:ui-monospace,monospace;color:var(--gold);font-size:15px;letter-spacing:0}
+  .spoints.has b{animation:pulseGold 1.5s ease-in-out infinite}
+  @keyframes pulseGold{0%,100%{text-shadow:0 0 0 transparent}50%{text-shadow:0 0 14px rgba(255,216,119,.8)}}
+
+  /* ---- quests ---- */
+  .qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .streakchip{font-size:11px;letter-spacing:.04em;color:var(--gold);background:rgba(255,216,119,.08);border:1px solid rgba(255,216,119,.3);padding:4px 10px;border-radius:20px;font-weight:600}
+  .streakchip .em{filter:grayscale(.1)}
+  .qlist{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .quest{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:rgba(9,18,38,.55);transition:.2s}
+  .quest:hover{border-color:var(--line-bright)}
+  .quest.done{opacity:.6}
+  .quest.done .qname{text-decoration:line-through;color:var(--muted)}
+  .qcheck{flex:none;width:24px;height:24px;border-radius:7px;border:1.5px solid var(--line-bright);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:transparent;font-size:14px;font-weight:800;transition:.18s}
+  .qcheck:hover{box-shadow:0 0 12px var(--glow)}
+  .quest.done .qcheck{background:linear-gradient(180deg,var(--good),#2fae77);border-color:var(--good);color:#03130c}
+  .qmid{flex:1;min-width:0}
+  .qname{font-size:13.5px;font-weight:600;color:var(--text)}
+  .qsub{font-size:11px;color:var(--muted2);margin-top:2px;display:flex;gap:8px;align-items:center}
+  .pill{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:20px;border:1px solid currentColor;opacity:.95}
+  .qxp{font-family:ui-monospace,monospace;font-size:12.5px;color:var(--cyan-b);font-weight:700;white-space:nowrap}
+  .qdel{flex:none;background:transparent;border:none;color:var(--muted2);cursor:pointer;font-size:15px;padding:2px 4px;border-radius:5px;line-height:1}
+  .qdel:hover{color:var(--danger)}
+
+  .addrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  input.fld, select.fld, textarea.fld{
+    background:rgba(8,16,34,.85);border:1px solid var(--line);border-radius:9px;color:var(--text);
+    padding:9px 11px;font-size:13px;font-family:inherit;outline:none;transition:.15s;
+  }
+  input.fld:focus, select.fld:focus, textarea.fld:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(79,195,255,.12)}
+  input.fld::placeholder{color:var(--muted2)}
+  .grow{flex:1;min-width:140px}
+  .btn{
+    background:rgba(79,195,255,.14);border:1px solid var(--line-bright);color:var(--cyan-b);
+    padding:9px 15px;border-radius:9px;font-size:12.5px;font-weight:700;letter-spacing:.04em;cursor:pointer;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{background:var(--cyan);color:#04101f;box-shadow:0 0 16px var(--glow)}
+  .btn.ghost{background:transparent;color:var(--muted)}
+  .btn.ghost:hover{color:var(--cyan-b);background:rgba(79,195,255,.08);box-shadow:none}
+  .btn.danger{color:var(--danger);border-color:rgba(255,107,129,.45);background:rgba(255,107,129,.08)}
+  .btn.danger:hover{background:var(--danger);color:#160205;box-shadow:0 0 16px rgba(255,107,129,.5)}
+
+  /* ---- manual log ---- */
+  .magrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .mag{flex:1;min-width:80px;padding:9px 6px;border-radius:9px;border:1px solid var(--line);background:rgba(9,18,38,.6);cursor:pointer;text-align:center;transition:.15s}
+  .mag:hover{border-color:var(--cyan)}
+  .mag.sel{border-color:var(--cyan);background:rgba(79,195,255,.15);box-shadow:0 0 0 2px rgba(79,195,255,.15) inset}
+  .mag .mt{font-size:12px;font-weight:700;color:var(--text)}
+  .mag .mx{font-family:ui-monospace,monospace;font-size:11px;color:var(--cyan-b);margin-top:2px}
+  .logitems{display:flex;flex-direction:column;gap:7px;margin-top:14px;max-height:230px;overflow:auto}
+  .logitem{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:8px 10px;border-radius:8px;background:rgba(9,18,38,.4);border:1px solid rgba(86,168,255,.12)}
+  .logitem .lx{font-family:ui-monospace,monospace;color:var(--good);font-weight:700;white-space:nowrap}
+  .logitem .lt{flex:1;min-width:0;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .logitem .ld{color:var(--muted2);font-size:10.5px;white-space:nowrap}
+  .empty{color:var(--muted2);font-size:12.5px;font-style:italic;padding:10px 2px}
+
+  /* ---- titles ---- */
+  .titlegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+  .tcard{position:relative;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:rgba(9,18,38,.5);transition:.15s}
+  .tcard.unlocked{cursor:pointer}
+  .tcard.unlocked:hover{border-color:var(--line-bright)}
+  .tcard.locked{opacity:.45;filter:grayscale(.5)}
+  .tcard.equipped{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 0 18px rgba(255,216,119,.2)}
+  .tcard .tn{font-size:13px;font-weight:700;color:var(--text)}
+  .tcard.unlocked .tn{color:var(--gold)}
+  .tcard .tdsc{font-size:11px;color:var(--muted2);margin-top:3px;line-height:1.35}
+  .tcard .eqtag{position:absolute;top:9px;right:10px;font-size:9px;letter-spacing:.1em;color:#04101f;background:var(--gold);padding:2px 6px;border-radius:12px;font-weight:800}
+  .tcard .lk{position:absolute;top:9px;right:11px;font-size:12px;opacity:.6}
+
+  /* ---- settings ---- */
+  .setrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--muted2);font-size:11.5px}
+  textarea.fld{width:100%;resize:vertical;min-height:80px;font-family:ui-monospace,monospace;font-size:11px;margin-top:10px}
+
+  /* ---- toasts ---- */
+  #toasts{position:fixed;top:16px;right:16px;z-index:60;display:flex;flex-direction:column;gap:10px;max-width:330px}
+  .toast{
+    border:1px solid var(--line-bright);background:linear-gradient(180deg,rgba(13,28,58,.96),rgba(9,18,40,.96));
+    border-radius:11px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 22px rgba(79,195,255,.18);
+    animation:tin .35s ease both;backdrop-filter:blur(6px);
+  }
+  .toast.out{animation:tout .4s ease forwards}
+  @keyframes tin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+  @keyframes tout{to{opacity:0;transform:translateX(30px)}}
+  .toast .th{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:4px}
+  .toast .tb{font-size:13px;color:var(--text);line-height:1.4}
+  .toast.gold{border-color:rgba(255,216,119,.6);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 22px rgba(255,216,119,.25)}
+  .toast.gold .th{color:var(--gold)}
+
+  /* ---- level up modal ---- */
+  #overlay{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(3,7,16,.74);backdrop-filter:blur(3px)}
+  #overlay.show{display:flex;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal{
+    position:relative;width:min(420px,92vw);text-align:center;padding:30px 26px 24px;border-radius:18px;
+    border:1px solid var(--line-bright);background:linear-gradient(180deg,rgba(15,32,66,.97),rgba(8,16,38,.98));
+    box-shadow:0 0 0 1px rgba(79,195,255,.2),0 30px 80px rgba(0,0,0,.6),0 0 50px rgba(79,195,255,.3);
+    animation:pop .45s cubic-bezier(.2,1.2,.3,1) both;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+  .modal .ring{position:absolute;inset:-2px;border-radius:18px;pointer-events:none;box-shadow:0 0 0 2px rgba(79,195,255,.0);animation:ring 2s ease-in-out infinite}
+  @keyframes ring{0%,100%{box-shadow:0 0 22px rgba(79,195,255,.25)}50%{box-shadow:0 0 46px rgba(79,195,255,.55)}}
+  .modal .mlabel{font-size:11px;letter-spacing:.4em;color:var(--cyan);text-transform:uppercase}
+  .modal .mtitle{font-size:30px;font-weight:800;letter-spacing:.14em;margin:6px 0 2px;background:linear-gradient(180deg,#fff,#7cc4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .modal .mlvl{font-family:ui-monospace,monospace;font-size:64px;font-weight:800;color:#fff;text-shadow:0 0 30px var(--glow);line-height:1.05}
+  .modal .msub{color:var(--muted);font-size:13px;margin:2px 0 4px}
+  .modal .mgain{color:var(--gold);font-weight:700;font-size:14px;margin:10px 0 18px}
+  .modal .mrank{color:var(--cyan-b);font-size:13px;margin-bottom:14px;font-weight:600;letter-spacing:.05em}
+  .modal .mbtns{display:flex;gap:10px;justify-content:center}
+
+  .footnote{text-align:center;color:var(--muted2);font-size:11px;letter-spacing:.04em;margin-top:8px}
+  .hide{display:none!important}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:rgba(79,195,255,.25);border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sysbanner">
+    <div class="t"><span>◤</span> The System <span>◢</span></div>
+    <h1>HUNTER PROGRESSION</h1>
+    <div class="sub">Real life is the dungeon. Clear quests, gain EXP, and level up.</div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="panel">
+    <div class="ptitle"><span class="dot"></span>Player Status<span class="ln"></span></div>
+    <div class="player">
+      <div>
+        <div class="pname-row">
+          <span class="rankbadge" id="rankBadge">E-RANK</span>
+          <input class="nameinput" id="nameInput" maxlength="22" spellcheck="false" value="Player">
+        </div>
+        <div class="titleline"><span class="lbl">Title</span><span id="titleNow">The Weakest Hunter</span></div>
+        <div class="levelblock">
+          <div class="lvlbig mono" id="lvlBig">1</div>
+          <div class="lvllbl">Hunter<br><b>LEVEL</b></div>
+        </div>
+        <div class="barrow">
+          <div class="cap"><span>EXP</span><span><b id="xpNow">0</b> / <b id="xpNext">100</b></span></div>
+          <div class="bar xp"><i id="xpFill"></i><span class="shine"></span></div>
+        </div>
+      </div>
+      <div>
+        <div class="hpmp">
+          <div class="barrow">
+            <div class="cap"><span>HP · Vitality</span><b id="hpVal">100</b></div>
+            <div class="bar hp"><i id="hpFill"></i></div>
+          </div>
+          <div class="barrow">
+            <div class="cap"><span>MP · Focus</span><b id="mpVal">100</b></div>
+            <div class="bar mp"><i id="mpFill"></i></div>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:7px">
+          <div class="cap" style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>Total EXP earned</span><b class="mono" id="totalXp" style="color:var(--text)">0</b></div>
+          <div class="cap" style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>Quests cleared</span><b class="mono" id="qCleared" style="color:var(--text)">0</b></div>
+          <div class="cap" style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)"><span>Best daily streak</span><b class="mono" id="bestStreak" style="color:var(--gold)">0</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="panel">
+    <div class="ptitle"><span class="dot"></span>Attributes<span class="ln"></span>
+      <span class="spoints" id="spWrap">Stat Points: <b id="spVal">0</b></span>
+    </div>
+    <div class="statswrap">
+      <div class="hex"><div id="hexHolder"></div></div>
+      <div class="statlist" id="statList"></div>
+    </div>
+    <div class="footnote">Allocate points earned on level-up. Tip: clearing quests in a domain is your cue to invest there.</div>
+  </div>
+
+  <!-- DAILY QUESTS -->
+  <div class="panel">
+    <div class="ptitle"><span class="dot"></span>Daily Quest<span class="ln"></span></div>
+    <div class="qhead">
+      <div class="muted" id="questInfo">Resets at local midnight. Clear all for a completion bonus.</div>
+      <div class="streakchip"><span class="em">🔥</span> <span id="streakTxt">0 day streak</span></div>
+    </div>
+    <div class="qlist" id="questList"></div>
+    <div class="addrow">
+      <input class="fld grow" id="qName" placeholder="New daily quest (e.g. 30 min workout)" maxlength="60">
+      <select class="fld" id="qStat"></select>
+      <select class="fld" id="qXp">
+        <option value="10">+10 EXP</option>
+        <option value="15" selected>+15 EXP</option>
+        <option value="20">+20 EXP</option>
+        <option value="30">+30 EXP</option>
+      </select>
+      <button class="btn" id="qAdd">+ Add Quest</button>
+    </div>
+  </div>
+
+  <!-- MANUAL LOG -->
+  <div class="panel">
+    <div class="ptitle"><span class="dot"></span>Victory Log<span class="ln"></span></div>
+    <div class="muted">Log any win the moment it happens — assign it to a stat and bank the EXP.</div>
+    <div class="addrow" style="margin-top:12px">
+      <input class="fld grow" id="logName" placeholder="What did you accomplish?" maxlength="80">
+      <select class="fld" id="logStat"></select>
+    </div>
+    <div class="magrow" id="magRow">
+      <div class="mag" data-x="10"><div class="mt">Minor</div><div class="mx">+10</div></div>
+      <div class="mag sel" data-x="25"><div class="mt">Solid</div><div class="mx">+25</div></div>
+      <div class="mag" data-x="50"><div class="mt">Major</div><div class="mx">+50</div></div>
+      <div class="mag" data-x="100"><div class="mt">Epic</div><div class="mx">+100</div></div>
+    </div>
+    <div class="addrow" style="margin-top:10px"><button class="btn grow" id="logAdd">⚔ Log Victory &amp; Gain EXP</button></div>
+    <div class="logitems" id="logList"></div>
+  </div>
+
+  <!-- TITLES -->
+  <div class="panel">
+    <div class="ptitle"><span class="dot"></span>Titles<span class="ln"></span></div>
+    <div class="muted" style="margin-bottom:12px">Earned through levels, streaks, and total EXP. Click an unlocked title to equip it.</div>
+    <div class="titlegrid" id="titleGrid"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel">
+    <div class="ptitle"><span class="dot"></span>System Settings<span class="ln"></span></div>
+    <div class="setrow">
+      <button class="btn ghost" id="backupBtn">⬇ Show backup data</button>
+      <button class="btn ghost" id="restoreBtn">⬆ Restore from data</button>
+      <button class="btn danger" id="resetBtn">⟲ Reset all progress</button>
+      <span class="muted" id="saveState">Progress auto-saves to this browser.</span>
+    </div>
+    <textarea class="fld hide" id="backupArea" spellcheck="false" placeholder="Paste backup JSON here, then press Restore again to apply."></textarea>
+    <div class="footnote">Inspired by Solo Leveling. Built for your own dungeon. The System never lies — only you can decide to grow stronger.</div>
+  </div>
+
+</div>
+
+<div id="toasts"></div>
+
+<div id="overlay">
+  <div class="modal">
+    <div class="ring"></div>
+    <div class="mlabel">⚠ Notification</div>
+    <div class="mtitle">LEVEL UP</div>
+    <div class="mlvl mono" id="mLvl">2</div>
+    <div class="msub">You have grown stronger.</div>
+    <div class="mgain" id="mGain">+3 Stat Points available</div>
+    <div class="mrank" id="mRank"></div>
+    <div class="mbtns">
+      <button class="btn" id="mAllocate">Allocate Points</button>
+      <button class="btn ghost" id="mClose">Continue</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* --- System Bridge: real focus -> real EXP (injected, runs before the app) --- */
+(function(){
+  var KEY = "slSystem_v1";
+  var FEED = [{"date": "2026-08-12", "minutes": 72.8, "productivePct": 8, "deepWork": true}, {"date": "2026-08-13", "minutes": 2.0, "productivePct": 100, "deepWork": false}];
+  var NIGHTOWL_FEED = [];
+  var NIGHTOWL_NIGHTS = [{"date": "2026-08-10", "bonus": 20}, {"date": "2026-08-11", "bonus": 20}, {"date": "2026-08-12", "bonus": 20}];
+  var XP_PER_MIN = 1;
+  var XP_PER_NO_MIN = 1;
+  function xpToNext(l){return Math.round(50*Math.pow(l,1.5))+50;}
+  var s;
+  try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch(e) { s = null; }
+  if(!s) s = {};                       // the app's load() backfills everything else
+  if(typeof s.level   !== "number") s.level = 1;
+  if(typeof s.xp      !== "number") s.xp = 0;
+  if(typeof s.totalXp !== "number") s.totalXp = 0;
+  if(typeof s.statPoints !== "number") s.statPoints = 0;
+  s.focusLog = s.focusLog || {};             // webcam coach: date -> minutes already paid
+  s.nightOwlFocusLog = s.nightOwlFocusLog || {};   // NightOwl focus blocks: date -> minutes already paid
+  s.nightsLog = s.nightsLog || {};                 // clean nights: date -> already paid (bool)
+  var totalGain = 0, noGain = 0, nightsGain = 0;
+
+  function award(xp){
+    s.xp += xp; s.totalXp += xp;
+    while(s.xp >= xpToNext(s.level)){ s.xp -= xpToNext(s.level); s.level++; s.statPoints += 3; }
+  }
+
+  for(var i=0;i<FEED.length;i++){
+    var d = FEED[i];
+    var paid = s.focusLog[d.date] || 0;
+    var delta = d.minutes - paid;
+    if(delta > 0){ var gain = Math.round(delta * XP_PER_MIN); award(gain); totalGain += gain; s.focusLog[d.date] = d.minutes; }
+  }
+  for(var i=0;i<NIGHTOWL_FEED.length;i++){
+    var d = NIGHTOWL_FEED[i];
+    var paid = s.nightOwlFocusLog[d.date] || 0;
+    var delta = d.minutes - paid;
+    if(delta > 0){ var gain = Math.round(delta * XP_PER_NO_MIN); award(gain); noGain += gain; s.nightOwlFocusLog[d.date] = d.minutes; }
+  }
+  for(var i=0;i<NIGHTOWL_NIGHTS.length;i++){
+    var n = NIGHTOWL_NIGHTS[i];
+    if(!s.nightsLog[n.date]){ award(n.bonus); nightsGain += n.bonus; s.nightsLog[n.date] = true; }
+  }
+
+  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){}
+  window.__FOCUS_FEED__ = FEED;
+  window.__FOCUS_GAIN__ = totalGain;
+  window.__NO_FEED__ = NIGHTOWL_FEED;
+  window.__NO_GAIN__ = noGain;
+  window.__NIGHTS_GAIN__ = nightsGain;
+  window.__NIGHTS_COUNT__ = NIGHTOWL_NIGHTS.length;
+})();
+</script>
+
+<script>
+"use strict";
+(function(){
+  var KEY = "slSystem_v1";
+
+  var STATS = [
+    {key:"STR", name:"Strength",     sub:"Fitness & body",   color:"var(--str)"},
+    {key:"VIT", name:"Vitality",     sub:"Health & sleep",   color:"var(--vit)"},
+    {key:"AGI", name:"Agility",      sub:"Productivity",     color:"var(--agi)"},
+    {key:"INT", name:"Intelligence", sub:"Learning",         color:"var(--int)"},
+    {key:"PER", name:"Perception",   sub:"Mindfulness",      color:"var(--per)"},
+    {key:"SEN", name:"Sense",        sub:"Social",           color:"var(--sen)"}
+  ];
+  var STAT_HEX = {STR:"#ff7d7d",VIT:"#62e58a",AGI:"#ffd86b",INT:"#6bb8ff",PER:"#c08bff",SEN:"#ff9ad1"};
+
+  var TITLES = [
+    {id:"weakest",  name:"The Weakest Hunter", desc:"Where every Monarch begins.",        test:function(s){return true;}},
+    {id:"awakened", name:"The Awakened",       desc:"Reach Level 5.",                      test:function(s){return s.level>=5;}},
+    {id:"wolf",     name:"Wolf Assassin",      desc:"Reach Level 10.",                     test:function(s){return s.level>=10;}},
+    {id:"relentless",name:"Relentless",        desc:"7-day Daily Quest streak.",           test:function(s){return s.bestStreak>=7;}},
+    {id:"vanguard", name:"Vanguard",           desc:"Reach Level 20.",                     test:function(s){return s.level>=20;}},
+    {id:"grinder",  name:"The Grinder",        desc:"Earn 5,000 total EXP.",               test:function(s){return s.totalXp>=5000;}},
+    {id:"ironwill", name:"Iron Will",          desc:"30-day Daily Quest streak.",          test:function(s){return s.bestStreak>=30;}},
+    {id:"sovereign",name:"Shadow Sovereign",   desc:"Reach Level 35.",                     test:function(s){return s.level>=35;}},
+    {id:"monarch",  name:"Shadow Monarch",     desc:"Reach Level 50.",                     test:function(s){return s.level>=50;}},
+    {id:"ruler",    name:"Ruler's Authority",  desc:"Earn 25,000 total EXP.",              test:function(s){return s.totalXp>=25000;}}
+  ];
+
+  var RANKS = [
+    {min:90, name:"MONARCH"},
+    {min:70, name:"NATIONAL"},
+    {min:50, name:"S-RANK"},
+    {min:35, name:"A-RANK"},
+    {min:20, name:"B-RANK"},
+    {min:10, name:"C-RANK"},
+    {min:5,  name:"D-RANK"},
+    {min:1,  name:"E-RANK"}
+  ];
+
+  function defaultQuests(){
+    return [
+      {id:uid(), name:"Train your body — 30 min", stat:"STR", xp:20, done:false},
+      {id:uid(), name:"Study / read for 30 min",  stat:"INT", xp:20, done:false},
+      {id:uid(), name:"Sleep 7–8 hours",          stat:"VIT", xp:15, done:false},
+      {id:uid(), name:"One deep-work block",      stat:"AGI", xp:20, done:false},
+      {id:uid(), name:"10 min meditate / journal",stat:"PER", xp:15, done:false},
+      {id:uid(), name:"Reach out to someone",     stat:"SEN", xp:15, done:false}
+    ];
+  }
+
+  function defaultState(){
+    return {
+      name:"Player",
+      level:1, xp:0, totalXp:0, statPoints:0,
+      stats:{STR:10,VIT:10,AGI:10,INT:10,PER:10,SEN:10},
+      quests:defaultQuests(),
+      log:[],
+      questsCleared:0,
+      streak:0, bestStreak:0,
+      dayBonusGiven:false,
+      lastReset:todayStr(),
+      equippedTitle:"weakest",
+      seenTitles:["weakest"],
+      createdAt:Date.now()
+    };
+  }
+
+  // ---------- helpers ----------
+  function uid(){return Math.random().toString(36).slice(2,9);}
+  function todayStr(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+  function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
+  function fmt(n){return n.toLocaleString("en-US");}
+  function el(id){return document.getElementById(id);}
+  function xpToNext(level){return Math.round(50*Math.pow(level,1.5))+50;}
+  function rankFor(level){for(var i=0;i<RANKS.length;i++){if(level>=RANKS[i].min)return RANKS[i].name;}return "E-RANK";}
+
+  var hasLS=true;
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(!raw)return defaultState();
+      var s=JSON.parse(raw);
+      // backfill any missing fields
+      var d=defaultState();
+      for(var k in d){if(!(k in s))s[k]=d[k];}
+      if(!s.stats)s.stats=d.stats;
+      for(var i=0;i<STATS.length;i++){var kk=STATS[i].key;if(typeof s.stats[kk]!=="number")s.stats[kk]=10;}
+      return s;
+    }catch(e){hasLS=false;return defaultState();}
+  }
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(state));}
+    catch(e){hasLS=false;el("saveState").textContent="(Storage unavailable — progress lasts this session only)";}
+  }
+
+  var state=load();
+
+  // ---------- daily reset ----------
+  function checkDailyReset(){
+    var t=todayStr();
+    if(state.lastReset===t)return;
+    // evaluate yesterday
+    var total=state.quests.length;
+    var done=state.quests.filter(function(q){return q.done;}).length;
+    if(total>0 && done>=total){
+      // streak already counted on completion; keep it
+    }else{
+      if(state.streak>0){
+        toast("System Notice","A Daily Quest was left unfinished. Streak reset to 0 — rise again, Hunter.",false);
+      }
+      state.streak=0;
+    }
+    state.quests.forEach(function(q){q.done=false;});
+    state.dayBonusGiven=false;
+    state.lastReset=t;
+    save();
+  }
+
+  // ---------- core actions ----------
+  var pendingLevels=[];
+  function awardXP(amount){
+    if(amount<=0)return;
+    state.xp+=amount; state.totalXp+=amount;
+    var leveled=false;
+    while(state.xp>=xpToNext(state.level)){
+      state.xp-=xpToNext(state.level);
+      state.level++;
+      state.statPoints+=3;
+      leveled=true;
+      pendingLevels.push(state.level);
+    }
+    if(leveled){
+      var newRank=rankFor(state.level);
+      showLevelModal(state.level, newRank);
+    }
+    checkTitles();
+    save();
+    render();
+  }
+
+  function allocate(key){
+    if(state.statPoints<=0)return;
+    state.stats[key]++; state.statPoints--;
+    save(); render();
+  }
+
+  function clearQuest(q){
+    if(q.done)return;
+    q.done=true;
+    state.questsCleared++;
+    toast("Quest Cleared", q.name+"  (+"+q.xp+" EXP)", false);
+    awardXP(q.xp);
+    // all done?
+    var all=state.quests.length>0 && state.quests.every(function(x){return x.done;});
+    if(all && !state.dayBonusGiven){
+      state.dayBonusGiven=true;
+      state.streak++;
+      if(state.streak>state.bestStreak)state.bestStreak=state.streak;
+      var bonus=30+state.streak*5;
+      toast("DAILY QUEST COMPLETE","All quests cleared! Streak "+state.streak+" 🔥  Bonus +"+bonus+" EXP",true);
+      awardXP(bonus);
+    }
+    save(); render();
+  }
+
+  function addQuest(name,stat,xp){
+    state.quests.push({id:uid(),name:name,stat:stat,xp:xp,done:false});
+    // a freshly added quest means the day isn't fully complete anymore
+    if(state.quests.some(function(q){return !q.done;}))state.dayBonusGiven=state.dayBonusGiven&&false;
+    save(); render();
+  }
+  function delQuest(id){
+    state.quests=state.quests.filter(function(q){return q.id!==id;});
+    save(); render();
+  }
+
+  function logVictory(text,stat,xp){
+    state.log.unshift({id:uid(),t:text,stat:stat,xp:xp,ts:Date.now()});
+    if(state.log.length>40)state.log=state.log.slice(0,40);
+    toast("EXP Gained", text+"  (+"+xp+" EXP)", false);
+    awardXP(xp);
+    save(); render();
+  }
+
+  function checkTitles(){
+    TITLES.forEach(function(tt){
+      if(tt.test(state) && state.seenTitles.indexOf(tt.id)<0){
+        state.seenTitles.push(tt.id);
+        toast("New Title Acquired", "“"+tt.name+"” — "+tt.desc, true);
+      }
+    });
+  }
+  function equipTitle(id){
+    var tt=findTitle(id);
+    if(!tt||!tt.test(state))return;
+    state.equippedTitle=id; save(); render();
+  }
+  function findTitle(id){for(var i=0;i<TITLES.length;i++){if(TITLES[i].id===id)return TITLES[i];}return null;}
+
+  // ---------- rendering ----------
+  function render(){
+    // player
+    el("nameInput").value=state.name;
+    el("rankBadge").textContent=rankFor(state.level);
+    el("lvlBig").textContent=state.level;
+    var need=xpToNext(state.level);
+    el("xpNow").textContent=fmt(state.xp);
+    el("xpNext").textContent=fmt(need);
+    el("xpFill").style.width=clamp(state.xp/need*100,0,100)+"%";
+    el("totalXp").textContent=fmt(state.totalXp);
+    el("qCleared").textContent=fmt(state.questsCleared);
+    el("bestStreak").textContent=state.bestStreak;
+
+    var eq=findTitle(state.equippedTitle)||TITLES[0];
+    el("titleNow").textContent=eq.name;
+
+    // hp / mp flavor (always shown full, scaled label)
+    var hp=state.stats.VIT*10+state.level*5;
+    var mp=state.stats.INT*8+state.stats.PER*4+state.level*3;
+    el("hpVal").textContent=fmt(hp); el("hpFill").style.width="100%";
+    el("mpVal").textContent=fmt(mp); el("mpFill").style.width="100%";
+
+    // stat points
+    el("spVal").textContent=state.statPoints;
+    el("spWrap").classList.toggle("has",state.statPoints>0);
+
+    renderStats();
+    drawHex();
+    renderQuests();
+    renderLog();
+    renderTitles();
+  }
+
+  function renderStats(){
+    var maxV=10;
+    STATS.forEach(function(s){maxV=Math.max(maxV,state.stats[s.key]);});
+    var host=el("statList"); host.innerHTML="";
+    STATS.forEach(function(s){
+      var v=state.stats[s.key];
+      var row=document.createElement("div"); row.className="statrow";
+      var hex=STAT_HEX[s.key];
+      row.innerHTML=
+        '<div class="stag" style="color:'+hex+';border-color:'+hex+'55">'+s.key+'</div>'+
+        '<div class="smeta"><div class="nm">'+s.name+'</div><div class="sb">'+s.sub+'</div>'+
+          '<div class="sbar"><i style="width:'+clamp(v/maxV*100,6,100)+'%;background:'+hex+'"></i></div></div>'+
+        '<div class="sval">'+v+'</div>';
+      var btn=document.createElement("button");
+      btn.className="plus"; btn.textContent="+";
+      btn.disabled=state.statPoints<=0;
+      btn.title="Allocate a point to "+s.name;
+      btn.onclick=function(){allocate(s.key);};
+      row.appendChild(btn);
+      host.appendChild(row);
+    });
+  }
+
+  function drawHex(){
+    var size=240, c=size/2, R=80, lblR=104;
+    var maxV=20;
+    STATS.forEach(function(s){maxV=Math.max(maxV,state.stats[s.key]);});
+    maxV=Math.ceil(maxV/10)*10; if(maxV<20)maxV=20;
+    function pt(i,frac){
+      var ang=(-90+i*60)*Math.PI/180;
+      return [c+R*frac*Math.cos(ang), c+R*frac*Math.sin(ang)];
+    }
+    var svg='<svg viewBox="0 0 '+size+' '+size+'" xmlns="http://www.w3.org/2000/svg">';
+    // grid rings
+    [0.25,0.5,0.75,1].forEach(function(fr){
+      var pts=[];
+      for(var i=0;i<6;i++){var p=pt(i,fr);pts.push(p[0].toFixed(1)+","+p[1].toFixed(1));}
+      svg+='<polygon points="'+pts.join(" ")+'" fill="none" stroke="rgba(86,168,255,0.18)" stroke-width="1"/>';
+    });
+    // axes
+    for(var i=0;i<6;i++){var p=pt(i,1);svg+='<line x1="'+c+'" y1="'+c+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="rgba(86,168,255,0.16)" stroke-width="1"/>';}
+    // data polygon
+    var dpts=[];
+    for(var j=0;j<6;j++){var fr=clamp(state.stats[STATS[j].key]/maxV,0.04,1);var dp=pt(j,fr);dpts.push(dp[0].toFixed(1)+","+dp[1].toFixed(1));}
+    svg+='<polygon points="'+dpts.join(" ")+'" fill="rgba(79,195,255,0.22)" stroke="#7ad6ff" stroke-width="2" stroke-linejoin="round"/>';
+    // vertices + labels
+    for(var k=0;k<6;k++){
+      var frk=clamp(state.stats[STATS[k].key]/maxV,0.04,1);
+      var vp=pt(k,frk);
+      svg+='<circle cx="'+vp[0].toFixed(1)+'" cy="'+vp[1].toFixed(1)+'" r="3.2" fill="'+STAT_HEX[STATS[k].key]+'"/>';
+      var lp=pt(k,lblR/R);
+      var anchor= (Math.abs(lp[0]-c)<8)?"middle":(lp[0]>c?"start":"end");
+      svg+='<text x="'+lp[0].toFixed(1)+'" y="'+(lp[1]+4).toFixed(1)+'" fill="#cfe2ff" font-size="11" font-family="ui-monospace,monospace" font-weight="700" text-anchor="'+anchor+'">'+STATS[k].key+'</text>';
+    }
+    svg+='</svg>';
+    el("hexHolder").innerHTML=svg;
+  }
+
+  function statPill(key){
+    var s=null; for(var i=0;i<STATS.length;i++){if(STATS[i].key===key)s=STATS[i];}
+    var hex=STAT_HEX[key]||"#8aa";
+    return '<span class="pill" style="color:'+hex+'">'+key+'</span>';
+  }
+
+  function renderQuests(){
+    var host=el("questList"); host.innerHTML="";
+    if(state.quests.length===0){host.innerHTML='<div class="empty">No daily quests. Add one below to begin.</div>';}
+    state.quests.forEach(function(q){
+      var row=document.createElement("div"); row.className="quest"+(q.done?" done":"");
+      row.innerHTML=
+        '<button class="qcheck" title="'+(q.done?"Cleared":"Clear quest")+'">'+(q.done?"✓":"")+'</button>'+
+        '<div class="qmid"><div class="qname">'+escapeHtml(q.name)+'</div>'+
+          '<div class="qsub">'+statPill(q.stat)+' <span>'+statName(q.stat)+'</span></div></div>'+
+        '<div class="qxp">+'+q.xp+' EXP</div>'+
+        '<button class="qdel" title="Remove quest">✕</button>';
+      row.querySelector(".qcheck").onclick=function(){clearQuest(q);};
+      row.querySelector(".qdel").onclick=function(){delQuest(q.id);};
+      host.appendChild(row);
+    });
+    var doneN=state.quests.filter(function(q){return q.done;}).length;
+    el("questInfo").textContent=doneN+" / "+state.quests.length+" cleared today · resets at local midnight";
+    el("streakTxt").textContent=state.streak+" day streak";
+  }
+
+  function statName(key){for(var i=0;i<STATS.length;i++){if(STATS[i].key===key)return STATS[i].name;}return key;}
+
+  function renderLog(){
+    var host=el("logList"); host.innerHTML="";
+    if(state.log.length===0){host.innerHTML='<div class="empty">No victories logged yet. Even small wins count.</div>';return;}
+    state.log.forEach(function(L){
+      var row=document.createElement("div"); row.className="logitem";
+      row.innerHTML='<span class="lx">+'+L.xp+'</span>'+statPill(L.stat)+
+        '<span class="lt">'+escapeHtml(L.t)+'</span><span class="ld">'+timeAgo(L.ts)+'</span>';
+      host.appendChild(row);
+    });
+  }
+
+  function renderTitles(){
+    var host=el("titleGrid"); host.innerHTML="";
+    TITLES.forEach(function(tt){
+      var unlocked=tt.test(state);
+      var equipped=state.equippedTitle===tt.id;
+      var card=document.createElement("div");
+      card.className="tcard "+(unlocked?"unlocked":"locked")+(equipped?" equipped":"");
+      card.innerHTML='<div class="tn">'+escapeHtml(tt.name)+'</div><div class="tdsc">'+escapeHtml(tt.desc)+'</div>'+
+        (equipped?'<span class="eqtag">EQUIPPED</span>':(unlocked?'':'<span class="lk">🔒</span>'));
+      if(unlocked && !equipped){card.onclick=function(){equipTitle(tt.id);};}
+      host.appendChild(card);
+    });
+  }
+
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function timeAgo(ts){
+    var d=Math.floor((Date.now()-ts)/1000);
+    if(d<60)return "just now";
+    if(d<3600)return Math.floor(d/60)+"m ago";
+    if(d<86400)return Math.floor(d/3600)+"h ago";
+    return Math.floor(d/86400)+"d ago";
+  }
+
+  // ---------- toasts ----------
+  function toast(head,body,gold){
+    var t=document.createElement("div"); t.className="toast"+(gold?" gold":"");
+    t.innerHTML='<div class="th">ⓘ '+escapeHtml(head)+'</div><div class="tb">'+escapeHtml(body)+'</div>';
+    el("toasts").appendChild(t);
+    setTimeout(function(){t.classList.add("out");setTimeout(function(){t.remove();},420);},4200);
+  }
+
+  // ---------- level modal ----------
+  function showLevelModal(level,rank){
+    el("mLvl").textContent=level;
+    el("mGain").textContent="+"+ (pendingLevels.length*3) +" Stat Points available";
+    el("mRank").textContent="Hunter Rank: "+rank;
+    el("overlay").classList.add("show");
+  }
+  function closeModal(){el("overlay").classList.remove("show");pendingLevels=[];}
+
+  // ---------- wire up ----------
+  el("nameInput").addEventListener("input",function(){state.name=this.value||"Player";save();});
+  el("nameInput").addEventListener("change",function(){if(!this.value.trim()){this.value="Player";state.name="Player";save();}});
+
+  // stat dropdowns
+  (function(){
+    var opts=STATS.map(function(s){return '<option value="'+s.key+'">'+s.key+' · '+s.name+'</option>';}).join("");
+    el("qStat").innerHTML=opts;
+    el("logStat").innerHTML=opts;
+  })();
+
+  el("qAdd").onclick=function(){
+    var n=el("qName").value.trim(); if(!n){el("qName").focus();return;}
+    addQuest(n, el("qStat").value, parseInt(el("qXp").value,10));
+    el("qName").value="";
+  };
+  el("qName").addEventListener("keydown",function(e){if(e.key==="Enter")el("qAdd").click();});
+
+  var magSel=25;
+  Array.prototype.forEach.call(document.querySelectorAll("#magRow .mag"),function(m){
+    m.onclick=function(){
+      document.querySelectorAll("#magRow .mag").forEach(function(x){x.classList.remove("sel");});
+      m.classList.add("sel"); magSel=parseInt(m.getAttribute("data-x"),10);
+    };
+  });
+  el("logAdd").onclick=function(){
+    var n=el("logName").value.trim(); if(!n){el("logName").focus();return;}
+    logVictory(n, el("logStat").value, magSel);
+    el("logName").value="";
+  };
+  el("logName").addEventListener("keydown",function(e){if(e.key==="Enter")el("logAdd").click();});
+
+  el("mAllocate").onclick=function(){closeModal();document.querySelector(".statswrap").scrollIntoView({behavior:"smooth",block:"center"});};
+  el("mClose").onclick=closeModal;
+  el("overlay").addEventListener("click",function(e){if(e.target===el("overlay"))closeModal();});
+
+  // settings
+  el("resetBtn").onclick=function(){
+    if(el("resetBtn").getAttribute("data-armed")==="1"){
+      state=defaultState(); save(); render();
+      el("resetBtn").textContent="⟲ Reset all progress"; el("resetBtn").removeAttribute("data-armed");
+      toast("System Reset","Progress wiped. Your journey begins anew at Level 1.",false);
+    }else{
+      el("resetBtn").setAttribute("data-armed","1");
+      el("resetBtn").textContent="⚠ Click again to confirm";
+      setTimeout(function(){el("resetBtn").textContent="⟲ Reset all progress";el("resetBtn").removeAttribute("data-armed");},4000);
+    }
+  };
+  el("backupBtn").onclick=function(){
+    var a=el("backupArea");
+    a.classList.toggle("hide");
+    if(!a.classList.contains("hide")){a.value=JSON.stringify(state);a.focus();a.select();}
+  };
+  el("restoreBtn").onclick=function(){
+    var a=el("backupArea");
+    if(a.classList.contains("hide")){a.classList.remove("hide");a.value="";a.placeholder="Paste backup JSON here, then press Restore again.";a.focus();return;}
+    try{
+      var s=JSON.parse(a.value);
+      if(!s||typeof s.level!=="number")throw new Error("bad");
+      var d=defaultState(); for(var k in d){if(!(k in s))s[k]=d[k];}
+      state=s; save(); render(); a.classList.add("hide");
+      toast("Restore Complete","Progress restored from backup.",true);
+    }catch(e){toast("Restore Failed","That doesn't look like valid backup data.",false);}
+  };
+
+  if(!hasLS){el("saveState").textContent="(Storage unavailable — progress lasts this session only)";}
+
+  checkDailyReset();
+  // pick up any titles that already qualify (e.g. restored data)
+  TITLES.forEach(function(tt){if(tt.test(state)&&state.seenTitles.indexOf(tt.id)<0)state.seenTitles.push(tt.id);});
+  render();
+})();
+</script>
+
+<script>
+/* --- System Bridge: focus banners --- */
+(function(){
+  function boot(){
+    var feed = window.__FOCUS_FEED__ || [];
+    var noFeed = window.__NO_FEED__ || [];
+    var today = new Date();
+    var ts = today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+    var t = null, no = null;
+    for(var i=0;i<feed.length;i++){ if(feed[i].date===ts) t = feed[i]; }
+    for(var i=0;i<noFeed.length;i++){ if(noFeed[i].date===ts) no = noFeed[i]; }
+    var wrap = document.querySelector(".wrap") || document.body;
+
+    var box = document.createElement("div");
+    box.className = "panel";
+    box.style.borderColor = "rgba(120,200,255,0.55)";
+    var mins = t ? t.minutes : 0;
+    var pct  = t ? t.productivePct : 0;
+    var gain = window.__FOCUS_GAIN__ || 0;
+    box.innerHTML =
+      '<div class="ptitle"><span class="dot"></span> FOCUS FEED &mdash; from your Productivity Coach <span class="ln"></span></div>' +
+      '<div style="display:flex;gap:26px;flex-wrap:wrap;align-items:baseline">' +
+        '<div><div style="font-family:ui-monospace,monospace;font-size:34px;color:#9be4ff;text-shadow:0 0 18px rgba(79,195,255,.5)">'+mins+'<span style="font-size:13px;color:#8197c2"> min</span></div><div style="font-size:11px;letter-spacing:.2em;color:#5d6f96;text-transform:uppercase">Focused today</div></div>' +
+        '<div><div style="font-family:ui-monospace,monospace;font-size:34px;color:'+(pct>=70?"#5fe3a1":pct>=40?"#ffb454":"#ff6b81")+'">'+pct+'<span style="font-size:13px;color:#8197c2">%</span></div><div style="font-size:11px;letter-spacing:.2em;color:#5d6f96;text-transform:uppercase">Locked in</div></div>' +
+        (gain>0 ? '<div><div style="font-family:ui-monospace,monospace;font-size:34px;color:#ffd877">+'+gain+'<span style="font-size:13px;color:#8197c2"> EXP</span></div><div style="font-size:11px;letter-spacing:.2em;color:#5d6f96;text-transform:uppercase">Credited this session</div></div>' : '') +
+      '</div>' +
+      '<div style="font-size:11px;color:#5d6f96;margin-top:10px">'+(t? 'Real deep-work minutes from the lifestyle tracker\'s mode log. Every deep-work minute is 1 EXP.' : 'No tracker data for today yet &mdash; run <b>py -3.12 src/mode_log.py</b> (or psychowl) and re-generate to see your focus here.')+'</div>';
+    if(wrap.firstChild) wrap.insertBefore(box, wrap.children[1] || null);
+    else wrap.appendChild(box);
+
+    var noGain = window.__NO_GAIN__ || 0;
+    var nightsGain = window.__NIGHTS_GAIN__ || 0;
+    var nightsCount = window.__NIGHTS_COUNT__ || 0;
+    var noBox = document.createElement("div");
+    noBox.className = "panel";
+    noBox.style.borderColor = "rgba(205,110,235,0.55)";
+    noBox.innerHTML =
+      '<div class="ptitle"><span class="dot" style="background:#cd6eeb;box-shadow:0 0 10px rgba(205,110,235,.6)"></span> NIGHTOWL FEED &mdash; focus blocks + clean wind-downs <span class="ln"></span></div>' +
+      '<div style="display:flex;gap:26px;flex-wrap:wrap;align-items:baseline">' +
+        '<div><div style="font-family:ui-monospace,monospace;font-size:34px;color:#cd6eeb;text-shadow:0 0 18px rgba(205,110,235,.5)">'+(no?no.minutes:0)+'<span style="font-size:13px;color:#8197c2"> min</span></div><div style="font-size:11px;letter-spacing:.2em;color:#5d6f96;text-transform:uppercase">Deep work blocks today</div></div>' +
+        '<div><div style="font-family:ui-monospace,monospace;font-size:34px;color:#9be4ff">'+nightsCount+'<span style="font-size:13px;color:#8197c2"> nights</span></div><div style="font-size:11px;letter-spacing:.2em;color:#5d6f96;text-transform:uppercase">Clean wind-downs banked</div></div>' +
+        ((noGain+nightsGain)>0 ? '<div><div style="font-family:ui-monospace,monospace;font-size:34px;color:#ffd877">+'+(noGain+nightsGain)+'<span style="font-size:13px;color:#8197c2"> EXP</span></div><div style="font-size:11px;letter-spacing:.2em;color:#5d6f96;text-transform:uppercase">Credited this session</div></div>' : '') +
+      '</div>' +
+      '<div style="font-size:11px;color:#5d6f96;margin-top:10px">Finishing a NightOwl focus-timer block pays '+1+' EXP/min. Holding a wind-down for '+3+'+ hours without overriding back to work/game banks +'+20+' EXP the next morning.</div>';
+    wrap.insertBefore(noBox, box.nextSibling);
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+</script>
+
+</body>
+</html>

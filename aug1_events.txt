@@ -1,0 +1,16 @@
+---
+summary: 🕯️ Night Ritual → Lights Out
+start: {'dateTime': '2026-08-01T00:45:00-07:00', 'timeZone': 'America/Los_Angeles'}
+end: {'dateTime': '2026-08-01T01:30:00-07:00', 'timeZone': 'America/Los_Angeles'}
+location: None
+desc: Candle, diffuser, the purple glow turned low, melatonin — let the room do half the work of shutting your brain off.
+---
+summary: 💳 Set Up Tuition Payment Plan — MyUCSC
+start: {'dateTime': '2026-08-01T10:10:00-07:00', 'timeZone': 'America/Los_Angeles'}
+end: {'dateTime': '2026-08-01T10:40:00-07:00', 'timeZone': 'America/Los_Angeles'}
+location: None
+desc: STEP-BY-STEP. 30 min.
+
+STEP 1 · 10:10 — FIND THE BILL (10 min)
+□ Log into MyUCSC, find the Student Billing / Financial Account section.
+□ Confirm your aid has finalized and see the current balance due

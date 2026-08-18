@@ -1,0 +1,66 @@
+{
+  "_comment": [
+    "Tunables for the mode resolver. The resolution LOGIC lives in",
+    "src/mode_log.py -- only the knobs are here, because the interesting part",
+    "(how idle interacts with passive content) has structure that a flat",
+    "lookup table would hide.",
+    "",
+    "The clock is a first-class input, not decoration. Bed + anime at 23:30 is",
+    "recovery; the identical camera frame and the identical window title at",
+    "14:00 is drift. Nothing but the hour separates them."
+  ],
+
+  "interval_seconds": 15,
+
+  "night_starts_hour": 22,
+  "night_ends_hour": 6,
+
+  "work_categories": ["work", "school", "trading", "creative"],
+  "leisure_categories": ["games", "social", "anime", "video", "shopping", "browsing"],
+
+  "trust_phone_detection": false,
+
+  "_trust_phone_note": [
+    "OFF because the phone IS the camera -- this rig streams from Iriun, so",
+    "the phone is mounted and can never appear in frame. Phone-in-hand is",
+    "therefore undetectable by construction.",
+    "",
+    "The detector can still fire, though: on someone else's phone, on a dark",
+    "rectangular object, on a wallet. Since the rule was written to OVERRIDE",
+    "everything on screen, leaving it on means a rule with no upside and real",
+    "downside. Off, `phone` is still recorded as a fact for analysis -- it",
+    "just no longer decides the mode.",
+    "",
+    "Flip to true if a dedicated webcam ever replaces the phone, which frees",
+    "the phone to be a tracked object again."
+  ],
+
+  "min_run_seconds": 90,
+
+  "_min_run_note": [
+    "A mode must hold for this long before it is committed to the log.",
+    "Without it, glancing at Discord for eight seconds carves a real work",
+    "block into three rows and the daily rollup reports fragmented focus that",
+    "never happened. Raise it if the log looks choppy; lower it if short",
+    "genuine switches are being swallowed."
+  ],
+
+  "log_dir": "logs",
+
+  "interventions_enabled": false,
+
+  "_interventions_note": [
+    "OFF by default -- this is the master switch for the watcher card",
+    "actually popping up on your screen. should_intervene() in mode_log.py",
+    "is fully implemented (which modes qualify, per-mode minute thresholds,",
+    "a 20-minute repeat cooldown per run) but every real card is gated",
+    "behind this flag first, so writing the logic never silently changed",
+    "what happens on your desktop.",
+    "",
+    "Flip to true to turn it on. Default thresholds: leisure/watching 45min,",
+    "on_phone/phone_night 15min, screen_abandoned 20min -- edit",
+    "INTERVENE_THRESHOLD_MINUTES in mode_log.py to change them.",
+    "work_paused and recovery never intervene (see the comment above",
+    "should_intervene() for why)."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "generated": "2026-08-17T10:59:16",
+  "xpPerFocusMin": 1,
+  "xpPerNightOwlMin": 1,
+  "cleanNightBonus": 20,
+  "days": [
+    {
+      "date": "2026-08-12",
+      "minutes": 72.8,
+      "productivePct": 8,
+      "deepWork": true
+    },
+    {
+      "date": "2026-08-13",
+      "minutes": 2.0,
+      "productivePct": 100,
+      "deepWork": false
+    }
+  ],
+  "nightowlDays": [],
+  "nightowlNights": [
+    {
+      "date": "2026-08-10",
+      "bonus": 20
+    },
+    {
+      "date": "2026-08-11",
+      "bonus": 20
+    },
+    {
+      "date": "2026-08-12",
+      "bonus": 20
+    }
+  ]
+}

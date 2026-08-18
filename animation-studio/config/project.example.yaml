@@ -1,0 +1,97 @@
+# animation-studio project config
+#
+# Copy to config/project.yaml and edit. project.yaml is gitignored; this
+# example file is the one that gets committed.
+#
+# Defaults below point at the SDXL checkpoints ALREADY on this machine
+# (installed with ComfyUI Desktop), so a first render needs no download at
+# all beyond the video backend.
+
+paths:
+  # Generated media lives OUTSIDE OneDrive on purpose. A short film is tens of
+  # GB of PNG sequences and intermediate clips; OneDrive will try to sync all
+  # of it, which is slow and can lock files while ffmpeg is writing them.
+  # Reference images and configs stay in the project (small, worth syncing).
+  work_root: C:/Users/aware/animstudio-work
+
+  # Where scripts/download_models.py puts the ncnn binaries.
+  models_root: ./models
+
+  ffmpeg: ffmpeg
+
+models:
+  # Animagine XL 4.0 -- anime/fantasy SDXL, already installed. Swap this line
+  # for sd_xl_base_1.0_0.9vae.safetensors if you want a photoreal look.
+  base_checkpoint: C:/Users/aware/AppData/Local/Comfy-Desktop/ComfyUI-Shared/models/checkpoints/animagine-xl-4.0.safetensors
+  base_kind: sdxl          # sdxl | sd15   (sd15 is required for animatediff)
+
+  # The SDXL 1.0 baked VAE produces NaN -> black images in fp16 on some cards.
+  # This fp16-fix VAE is the standard remedy and is already on disk.
+  vae: C:/Users/aware/AppData/Local/Comfy-Desktop/ComfyUI-Shared/models/vae/sdxl_vae_fp16fix.safetensors
+
+stages:
+  # ltx | wan | svd | animatediff  -- see README "Choosing a video backend"
+  video_backend: ltx
+  video_model: ""          # blank = the backend's default repo
+
+  upscaler: realesrgan     # realesrgan | lanczos | none
+  upscale_model: RealESRGAN_x4plus_anime_6B
+
+  interpolator: rife       # rife | ffmpeg | none
+
+  # Only read by the svd backend.
+  svd:
+    motion_bucket_id: 127  # ~80 = nearly still, ~180 = tearing
+    noise_aug_strength: 0.02
+    decode_chunk_size: 2
+
+  # Set these if the binaries are not on PATH and not under models_root.
+  # realesrgan_bin: C:/tools/realesrgan-ncnn-vulkan.exe
+  # rife_bin: C:/tools/rife-ncnn-vulkan.exe
+
+default_preset: draft
+
+# Applied to every shot, before the shot's own negative and each character's.
+negative_default: >-
+  worst quality, low quality, jpeg artifacts, watermark, signature, text,
+  extra fingers, deformed hands, mutated limbs, blurry, lowres
+
+presets:
+  draft:
+    width: 512
+    height: 512
+    keyframe_steps: 18
+    keyframe_cfg: 6.0
+    video_steps: 14
+    video_cfg: 5.0
+    fps: 12
+    upscale: false
+    interpolate: false
+
+  high:
+    width: 768
+    height: 768
+    keyframe_steps: 32
+    keyframe_cfg: 6.5
+    video_steps: 30
+    video_cfg: 5.5
+    fps: 12
+    upscale: true
+    interpolate: true
+    target_fps: 24
+    upscale_to_height: 1080
+
+  # A 16:9 variant, since the two above are square. Presets are just named
+  # bundles -- add as many as you like and select per shot with `preset:`.
+  high_wide:
+    width: 768
+    height: 448
+    keyframe_steps: 32
+    keyframe_cfg: 6.5
+    video_steps: 30
+    video_cfg: 5.5
+    fps: 12
+    upscale: true
+    interpolate: true
+    target_fps: 24
+    upscale_to_height: 1080

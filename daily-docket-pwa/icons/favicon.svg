@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Daily Docket">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2c1b52"/>
+      <stop offset="1" stop-color="#150c28"/>
+    </linearGradient>
+    <radialGradient id="bloom" cx="0.28" cy="0.16" r="0.78">
+      <stop offset="0" stop-color="#8b5cf6" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#efe8ff"/>
+      <stop offset="1" stop-color="#c9b3ff"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <clipPath id="bodyClip">
+      <rect x="72" y="128" width="368" height="320" rx="55"/>
+    </clipPath>
+  </defs>
+
+  <rect width="512" height="512" rx="115" fill="url(#plate)"/>
+  <rect width="512" height="512" rx="115" fill="url(#bloom)"/>
+
+  <rect x="166" y="48" width="31" height="70" rx="15.5" fill="#c9b3ff"/>
+  <rect x="315" y="48" width="31" height="70" rx="15.5" fill="#c9b3ff"/>
+
+  <rect x="72" y="128" width="368" height="320" rx="55" fill="url(#body)"/>
+  <g clip-path="url(#bodyClip)">
+    <rect x="72" y="128" width="368" height="83" fill="url(#band)"/>
+  </g>
+
+  <g fill="#2b1b4f" fill-opacity="0.36">
+    <rect x="122" y="255" width="66" height="49" rx="18"/>
+    <rect x="223" y="255" width="66" height="49" rx="18"/>
+    <rect x="324" y="255" width="66" height="49" rx="18"/>
+    <rect x="122" y="337" width="66" height="49" rx="18"/>
+    <rect x="324" y="337" width="66" height="49" rx="18"/>
+  </g>
+  <rect x="212" y="326" width="88" height="71" rx="28" fill="#f0b445" fill-opacity="0.28"/>
+  <rect x="223" y="337" width="66" height="49" rx="18" fill="#ffd580"/>
+</svg>

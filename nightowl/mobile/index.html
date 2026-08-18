@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NightOwl</title>
+<style>
+:root{
+  --bg1:#FEF7FC; --bg2:#F4EEFF; --card:#FFFFFF; --ink:#3A2647; --sub:#6C5480;
+  --line:#EFE2F5; --pink:#E0509F; --purple:#8B5CF6; --soft:#FBEDF7;
+  --shadow:0 8px 28px rgba(138,92,246,.13); --ok:#12A150; --warn:#E07A2F;
+}
+html[data-night="1"]{
+  --bg1:#1F1529; --bg2:#2B1E39; --card:#35263F; --ink:#F7EAF6; --sub:#C6ACD6;
+  --line:#453352; --pink:#F09AD4; --purple:#B98CE8; --soft:#3D2C4B;
+  --shadow:0 8px 28px rgba(0,0,0,.38); --ok:#5FD99B; --warn:#F3B36B;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; padding:28px 22px 60px;
+  font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  background:linear-gradient(150deg,var(--bg1),var(--bg2)); color:var(--ink);
+  min-height:100vh; transition:background .8s ease,color .4s ease;
+}
+.wrap{max-width:1220px;margin:0 auto}
+a{text-decoration:none;color:inherit}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.hello{font-size:31px;font-weight:700;letter-spacing:-.4px;margin:0 0 4px}
+.hello span{background:linear-gradient(100deg,var(--pink),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--sub);font-size:15px;margin:0}
+.clockbox{text-align:right}
+.clock{font-size:46px;font-weight:700;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;margin-top:8px;padding:5px 14px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:#fff;background:linear-gradient(100deg,var(--pink),var(--purple))}
+
+/* ---------- ribbon ---------- */
+.ribbon{background:var(--card);border-radius:20px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:20px;border:1px solid var(--line)}
+.rtop{display:flex;justify-content:space-between;font-size:13.5px;color:var(--sub);margin-bottom:12px;font-weight:600}
+.track{position:relative;height:16px;border-radius:999px;background:var(--soft);overflow:visible}
+.fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .6s}
+.mark{position:absolute;top:-6px;width:2px;height:28px;background:var(--sub);opacity:.45;border-radius:2px}
+.mark b{position:absolute;top:30px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:700;color:var(--sub);white-space:nowrap;opacity:.85}
+.dot{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--card);border:4px solid var(--pink);box-shadow:0 2px 10px rgba(224,80,159,.5);transition:left .6s}
+.rbot{display:flex;gap:26px;margin-top:38px;flex-wrap:wrap}
+.stat b{display:block;font-size:23px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat b .subms{font-size:.62em;font-weight:600;color:var(--sub);letter-spacing:-.2px}
+.stat span{font-size:12px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+
+/* ---------- modes ---------- */
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:11px;margin-bottom:22px}
+.mode{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 12px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:transform .16s,border-color .16s}
+.mode:hover{transform:translateY(-3px);border-color:var(--pink)}
+.mode .g{font-size:23px;line-height:1;margin-bottom:7px}
+.mode .n{font-weight:700;font-size:14.5px}
+.mode .d{font-size:11.5px;color:var(--sub);margin-top:3px}
+
+/* ---------- grid ---------- */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:20px}
+h2{font-size:16px;margin:0 0 16px;letter-spacing:.3px;display:flex;align-items:center;gap:9px}
+h2 em{font-style:normal;font-size:12px;color:var(--sub);font-weight:600;margin-left:auto}
+
+/* ---------- timer ---------- */
+.timerwrap{display:flex;align-items:center;gap:24px}
+.ring{position:relative;width:150px;height:150px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .t b{font-size:31px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.ring .t span{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.tbtns{display:flex;flex-direction:column;gap:8px;flex:1}
+
+/* ---------- agenda ---------- */
+.ag{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.ag:last-child{border-bottom:none}
+.ag .bar{width:4px;align-self:stretch;border-radius:3px;background:var(--line);flex-shrink:0}
+.ag.now .bar{background:linear-gradient(180deg,var(--pink),var(--purple))}
+.ag .m{flex:1;min-width:0}
+.ag .m b{display:block;font-size:14px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag.done .m b{opacity:.5;text-decoration:line-through}
+.ag .m span{font-size:12px;color:var(--sub)}
+.ag .tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:7px;background:var(--soft);color:var(--pink);flex-shrink:0}
+.ag.now .tag{background:linear-gradient(100deg,var(--pink),var(--purple));color:#fff}
+button{font-family:inherit;font-size:14px;font-weight:650;padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer;transition:transform .14s,filter .14s}
+button:hover{transform:translateY(-2px)}
+button.primary{background:linear-gradient(100deg,var(--pink),var(--purple));color:#fff;border:none}
+.presets{display:flex;gap:7px}
+.presets button{flex:1;padding:8px 6px;font-size:12.5px}
+
+/* ---------- anime ---------- */
+.ep{display:flex;align-items:center;gap:13px;padding:11px 0;border-bottom:1px solid var(--line)}
+.ep:last-child{border-bottom:none}
+.ep img{width:42px;height:58px;object-fit:cover;border-radius:8px;flex-shrink:0;background:var(--soft)}
+.ep .m{flex:1;min-width:0}
+.ep .m b{display:block;font-size:14px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep .m span{font-size:12px;color:var(--sub)}
+.when{text-align:right;flex-shrink:0}
+.when b{display:block;font-size:14px;font-weight:700}
+.when span{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px}
+.tonight{color:var(--pink)}
+.qbtn{border:1px solid var(--line);background:var(--soft);border-radius:9px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.prog{height:5px;border-radius:3px;background:var(--soft);margin-top:5px;overflow:hidden}
+.prog i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--pink),var(--purple))}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}
+.s{position:relative;border-radius:12px;overflow:hidden;background:var(--soft);cursor:pointer;aspect-ratio:2/3}
+.s img{width:100%;height:100%;object-fit:cover;display:block}
+.s .ov{position:absolute;inset:auto 0 0 0;padding:22px 8px 7px;background:linear-gradient(transparent,rgba(20,10,28,.92));color:#fff}
+.s .ov b{font-size:11px;font-weight:700;display:block;line-height:1.25;max-height:28px;overflow:hidden}
+.s .add{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:8px;background:rgba(255,255,255,.93);color:#3A2647;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s}
+.s:hover .add{opacity:1}
+.sc{position:absolute;top:6px;left:6px;background:rgba(20,10,28,.72);color:#fff;font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:6px}
+
+/* ---------- launch ---------- */
+.launch{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.launch a{background:var(--soft);border:1px solid var(--line);border-radius:13px;padding:13px 8px;text-align:center;font-size:13px;font-weight:650;transition:transform .15s,border-color .15s}
+.launch a:hover{transform:translateY(-3px);border-color:var(--purple)}
+.muted{color:var(--sub);font-size:13.5px;line-height:1.6}
+footer{text-align:center;color:var(--sub);font-size:12px;margin-top:30px}
+.toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,90px);background:linear-gradient(100deg,var(--pink),var(--purple));color:#fff;padding:13px 24px;border-radius:14px;font-weight:650;font-size:14px;box-shadow:0 8px 26px rgba(0,0,0,.28);transition:transform .34s;z-index:99}
+.toast.on{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <p class="hello">Good <span id="partofday">evening</span>.</p>
+    <p class="sub" id="datestr"></p>
+  </div>
+  <div class="clockbox">
+    <div class="clock" id="clock">--:--</div>
+    <div class="pill" id="phase">--</div>
+  </div>
+</header>
+
+<div class="ribbon">
+  <div class="rtop"><span id="wakeLbl">Awake</span><span id="bedLbl">Bed</span></div>
+  <div class="track">
+    <div class="fill" id="fill"></div>
+    <div class="mark" id="wdMark"><b>wind-down</b></div>
+    <div class="dot" id="dot"></div>
+  </div>
+  <div class="rbot">
+    <div class="stat"><b id="sAwake">-</b><span>awake</span></div>
+    <div class="stat"><b id="sToBed">-</b><span>until bed</span></div>
+    <div class="stat"><b id="sWind">-</b><span>until wind-down</span></div>
+    <div class="stat"><b id="sScreen">-</b><span>screen target</span></div>
+    <div class="stat"><b id="sMode">-</b><span>last mode</span></div>
+  </div>
+</div>
+
+<div class="modes">
+  <div class="mode" onclick="go('mode/work','Work mode')"><div class="g">&#9635;</div><div class="n">Work</div><div class="d">quiet + fast</div></div>
+  <div class="mode" onclick="go('mode/game','Game mode')"><div class="g">&#9670;</div><div class="n">Game</div><div class="d">game mode on</div></div>
+  <div class="mode" onclick="go('mode/anime','Anime mode')"><div class="g">&#9654;</div><div class="n">Anime</div><div class="d">no screen sleep</div></div>
+  <div class="mode" onclick="go('mode/winddown','Wind-down')"><div class="g">&#9789;</div><div class="n">Wind-down</div><div class="d">warm + dim</div></div>
+  <div class="mode" onclick="go('mode/reset','Reset')"><div class="g">&#9679;</div><div class="n">Reset</div><div class="d">back to default</div></div>
+  <div class="mode" onclick="go('sync','Rebuilding');setTimeout(()=>location.reload(),2600)"><div class="g">&#8635;</div><div class="n">Refresh</div><div class="d">rebuild data</div></div>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="card">
+      <h2>Today<em id="agendaSynced"></em></h2>
+      <div id="agenda"></div>
+    </div>
+
+    <div class="card">
+      <h2>Focus timer<em id="tmrLabel">deep work</em></h2>
+      <div class="timerwrap">
+        <div class="ring">
+          <svg width="150" height="150">
+            <circle cx="75" cy="75" r="66" fill="none" stroke="var(--soft)" stroke-width="13"/>
+            <circle cx="75" cy="75" r="66" fill="none" stroke="url(#g)" stroke-width="13"
+                    stroke-linecap="round" id="arc" stroke-dasharray="414.7" stroke-dashoffset="0"/>
+            <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="var(--pink)"/><stop offset="1" stop-color="var(--purple)"/>
+            </linearGradient></defs>
+          </svg>
+          <div class="t"><b id="tmr">50:00</b><span id="tmrState">ready</span></div>
+        </div>
+        <div class="tbtns">
+          <button class="primary" id="startBtn" onclick="toggle()">Start</button>
+          <button onclick="resetT()">Reset</button>
+          <div class="presets">
+            <button onclick="setT(25,'pomodoro')">25</button>
+            <button onclick="setT(50,'deep work')">50</button>
+            <button onclick="setT(90,'long block')">90</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Screen<em>circadian curve</em></h2>
+      <p class="muted" id="screenNote"></p>
+      <div class="presets" style="margin-top:14px">
+        <button onclick="go('warmer','Warmer')">&#8722; warmer</button>
+        <button onclick="go('cooler','Cooler')">&#43; cooler</button>
+        <button onclick="go('warmthreset','Bias cleared')">auto</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Launch</h2>
+      <div class="launch" id="apps"></div>
+    </div>
+
+    <div class="card">
+      <h2>Games<em id="gameNote"></em></h2>
+      <div class="launch" id="games"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2>Airing<em id="seasonLbl"></em></h2>
+      <div id="upcoming"></div>
+    </div>
+
+    <div class="card">
+      <h2>My queue<em id="queueNote"></em></h2>
+      <div id="queue"></div>
+    </div>
+
+    <div class="card">
+      <h2>This season<em>click to track</em></h2>
+      <div class="sgrid" id="seasonal"></div>
+    </div>
+  </div>
+</div>
+
+<footer>NightOwl &middot; data built <span id="built"></span> &middot; <span id="staleNote"></span></footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const D = {"generatedAt": "2026-08-03 16:32", "config": {"wake": "07:30", "bedtime": "01:30", "windDownMinutes": 60, "eyeBreakMinutes": 25, "deepWorkMinutes": 50, "gameBudgetMinutes": 120}, "state": {"mode": "work", "lastGameMinutes": null, "kelvinOffset": 0}, "anime": {"season": "Summer 2026", "stale": false, "upcoming": [{"id": 128757, "title": "Young Ladies Don't Play Fighting Games", "episode": 5, "at": "2026-08-04T04:30:00", "date": "2026-08-04", "day": "Tue", "time": "04:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx128757-Iqc6hTjEYIz4.png", "color": "#436bff", "url": "https://anilist.co/anime/128757"}, {"id": 187260, "title": "I Want to Love You Till Your Dying Day", "episode": 5, "at": "2026-08-04T05:30:00", "date": "2026-08-04", "day": "Tue", "time": "05:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx187260-WW5RBa5NINRP.jpg", "color": "#e4ae35", "url": "https://anilist.co/anime/187260"}, {"id": 213665, "title": "Saved By the Ice Cold Prince's Embrace", "episode": 5, "at": "2026-08-04T05:55:00", "date": "2026-08-04", "day": "Tue", "time": "05:55", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213665-E6byznDKrKY0.png", "color": "#1aaee4", "url": "https://anilist.co/anime/213665"}, {"id": 196219, "title": "The Oblivious Saint Can't Contain Her Power", "episode": 6, "at": "2026-08-04T06:00:00", "date": "2026-08-04", "day": "Tue", "time": "06:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196219-imvC0rbk4VzH.jpg", "color": "#5daee4", "url": "https://anilist.co/anime/196219"}, {"id": 177699, "title": "THE GHOST IN THE SHELL", "episode": 5, "at": "2026-08-04T07:00:00", "date": "2026-08-04", "day": "Tue", "time": "07:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx177699-hnzc1CS5ZSM2.png", "color": "#c084fc", "url": "https://anilist.co/anime/177699"}, {"id": 209800, "title": "Yoroi-Shinden Samurai Troopers Cour 2", "episode": 5, "at": "2026-08-04T07:30:00", "date": "2026-08-04", "day": "Tue", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209800-v3TIdNz1AV0X.jpg", "color": "#e4a143", "url": "https://anilist.co/anime/209800"}, {"id": 198709, "title": "Victoria of Many Faces", "episode": 5, "at": "2026-08-04T08:00:00", "date": "2026-08-04", "day": "Tue", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198709-3PFLvU6eqPvf.jpg", "color": "#5da1e4", "url": "https://anilist.co/anime/198709"}, {"id": 213847, "title": "Star Wars: Visions Presents - The Ninth Jedi", "episode": 1, "at": "2026-08-04T08:00:00", "date": "2026-08-04", "day": "Tue", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213847-emdj0kmGX3vv.jpg", "color": "#43e4a1", "url": "https://anilist.co/anime/213847"}, {"id": 207809, "title": "Red River", "episode": 5, "at": "2026-08-04T09:35:00", "date": "2026-08-04", "day": "Tue", "time": "09:35", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207809-cpS7CAyjN7iP.jpg", "color": "#e4bb5d", "url": "https://anilist.co/anime/207809"}, {"id": 198946, "title": "Clevatess Season 2", "episode": 5, "at": "2026-08-05T05:00:00", "date": "2026-08-05", "day": "Wed", "time": "05:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198946-IGXmbqBEYRYD.jpg", "color": "#f1bb5d", "url": "https://anilist.co/anime/198946"}, {"id": 135865, "title": "Saga of Tanya the Evil Season 2", "episode": 5, "at": "2026-08-05T05:30:00", "date": "2026-08-05", "day": "Wed", "time": "05:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx135865-T7XIPMAbqcxN.png", "color": "#e46b28", "url": "https://anilist.co/anime/135865"}, {"id": 213666, "title": "Perfect Addiction", "episode": 5, "at": "2026-08-05T06:00:00", "date": "2026-08-05", "day": "Wed", "time": "06:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213666-nnKcumRblZi1.jpg", "color": "#e4bba1", "url": "https://anilist.co/anime/213666"}, {"id": 192800, "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!", "episode": 7, "at": "2026-08-05T06:30:00", "date": "2026-08-05", "day": "Wed", "time": "06:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx192800-r8zlO0VY0jJP.jpg", "color": "#f1e4ae", "url": "https://anilist.co/anime/192800"}, {"id": 159309, "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2", "episode": 5, "at": "2026-08-05T07:30:00", "date": "2026-08-05", "day": "Wed", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx159309-wRfh9O1odrDJ.jpg", "color": "#e4c986", "url": "https://anilist.co/anime/159309"}, {"id": 196356, "title": "My Stepmother and Stepsisters Aren’t Wicked", "episode": 5, "at": "2026-08-05T07:30:00", "date": "2026-08-05", "day": "Wed", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196356-2TNt2b9tu0jm.jpg", "color": "#93f1c9", "url": "https://anilist.co/anime/196356"}, {"id": 194829, "title": "From Old Country Bumpkin to Master Swordsman II", "episode": 5, "at": "2026-08-05T07:46:00", "date": "2026-08-05", "day": "Wed", "time": "07:46", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx194829-bZKwhfo60EuF.jpg", "color": "#aed6e4", "url": "https://anilist.co/anime/194829"}, {"id": 197715, "title": "The Villager of Level 999", "episode": 7, "at": "2026-08-05T08:00:00", "date": "2026-08-05", "day": "Wed", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx197715-KLFLxU24U1uL.png", "color": "#5daef1", "url": "https://anilist.co/anime/197715"}, {"id": 213961, "title": "Youjo Shenki 2", "episode": 5, "at": "2026-08-05T08:00:00", "date": "2026-08-05", "day": "Wed", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b213961-x2ZvvtkYSTC9.png", "color": "#f1d693", "url": "https://anilist.co/anime/213961"}, {"id": 207254, "title": "Thunder 3", "episode": 5, "at": "2026-08-05T08:44:00", "date": "2026-08-05", "day": "Wed", "time": "08:44", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207254-StcuNpmZTDCL.jpg", "color": "#1a93e4", "url": "https://anilist.co/anime/207254"}, {"id": 209669, "title": "Hana-Kimi Season 2", "episode": 7, "at": "2026-08-05T09:00:00", "date": "2026-08-05", "day": "Wed", "time": "09:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209669-7GlPe2ra5f1i.jpg", "color": "#436be4", "url": "https://anilist.co/anime/209669"}, {"id": 203880, "title": "Dara-san of the Reiwa Era", "episode": 6, "at": "2026-08-06T05:30:00", "date": "2026-08-06", "day": "Thu", "time": "05:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx203880-lnruKftb27Nr.png", "color": "#c084fc", "url": "https://anilist.co/anime/203880"}, {"id": 201667, "title": "Bungo Stray Dogs WAN! 2", "episode": 6, "at": "2026-08-06T05:40:00", "date": "2026-08-06", "day": "Thu", "time": "05:40", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx201667-oqaW97DQ7HUj.jpg", "color": "#e46b5d", "url": "https://anilist.co/anime/201667"}, {"id": 198376, "title": "BanG Dream! YUME∞MITA", "episode": 8, "at": "2026-08-06T07:00:00", "date": "2026-08-06", "day": "Thu", "time": "07:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198376-sc5qcFv0RSH9.jpg", "color": "#a1f150", "url": "https://anilist.co/anime/198376"}, {"id": 108992, "title": "Mebius Dust", "episode": 5, "at": "2026-08-06T07:30:00", "date": "2026-08-06", "day": "Thu", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx108992-skuOsfmLmMd2.jpg", "color": "#50bbc9", "url": "https://anilist.co/anime/108992"}, {"id": 196187, "title": "Smoking Behind the Supermarket with You", "episode": 5, "at": "2026-08-06T07:56:00", "date": "2026-08-06", "day": "Thu", "time": "07:56", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196187-0dgFi2CPp3xn.jpg", "color": "#f1c9bb", "url": "https://anilist.co/anime/196187"}, {"id": 208044, "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage", "episode": 7, "at": "2026-08-06T08:00:00", "date": "2026-08-06", "day": "Thu", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208044-Pm2UhvApQFUh.jpg", "color": "#f1d61a", "url": "https://anilist.co/anime/208044"}, {"id": 180136, "title": "The Exiled Heavy Knight Knows How to Game the System", "episode": 6, "at": "2026-08-06T08:26:00", "date": "2026-08-06", "day": "Thu", "time": "08:26", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx180136-gtMTCRlOD4OE.jpg", "color": "#50c9fe", "url": "https://anilist.co/anime/180136"}, {"id": 207141, "title": "Chainsmoker Cat", "episode": 6, "at": "2026-08-06T08:30:00", "date": "2026-08-06", "day": "Thu", "time": "08:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207141-h5q5KJPd6vaX.jpg", "color": "#50a1f1", "url": "https://anilist.co/anime/207141"}, {"id": 204466, "title": "KAIJU GIRL CARAMELISE", "episode": 6, "at": "2026-08-06T09:28:00", "date": "2026-08-06", "day": "Thu", "time": "09:28", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx204466-vXMvIs4VOoQd.png", "color": "#e45d78", "url": "https://anilist.co/anime/204466"}, {"id": 199748, "title": "I Became a Legend After My 10 Year-Long Last Stand", "episode": 6, "at": "2026-08-07T06:30:00", "date": "2026-08-07", "day": "Fri", "time": "06:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199748-PAFk9pGSUmFL.png", "color": "#5dd6f1", "url": "https://anilist.co/anime/199748"}, {"id": 196218, "title": "The Frontier Lord Begins with Zero Subjects", "episode": 6, "at": "2026-08-07T06:30:00", "date": "2026-08-07", "day": "Fri", "time": "06:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196218-UsdTTCrwpDIN.jpg", "color": "#febb50", "url": "https://anilist.co/anime/196218"}, {"id": 182616, "title": "The Elusive Samurai Season 2", "episode": 4, "at": "2026-08-07T07:30:00", "date": "2026-08-07", "day": "Fri", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx182616-ZOCgArw9cgqI.jpg", "color": "#e45050", "url": "https://anilist.co/anime/182616"}, {"id": 188525, "title": "Draw This, Then Die!", "episode": 6, "at": "2026-08-07T07:30:00", "date": "2026-08-07", "day": "Fri", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx188525-uWhw4rQcqOyF.jpg", "color": "#e48650", "url": "https://anilist.co/anime/188525"}, {"id": 203490, "title": "Please Excuse My Younger Brothers", "episode": 6, "at": "2026-08-07T08:00:00", "date": "2026-08-07", "day": "Fri", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx203490-YQXiymUiDQNA.jpg", "color": "#fef150", "url": "https://anilist.co/anime/203490"}, {"id": 209983, "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2", "episode": 6, "at": "2026-08-07T09:00:00", "date": "2026-08-07", "day": "Fri", "time": "09:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209983-sFOcKyqMufxb.jpg", "color": "#0dbbf1", "url": "https://anilist.co/anime/209983"}, {"id": 207674, "title": "KAMUI ---He's behind you", "episode": 6, "at": "2026-08-07T09:30:00", "date": "2026-08-07", "day": "Fri", "time": "09:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207674-BT8lFAwH1WrL.jpg", "color": "#c084fc", "url": "https://anilist.co/anime/207674"}, {"id": 213831, "title": "Snack Hazama", "episode": 6, "at": "2026-08-07T09:42:00", "date": "2026-08-07", "day": "Fri", "time": "09:42", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213831-jrH7JR6feW1q.png", "color": "#e48628", "url": "https://anilist.co/anime/213831"}, {"id": 212308, "title": "Pan no Akachan (TV)", "episode": 6, "at": "2026-08-07T16:30:00", "date": "2026-08-07", "day": "Fri", "time": "16:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx212308-HUdh20Djd7cm.jpg", "color": "#1abbd6", "url": "https://anilist.co/anime/212308"}, {"id": 211308, "title": "THE RIBBON HERO", "episode": 1, "at": "2026-08-08T02:01:00", "date": "2026-08-08", "day": "Sat", "time": "02:01", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b211308-88VZiAPkkXZV.jpg", "color": "#f12843", "url": "https://anilist.co/anime/211308"}, {"id": 186863, "title": "The Cat and the Dragon", "episode": 7, "at": "2026-08-08T05:00:00", "date": "2026-08-08", "day": "Sat", "time": "05:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx186863-AO4efoB8HuzA.png", "color": "#e4e45d", "url": "https://anilist.co/anime/186863"}, {"id": 187538, "title": "BLACK TORCH", "episode": 6, "at": "2026-08-08T06:00:00", "date": "2026-08-08", "day": "Sat", "time": "06:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx187538-fXVXKYUA3VV6.jpg", "color": "#435dff", "url": "https://anilist.co/anime/187538"}, {"id": 206249, "title": "Recommendations from Iwamoto-Senpai", "episode": 6, "at": "2026-08-08T06:30:00", "date": "2026-08-08", "day": "Sat", "time": "06:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206249-1AUSry416wGz.png", "color": "#fed650", "url": "https://anilist.co/anime/206249"}, {"id": 185874, "title": "BLEACH: Thousand-Year Blood War - The Calamity", "episode": 3, "at": "2026-08-08T07:00:00", "date": "2026-08-08", "day": "Sat", "time": "07:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185874-aU3e6tBT6wwA.jpg", "color": "#c084fc", "url": "https://anilist.co/anime/185874"}, {"id": 190569, "title": "Jaadugar: A Witch in Mongolia", "episode": 7, "at": "2026-08-08T07:30:00", "date": "2026-08-08", "day": "Sat", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx190569-KnCQLI3Z8hPX.jpg", "color": "#50a1e4", "url": "https://anilist.co/anime/190569"}, {"id": 196017, "title": "Grow Up Show", "episode": 6, "at": "2026-08-08T08:00:00", "date": "2026-08-08", "day": "Sat", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196017-GynDNdbDzqzk.jpg", "color": "#f1ae1a", "url": "https://anilist.co/anime/196017"}, {"id": 194219, "title": "The Ogre's Bride", "episode": 6, "at": "2026-08-08T08:30:00", "date": "2026-08-08", "day": "Sat", "time": "08:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b194219-56EhyK775lga.jpg", "color": "#ff7835", "url": "https://anilist.co/anime/194219"}, {"id": 185692, "title": "Magilumiere Magical Girls Inc. Season 2", "episode": 6, "at": "2026-08-08T08:55:00", "date": "2026-08-08", "day": "Sat", "time": "08:55", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185692-1a8huwOIx7gw.jpg", "color": "#5dc9e4", "url": "https://anilist.co/anime/185692"}, {"id": 185875, "title": "Magical Girl Lyrical Nanoha EXCEEDS Gun Blaze Vengeance", "episode": 6, "at": "2026-08-08T09:00:00", "date": "2026-08-08", "day": "Sat", "time": "09:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185875-XMvDVlIUZODx.jpg", "color": "#e46b43", "url": "https://anilist.co/anime/185875"}, {"id": 208225, "title": "The Duke’s Son Claims He Won’t Love Me Yet Showers Me with Adoration", "episode": 6, "at": "2026-08-08T09:30:00", "date": "2026-08-08", "day": "Sat", "time": "09:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208225-HJbCC0Z4xRp3.jpg", "color": "#e4bb28", "url": "https://anilist.co/anime/208225"}, {"id": 199066, "title": "Hanaori-san Still Wants to Fight in the Next Life", "episode": 5, "at": "2026-08-08T10:00:00", "date": "2026-08-08", "day": "Sat", "time": "10:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199066-YXDVsguvFZMm.jpg", "color": "#43bbe4", "url": "https://anilist.co/anime/199066"}, {"id": 201514, "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School", "episode": 6, "at": "2026-08-08T10:38:00", "date": "2026-08-08", "day": "Sat", "time": "10:38", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx201514-BHAeWhSbcBrT.png", "color": "#e48650", "url": "https://anilist.co/anime/201514"}, {"id": 208824, "title": "Plannosaurus Gachi Koseibutsu-bu", "episode": 5, "at": "2026-08-08T15:00:00", "date": "2026-08-08", "day": "Sat", "time": "15:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208824-JeKq65nNiFhA.png", "color": "#d6e41a", "url": "https://anilist.co/anime/208824"}, {"id": 200230, "title": "Let's go KAIKIGUMI", "episode": 6, "at": "2026-08-09T00:30:00", "date": "2026-08-09", "day": "Sun", "time": "00:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx200230-YuzdgbXSgi38.png", "color": "#e45d43", "url": "https://anilist.co/anime/200230"}, {"id": 210031, "title": "You and I Are Polar Opposites Season 2", "episode": 6, "at": "2026-08-09T01:00:00", "date": "2026-08-09", "day": "Sun", "time": "01:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx210031-TppgcHZh46LY.jpg", "color": "#fe5093", "url": "https://anilist.co/anime/210031"}, {"id": 204060, "title": "Iron Wok Jan!", "episode": 6, "at": "2026-08-09T01:30:00", "date": "2026-08-09", "day": "Sun", "time": "01:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx204060-bKhovD8jAlW8.jpg", "color": "#f1931a", "url": "https://anilist.co/anime/204060"}, {"id": 198409, "title": "The World's Strongest Rearguard", "episode": 6, "at": "2026-08-09T06:00:00", "date": "2026-08-09", "day": "Sun", "time": "06:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198409-EiWJXfYnvfu4.png", "color": "#0dbbfe", "url": "https://anilist.co/anime/198409"}, {"id": 200637, "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3", "episode": 6, "at": "2026-08-09T06:30:00", "date": "2026-08-09", "day": "Sun", "time": "06:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx200637-QLR5uv9SbQ69.jpg", "color": "#f193bb", "url": "https://anilist.co/anime/200637"}, {"id": 103303, "title": "Sparks of Tomorrow", "episode": 6, "at": "2026-08-09T07:00:00", "date": "2026-08-09", "day": "Sun", "time": "07:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx103303-IF43hFJPPv2Y.png", "color": "#fec950", "url": "https://anilist.co/anime/103303"}, {"id": 21, "title": "ONE PIECE", "episode": 1173, "at": "2026-08-09T07:16:00", "date": "2026-08-09", "day": "Sun", "time": "07:16", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg", "color": "#e49335", "url": "https://anilist.co/anime/21"}, {"id": 188139, "title": "Though I Am an Inept Villainess", "episode": 5, "at": "2026-08-09T07:46:00", "date": "2026-08-09", "day": "Sun", "time": "07:46", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx188139-1qIJfWxym8FX.jpg", "color": "#0d86fe", "url": "https://anilist.co/anime/188139"}, {"id": 178789, "title": "Mushoku Tensei: Jobless Reincarnation Season 3", "episode": 7, "at": "2026-08-09T08:00:00", "date": "2026-08-09", "day": "Sun", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx178789-hNXjKFzUq7mk.jpg", "color": "#28bbe4", "url": "https://anilist.co/anime/178789"}, {"id": 177637, "title": "Goodbye, Lara", "episode": 6, "at": "2026-08-09T08:30:00", "date": "2026-08-09", "day": "Sun", "time": "08:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx177637-8onaQWqKW1C3.jpg", "color": "#5daee4", "url": "https://anilist.co/anime/177637"}, {"id": 205116, "title": "Aware! Meisaku-kun (2026)", "episode": 6, "at": "2026-08-09T08:45:00", "date": "2026-08-09", "day": "Sun", "time": "08:45", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx205116-160t0jWDkIdK.png", "color": "#ffc91a", "url": "https://anilist.co/anime/205116"}, {"id": 169080, "title": "Anime AzurLane: Slow Ahead! Season 2", "episode": 6, "at": "2026-08-09T09:00:00", "date": "2026-08-09", "day": "Sun", "time": "09:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169080-el4sMLlqMxeI.png", "color": "#fefe28", "url": "https://anilist.co/anime/169080"}, {"id": 213359, "title": "Theatre of Darkness: Yamishibai 17", "episode": 5, "at": "2026-08-09T11:20:00", "date": "2026-08-09", "day": "Sun", "time": "11:20", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213359-VDIZoZHMA0LI.jpg", "color": "#c084fc", "url": "https://anilist.co/anime/213359"}, {"id": 169582, "title": "The Insipid Prince's Furtive Grab for the Throne", "episode": 6, "at": "2026-08-10T04:57:00", "date": "2026-08-10", "day": "Mon", "time": "04:57", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169582-quL8VMg45fcu.png", "color": "#f1e4c9", "url": "https://anilist.co/anime/169582"}, {"id": 202269, "title": "Love Unseen Beneath the Clear Night Sky", "episode": 6, "at": "2026-08-10T05:00:00", "date": "2026-08-10", "day": "Mon", "time": "05:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202269-7KNj8s2fSsJJ.jpg", "color": "#5da1e4", "url": "https://anilist.co/anime/202269"}, {"id": 185542, "title": "Skeleton Knight in Another World Season 2", "episode": 6, "at": "2026-08-10T06:00:00", "date": "2026-08-10", "day": "Mon", "time": "06:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185542-6a9LCWlLHa0T.jpg", "color": "#286bbb", "url": "https://anilist.co/anime/185542"}, {"id": 206521, "title": "The World Is Dancing", "episode": 7, "at": "2026-08-10T06:00:00", "date": "2026-08-10", "day": "Mon", "time": "06:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206521-ecJuDgjth84C.png", "color": "#e45d78", "url": "https://anilist.co/anime/206521"}, {"id": 199408, "title": "A Livid Lady’s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires", "episode": 6, "at": "2026-08-10T06:30:00", "date": "2026-08-10", "day": "Mon", "time": "06:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199408-ocRWG4pRWl8f.png", "color": "#f1ae35", "url": "https://anilist.co/anime/199408"}, {"id": 209504, "title": "The Forsaken Saintess and Her Foodie Roadtrip in Another World", "episode": 6, "at": "2026-08-10T07:00:00", "date": "2026-08-10", "day": "Mon", "time": "07:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209504-yRxHWxKuNGtg.jpg", "color": "#bbe40d", "url": "https://anilist.co/anime/209504"}, {"id": 195833, "title": "Flaming Dodgeball Girl Danko", "episode": 6, "at": "2026-08-10T07:00:00", "date": "2026-08-10", "day": "Mon", "time": "07:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195833-h7x6i3NQWROA.jpg", "color": "#f1860d", "url": "https://anilist.co/anime/195833"}, {"id": 169583, "title": "Oh Boy, Was I Wrong About Her", "episode": 6, "at": "2026-08-10T07:30:00", "date": "2026-08-10", "day": "Mon", "time": "07:30", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169583-0ZTdBGrKNIbe.jpg", "color": "#50c9fe", "url": "https://anilist.co/anime/169583"}, {"id": 199111, "title": "Grand Blue Dreaming Season 3", "episode": 6, "at": "2026-08-10T08:00:00", "date": "2026-08-10", "day": "Mon", "time": "08:00", "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199111-gBSuBG61ElcW.jpg", "color": "#5daed6", "url": "https://anilist.co/anime/199111"}], "queue": [{"id": 21, "title": "ONE PIECE", "progress": 0, "episodes": null, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg", "color": "#e49335", "url": "https://anilist.co/anime/21", "nextEpisode": 1173, "nextAiringAt": 1786284960, "score": 87}, {"id": 178025, "title": "Gachiakuta", "progress": 4, "episodes": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx178025-cWJKEsZynkil.jpg", "color": "#e4a150", "url": "https://anilist.co/anime/178025", "nextEpisode": null, "nextAiringAt": null, "score": 82}], "seasonal": [{"id": 178789, "title": "Mushoku Tensei: Jobless Reincarnation Season 3", "romaji": "Mushoku Tensei III: Isekai Ittara Honki Dasu", "episodes": 14, "score": 85, "genres": ["Adventure", "Drama", "Ecchi"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx178789-hNXjKFzUq7mk.jpg", "color": "#28bbe4", "url": "https://anilist.co/anime/178789", "nextEpisode": 7, "nextAiringAt": 1786287600}, {"id": 196187, "title": "Smoking Behind the Supermarket with You", "romaji": "Super no Ura de Yani Suu Futari", "episodes": 12, "score": 82, "genres": ["Comedy", "Romance", "Slice of Life"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196187-0dgFi2CPp3xn.jpg", "color": "#f1c9bb", "url": "https://anilist.co/anime/196187", "nextEpisode": 5, "nextAiringAt": 1786028160}, {"id": 135865, "title": "Saga of Tanya the Evil Season 2", "romaji": "Youjo Senki II", "episodes": 12, "score": 81, "genres": ["Action", "Fantasy"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx135865-T7XIPMAbqcxN.png", "color": "#e46b28", "url": "https://anilist.co/anime/135865", "nextEpisode": 5, "nextAiringAt": 1785933000}, {"id": 185874, "title": "BLEACH: Thousand-Year Blood War - The Calamity", "romaji": "BLEACH: Sennen Kessen-hen - Kashin-tan", "episodes": 10, "score": 88, "genres": ["Action", "Adventure", "Supernatural"], "format": "TV", "status": "RELEASING", "duration": null, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185874-aU3e6tBT6wwA.jpg", "color": "#c084fc", "url": "https://anilist.co/anime/185874", "nextEpisode": 3, "nextAiringAt": 1786197600}, {"id": 207141, "title": "Chainsmoker Cat", "romaji": "Yani Neko", "episodes": null, "score": 67, "genres": ["Comedy", "Slice of Life"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207141-h5q5KJPd6vaX.jpg", "color": "#50a1f1", "url": "https://anilist.co/anime/207141", "nextEpisode": 6, "nextAiringAt": 1786030200}, {"id": 187538, "title": "BLACK TORCH", "romaji": "BLACK TORCH", "episodes": null, "score": 71, "genres": ["Action", "Adventure", "Fantasy"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx187538-fXVXKYUA3VV6.jpg", "color": "#435dff", "url": "https://anilist.co/anime/187538", "nextEpisode": 6, "nextAiringAt": 1786194000}, {"id": 180136, "title": "The Exiled Heavy Knight Knows How to Game the System", "romaji": "Tsuihou Sareta Tensei Juukishi wa Game Chishiki de Musou Suru", "episodes": 26, "score": 67, "genres": ["Action", "Fantasy"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx180136-gtMTCRlOD4OE.jpg", "color": "#50c9fe", "url": "https://anilist.co/anime/180136", "nextEpisode": 6, "nextAiringAt": 1786029960}, {"id": 210031, "title": "You and I Are Polar Opposites Season 2", "romaji": "Seihantai na Kimi to Boku 2nd Season", "episodes": 13, "score": 81, "genres": ["Comedy", "Drama", "Romance"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx210031-TppgcHZh46LY.jpg", "color": "#fe5093", "url": "https://anilist.co/anime/210031", "nextEpisode": 6, "nextAiringAt": 1786262400}, {"id": 103303, "title": "Sparks of Tomorrow", "romaji": "Nijusseiki Denki Mokuroku: Eureka Evrika", "episodes": 13, "score": 76, "genres": ["Adventure", "Romance"], "format": "TV", "status": "RELEASING", "duration": 25, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx103303-IF43hFJPPv2Y.png", "color": "#fec950", "url": "https://anilist.co/anime/103303", "nextEpisode": 6, "nextAiringAt": 1786284000}, {"id": 187260, "title": "I Want to Love You Till Your Dying Day", "romaji": "Kimi ga Shinu made Koi wo Shitai", "episodes": 13, "score": 75, "genres": ["Drama", "Fantasy", "Romance"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx187260-WW5RBa5NINRP.jpg", "color": "#e4ae35", "url": "https://anilist.co/anime/187260", "nextEpisode": 5, "nextAiringAt": 1785846600}, {"id": 177699, "title": "THE GHOST IN THE SHELL", "romaji": "Koukaku Kidoutai: THE GHOST IN THE SHELL", "episodes": null, "score": 77, "genres": ["Action", "Psychological", "Sci-Fi"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx177699-hnzc1CS5ZSM2.png", "color": "#c084fc", "url": "https://anilist.co/anime/177699", "nextEpisode": 5, "nextAiringAt": 1785852000}, {"id": 159309, "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2", "romaji": "Otomege Sekai wa Mob ni Kibishii Sekai desu 2", "episodes": 12, "score": 67, "genres": ["Action", "Fantasy", "Mecha"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx159309-wRfh9O1odrDJ.jpg", "color": "#e4c986", "url": "https://anilist.co/anime/159309", "nextEpisode": 5, "nextAiringAt": 1785940200}, {"id": 185542, "title": "Skeleton Knight in Another World Season 2", "romaji": "Gaikotsu Kishi-sama, Tadaima Isekai e Odekakechuu II", "episodes": 12, "score": 67, "genres": ["Action", "Adventure", "Comedy"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185542-6a9LCWlLHa0T.jpg", "color": "#286bbb", "url": "https://anilist.co/anime/185542", "nextEpisode": 6, "nextAiringAt": 1786366800}, {"id": 198946, "title": "Clevatess Season 2", "romaji": "Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou", "episodes": 13, "score": 75, "genres": ["Action", "Drama", "Fantasy"], "format": "TV", "status": "RELEASING", "duration": 24, "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198946-IGXmbqBEYRYD.jpg", "color": "#f1bb5d", "url": "https://anilist.co/anime/198946", "nextEpisode": 5, "nextAiringAt": 1785931200}]}, "calendar": {"fetchedAt": "2026-08-03T12:32:15.099320-07:00", "fetchedAtLocal": "12:32", "events": [{"title": "🍳 Lunch + Reset Before Class", "start": "2026-08-03T12:15:00-07:00", "end": "2026-08-03T13:00:00-07:00", "allDay": false, "calendar": "School"}, {"title": "🧪 CHEM 3A — Lecture (online)", "start": "2026-08-03T13:00:00-07:00", "end": "2026-08-03T15:30:00-07:00", "allDay": false, "calendar": "School"}, {"title": "📚 CHEM Homework / Study 🛡️", "start": "2026-08-03T15:30:00-07:00", "end": "2026-08-03T17:00:00-07:00", "allDay": false, "calendar": "School"}, {"title": "🌿 Meal Prep + Loose Ends", "start": "2026-08-03T17:00:00-07:00", "end": "2026-08-03T17:30:00-07:00", "allDay": false, "calendar": "School"}, {"title": "🌙 Recharge", "start": "2026-08-03T17:30:00-07:00", "end": "2026-08-03T18:00:00-07:00", "allDay": false, "calendar": "School"}, {"title": "💳 Tuition Plan + 🎓 Confirm Enrollment Appointment (MyUCSC)", "start": "2026-08-03T18:00:00-07:00", "end": "2026-08-03T18:30:00-07:00", "allDay": false, "calendar": "School"}, {"title": "📓 Notion Day Recap", "start": "2026-08-03T19:00:00-07:00", "end": "2026-08-03T19:15:00-07:00", "allDay": false, "calendar": "School"}, {"title": "🎮 Free Time / Hobbies", "start": "2026-08-03T19:15:00-07:00", "end": "2026-08-03T21:45:00-07:00", "allDay": false, "calendar": "School"}, {"title": "🌙GETTING HIGH AS FUCK ", "start": "2026-08-03T21:45:00-07:00", "end": "2026-08-04T00:45:00-07:00", "allDay": false, "calendar": "School"}, {"title": "🕯️ Night Ritual → Lights Out", "start": "2026-08-04T00:45:00-07:00", "end": "2026-08-04T01:30:00-07:00", "allDay": false, "calendar": "School"}]}, "games": [{"id": "730", "name": "Counter-Strike 2"}, {"id": "1091500", "name": "Cyberpunk 2077"}, {"id": "629730", "name": "Blade & Sorcery"}, {"id": "322170", "name": "Geometry Dash"}, {"id": "202970", "name": "Black Ops II"}, {"id": "250820", "name": "SteamVR"}], "apps": [{"key": "brave", "label": "Brave"}, {"key": "vscode", "label": "VS Code"}, {"key": "obsidian", "label": "Obsidian"}, {"key": "notion", "label": "Notion"}, {"key": "vlc", "label": "VLC"}, {"key": "obs", "label": "OBS"}, {"key": "steam", "label": "Steam"}, {"key": "hoyoplay", "label": "HoYoPlay"}, {"key": "govee", "label": "Govee"}]};
+const C = D.config;
+
+/* ---------- schedule maths (mirrors the PowerShell engine) ---------- */
+function hm(s){const p=s.split(":");return {h:+p[0],m:+p[1]};}
+function windowFor(now){
+  const w=hm(C.wake), b=hm(C.bedtime);
+  let wake=new Date(now); wake.setHours(w.h,w.m,0,0);
+  if(now<wake) wake=new Date(wake.getTime()-864e5);
+  let bed=new Date(wake); bed.setHours(b.h,b.m,0,0);
+  if(bed<=wake) bed=new Date(bed.getTime()+864e5);
+  const wd=new Date(bed.getTime()-C.windDownMinutes*6e4);
+  return {wake,bed,wd};
+}
+function phaseFor(now,W){
+  if(now>=W.bed) return "past bedtime";
+  if(now>=W.wd) return "wind-down";
+  if(now < new Date(W.wake.getTime()+72e5)) return "morning";
+  if(now >= new Date(W.bed.getTime()-18e6)) return "evening";
+  return "day";
+}
+function kelvinFor(now,W){
+  const pts=[[W.wake,6500],[new Date(W.bed-216e5),6500],[new Date(W.bed-144e5),5200],[W.wd,3300],[W.bed,2500],[new Date(+W.bed+72e5),2500]];
+  if(now<=pts[0][0]) return 6500;
+  if(now>=pts[pts.length-1][0]) return 2500;
+  for(let i=0;i<pts.length-1;i++){
+    const a=pts[i],b=pts[i+1];
+    if(now>=a[0]&&now<b[0]){const f=(now-a[0])/(b[0]-a[0]);return Math.round(a[1]+(b[1]-a[1])*f);}
+  }
+  return 6500;
+}
+function dur(ms){
+  const m=Math.round(Math.abs(ms)/6e4), h=Math.floor(m/60), r=m%60;
+  if(h===0) return r+"m";
+  return h+"h "+String(r).padStart(2,"0")+"m";
+}
+/* Same h/m head as dur(), but keeps the running seconds.milliseconds visible
+   as a smaller trailing span - this is what actually shows the clock moving,
+   since a plain "4h 29m" only changes once a minute. */
+function fmtDurMs(ms){
+  const neg=ms<0; ms=Math.abs(ms);
+  const totalSec=ms/1000;
+  const h=Math.floor(totalSec/3600), m=Math.floor((totalSec%3600)/60), s=totalSec%60;
+  let head="";
+  if(h>0) head=h+"h "+String(m).padStart(2,"0")+"m ";
+  else if(m>0) head=m+"m ";
+  return (neg?"-":"")+head+'<span class="subms">'+s.toFixed(3).padStart(6,"0")+"s</span>";
+}
+
+/* ---------- live header ---------- */
+function tick(){
+  const now=new Date(), W=windowFor(now), ph=phaseFor(now,W);
+  document.getElementById("clock").textContent=now.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false});
+  document.getElementById("datestr").textContent=now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric"});
+  document.getElementById("phase").textContent=ph;
+  const hr=now.getHours();
+  document.getElementById("partofday").textContent = hr<5?"night":hr<12?"morning":hr<18?"afternoon":"evening";
+
+  document.documentElement.dataset.night = (now>=W.wd || now<W.wake) ? "1" : "0";
+
+  const span=W.bed-W.wake, done=Math.min(Math.max(now-W.wake,0),span), pct=100*done/span;
+  document.getElementById("fill").style.width=pct+"%";
+  document.getElementById("dot").style.left=pct+"%";
+  document.getElementById("wdMark").style.left=(100*(W.wd-W.wake)/span)+"%";
+  document.getElementById("wakeLbl").textContent="Up since "+W.wake.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false});
+  document.getElementById("bedLbl").textContent="Bed "+W.bed.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false});
+
+  const k=kelvinFor(now,W)+(D.state.kelvinOffset||0);
+  document.getElementById("sScreen").textContent=k+"K";
+  document.getElementById("sMode").textContent=D.state.mode||"auto";
+
+  document.getElementById("screenNote").textContent =
+    "Target right now is "+k+"K. The curve holds 6500K through the working day, then rolls down to "
+    +"3300K at wind-down and 2500K past "+C.bedtime+". Warmer/cooler nudges by 300K and sticks until you clear it.";
+  requestAnimationFrame(()=>{});
+}
+
+/* Awake / to-bed / to-wind-down run on their own rAF loop rather than tick()'s
+   1000ms interval - that's the only way the seconds.milliseconds actually
+   look like they're moving instead of relabeling once a second. Throttled to
+   ~20 repaints/sec: fast enough to read as live, far short of chasing every
+   frame on a 240Hz panel for no visible benefit. */
+let ribbonLast=0;
+function ribbonLoop(ts){
+  if(ts-ribbonLast>=50){
+    ribbonLast=ts;
+    const now=new Date(), W=windowFor(now);
+    document.getElementById("sAwake").innerHTML=fmtDurMs(now-W.wake);
+    document.getElementById("sToBed").innerHTML=fmtDurMs(W.bed-now);
+    const toWd=W.wd-now;
+    document.getElementById("sWind").innerHTML = toWd>0 ? fmtDurMs(toWd) : "started";
+  }
+  requestAnimationFrame(ribbonLoop);
+}
+
+/* ---------- protocol bridge ---------- */
+function go(path,msg){
+  location.href="nightowl://"+path;
+  if(msg) toast(msg);
+}
+let tt;
+function toast(m){
+  const t=document.getElementById("toast");
+  t.textContent=m; t.classList.add("on");
+  clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),2300);
+}
+
+/* ---------- focus timer ---------- */
+let total=C.deepWorkMinutes*60, left=total, run=false, iv=null;
+const CIRC=414.7;
+function paint(){
+  const m=Math.floor(left/60), s=left%60;
+  document.getElementById("tmr").textContent=m+":"+String(s).padStart(2,"0");
+  document.getElementById("arc").style.strokeDashoffset=CIRC*(1-left/total);
+}
+function setT(min,label){
+  total=min*60; left=total; run=false; clearInterval(iv);
+  document.getElementById("tmrLabel").textContent=label;
+  document.getElementById("tmrState").textContent="ready";
+  document.getElementById("startBtn").textContent="Start";
+  paint();
+}
+function toggle(){
+  if(run){ run=false; clearInterval(iv);
+    document.getElementById("startBtn").textContent="Resume";
+    document.getElementById("tmrState").textContent="paused"; return; }
+  run=true;
+  document.getElementById("startBtn").textContent="Pause";
+  document.getElementById("tmrState").textContent="running";
+  iv=setInterval(()=>{
+    left--; paint();
+    if(left<=0){ clearInterval(iv); run=false; chime();
+      document.getElementById("tmrState").textContent="done";
+      document.getElementById("startBtn").textContent="Start";
+      toast("Block finished - stand up for a minute"); }
+  },1000);
+}
+function resetT(){ left=total; run=false; clearInterval(iv);
+  document.getElementById("startBtn").textContent="Start";
+  document.getElementById("tmrState").textContent="ready"; paint(); }
+function chime(){
+  try{
+    const a=new (window.AudioContext||window.webkitAudioContext)();
+    [880,1174.7].forEach((f,i)=>{
+      const o=a.createOscillator(), g=a.createGain();
+      o.frequency.value=f; o.type="sine"; o.connect(g); g.connect(a.destination);
+      const t=a.currentTime+i*0.18;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.03);
+      g.gain.exponentialRampToValueAtTime(.001,t+.7);
+      o.start(t); o.stop(t+.75);
+    });
+  }catch(e){}
+}
+
+/* ---------- agenda (Google Calendar) ---------- */
+function fmtT(iso){ return new Date(iso).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false}); }
+function renderAgenda(){
+  const el=document.getElementById("agenda");
+  const cal=D.calendar;
+  if(!cal){
+    document.getElementById("agendaSynced").textContent="not synced";
+    el.innerHTML='<p class="muted">No calendar data yet. Run <b>/nightowl</b> in Claude Code to pull today\'s schedule from Google Calendar.</p>';
+    return;
+  }
+  document.getElementById("agendaSynced").textContent="synced "+cal.fetchedAtLocal;
+  const now=new Date();
+  const rows=cal.events.map(e=>({...e, s:new Date(e.start), e:new Date(e.end)}))
+    .filter(e=>e.e>now)
+    .sort((a,b)=>a.s-b.s);
+  if(!rows.length){ el.innerHTML='<p class="muted">Nothing left on the calendar for today.</p>'; return; }
+  el.innerHTML=rows.map(r=>{
+    const isNow = r.s<=now && now<r.e;
+    const cls = isNow ? "now" : "";
+    const when = r.allDay ? "All day" : (fmtT(r.start)+" - "+fmtT(r.end));
+    return `<div class="ag ${cls}">
+      <div class="bar"></div>
+      <div class="m"><b>${esc(r.title)}</b><span>${when}${r.calendar?" &middot; "+esc(r.calendar):""}</span></div>
+      ${isNow?'<div class="tag">now</div>':""}
+    </div>`;
+  }).join("");
+}
+
+/* ---------- anime ---------- */
+function relDay(iso){
+  const d=new Date(iso), now=new Date();
+  const a=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const b=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const diff=Math.round((a-b)/864e5);
+  if(diff===0) return "today";
+  if(diff===1) return "tomorrow";
+  return d.toLocaleDateString([], {weekday:"short"});
+}
+function renderUpcoming(){
+  const el=document.getElementById("upcoming");
+  const rows=D.anime.upcoming.slice(0,9);
+  if(!rows.length){ el.innerHTML='<p class="muted">Nothing scheduled in the next week.</p>'; return; }
+  el.innerHTML=rows.map(r=>{
+    const rd=relDay(r.at), cls=rd==="today"?"tonight":"";
+    return `<div class="ep">
+      <img src="${r.cover}" loading="lazy" alt="">
+      <div class="m"><b>${esc(r.title)}</b><span>Episode ${r.episode}</span></div>
+      <div class="when"><b class="${cls}">${r.time}</b><span>${rd}</span></div>
+    </div>`;
+  }).join("");
+}
+function renderQueue(){
+  const el=document.getElementById("queue");
+  const q=D.anime.queue;
+  document.getElementById("queueNote").textContent=q.length?q.length+" tracked":"";
+  if(!q.length){ el.innerHTML='<p class="muted">Nothing tracked yet. Click a poster below to add it, then use +1 as you watch.</p>'; return; }
+  el.innerHTML=q.map(s=>{
+    const tot=s.episodes||s.nextEpisode||12;
+    const pct=Math.min(100,100*s.progress/tot);
+    const behind=s.nextEpisode?Math.max(0,(s.nextEpisode-1)-s.progress):0;
+    return `<div class="ep">
+      <img src="${s.cover||""}" loading="lazy" alt="">
+      <div class="m">
+        <b>${esc(s.title)}</b>
+        <span>${s.progress} / ${s.episodes||"?"} watched${behind?" &middot; "+behind+" behind":""}</span>
+        <div class="prog"><i style="width:${pct}%"></i></div>
+      </div>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button class="qbtn" data-act="watch" data-id="${s.id}">+1</button>
+        <button class="qbtn" data-act="untrack" data-id="${s.id}">&times;</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+function renderSeasonal(){
+  const el=document.getElementById("seasonal");
+  el.innerHTML=D.anime.seasonal.map(s=>`
+    <div class="s" data-act="track" data-id="${s.id}">
+      <img src="${s.cover}" loading="lazy" alt="">
+      ${s.score?`<div class="sc">${s.score}</div>`:""}
+      <div class="add">+</div>
+      <div class="ov"><b>${esc(s.title)}</b></div>
+    </div>`).join("");
+}
+
+/* Titles are looked up from the data at click time rather than interpolated
+   into HTML attributes - quoting them inline breaks on apostrophes. */
+const TITLES={};
+[...D.anime.queue, ...D.anime.seasonal].forEach(s=>TITLES[s.id]=s.title);
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act]");
+  if(!el) return;
+  const id=el.dataset.id, act=el.dataset.act, name=TITLES[id]||"show";
+  const msg={watch:"+1 "+name, untrack:"Removed "+name, track:"Tracking "+name}[act];
+  go("anime/"+act+"/"+id, msg);
+  setTimeout(()=>location.reload(),1600);
+});
+function esc(s){ return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- launchers ---------- */
+function renderLaunch(){
+  document.getElementById("apps").innerHTML =
+    D.apps.map(a=>`<a href="nightowl://launch/${a.key}" onclick="toast('Opening ${a.label}')">${a.label}</a>`).join("");
+  document.getElementById("games").innerHTML =
+    D.games.map(g=>`<a href="steam://rungameid/${g.id}" onclick="toast('Launching ${esc(g.name)}')">${esc(g.name)}</a>`).join("");
+  if(D.state.lastGameMinutes!=null)
+    document.getElementById("gameNote").textContent="last session "+D.state.lastGameMinutes+"m / "+C.gameBudgetMinutes+"m budget";
+}
+
+/* ---------- boot ---------- */
+document.getElementById("seasonLbl").textContent=D.anime.season;
+document.getElementById("built").textContent=D.generatedAt;
+document.getElementById("staleNote").textContent=D.anime.stale?"anime data is stale (network failed, showing last good copy)":"anime data fresh from AniList";
+renderUpcoming(); renderQueue(); renderSeasonal(); renderLaunch(); renderAgenda();
+setT(C.deepWorkMinutes,"deep work");
+tick(); setInterval(tick,1000);
+requestAnimationFrame(ribbonLoop);
+setInterval(renderAgenda,30000);   // re-checks the "now" highlight without a full reload
+</script>
+<style>
+/* ===== NightOwl Mobile patch ===== */
+.modes{display:none!important}
+.mobile-note{max-width:1220px;margin:0 auto 18px;padding:12px 16px;border-radius:14px;
+  background:var(--soft);border:1px solid var(--line);color:var(--sub);
+  font-size:12.5px;line-height:1.5;text-align:center}
+</style>
+<script>
+/* NightOwl Mobile: read-only phone view of the hub.
+   PC-only controls (mode switches, screen warmth, app/game launch) are hidden
+   because they need your Windows machine via the nightowl:// bridge. */
+(function(){
+  // 1) Neutralize the desktop protocol bridge so nothing navigates to nightowl://
+  window.go = function(path,msg){ if(window.toast) toast(msg || "That control lives on your PC"); };
+
+  // 2) Hide cards that only work on the desktop
+  var HIDE=["Screen","Launch","Games"];
+  document.querySelectorAll(".card").forEach(function(c){
+    var h=c.querySelector("h2"); if(!h) return;
+    var t=(h.textContent||"").trim();
+    if(HIDE.some(function(k){return t.indexOf(k)===0;})) c.style.display="none";
+  });
+
+  // 3) Anime posters/queue -> open AniList instead of the PC "track" action
+  var URLS={};
+  [].concat(D.anime.seasonal||[], D.anime.queue||[], D.anime.upcoming||[])
+    .forEach(function(s){ if(s && s.id && s.url) URLS[s.id]=s.url; });
+  document.addEventListener("click", function(e){
+    var el=e.target.closest("[data-act]");
+    if(!el) return;
+    e.stopPropagation();                 // block the original PC handler (capture runs first)
+    var u=URLS[el.dataset.id];
+    if(u) window.open(u,"_blank","noopener");
+  }, true);
+
+  // 4) Hide the +1 / untrack buttons (they need the PC)
+  var css=document.createElement("style");
+  css.textContent=".qbtn{display:none!important}";
+  document.head.appendChild(css);
+
+  // 5) Friendly note under the header
+  var note=document.createElement("div");
+  note.className="mobile-note";
+  note.innerHTML="📱 NightOwl — phone view. Live clock, circadian ribbon, today’s agenda &amp; anime. Mode switches and launchers stay on your PC. Tap a poster to open it on AniList.";
+  var wrap=document.querySelector(".wrap");
+  var hdr=wrap.querySelector("header");
+  wrap.insertBefore(note, hdr.nextSibling);
+})();
+</script>
+
+</body>
+</html>

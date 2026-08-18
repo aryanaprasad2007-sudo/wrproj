@@ -1,0 +1,47 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docket",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-m", "http.server", "4321", "--directory", "Daily-Docket"],
+      "port": 4321
+    },
+    {
+      "name": "docket-pwa",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-3", "daily-docket-pwa/tools/serve.py", "--port", "8137"],
+      "port": 8137
+    },
+    {
+      "name": "grimoire",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-3", "grimoire-calendar/tools/serve.py", "--no-open", "--port", "8787"],
+      "port": 8787
+    },
+    {
+      "name": "cockpit",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-m", "http.server", "8791", "--directory", "Swing-Pro-Trading"],
+      "port": 8791
+    },
+    {
+      "name": "iape-dashboard",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["Swing-Pro-Trading/backtest/dashboard.py", "--no-open", "--port", "8788"],
+      "port": 8788
+    },
+    {
+      "name": "iape-news",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["Swing-Pro-Trading/backtest/news_scanner.py", "--headless", "--port", "8790"],
+      "port": 8790
+    },
+    {
+      "name": "aria",
+      "runtimeExecutable": "py",
+      "runtimeArgs": ["-3.12", "aria-assistant/run_server.py"],
+      "port": 8000
+    }
+  ]
+}

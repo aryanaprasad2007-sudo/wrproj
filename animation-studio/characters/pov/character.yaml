@@ -1,0 +1,22 @@
+# The POV character -- seen only as hands and forearms.
+#
+# kind: pov changes two things. The default IP-Adapter weight drops (there is
+# no face to lock, so a high weight just imports the reference's framing), and
+# a default negative is injected that suppresses the failure that ends a POV
+# shot: a face or full body appearing.
+name: POV
+kind: pov
+
+trigger: povhnd
+
+# For a POV character the identity IS the skin tone, sleeve and any worn prop.
+# Everything else is staging.
+description: >-
+  first person view, own hands and forearms in frame, warm medium skin tone,
+  frayed grey knit sleeves pushed to the elbow, thin copper ring on index finger
+
+# Leave `negative` unset to inherit the built-in POV negative
+# ("face, head, portrait, full body, mirror reflection, selfie").
+
+lora_path: null
+ipadapter_weight: 0.45

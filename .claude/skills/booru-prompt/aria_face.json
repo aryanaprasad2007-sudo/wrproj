@@ -1,0 +1,368 @@
+{
+  "schema": 1,
+  "purpose": "Researched Danbooru-tag axes for generating Aria's FACE at scale. Consumed by face_lab.py. Kept as data rather than code for the same reason tags.json is: the vocabulary is the thing being refined overnight, and it must be editable without touching the runner.",
+  "provenance": {
+    "created": "2026-08-18",
+    "rig": "RTX 4060 8GB, ComfyUI 0.33.2, animagine-xl-4.0",
+    "reference_art": "aria-assistant/assistant/web/aria.jpg",
+    "verification_status": "MOST AXIS ENTRIES ARE UNVERIFIED ON THIS RIG. tags.json's rule is that an entry is earned only after the prose form was observed to DROP the trait on a real generation. The entries below are researched-plausible Danbooru tags, not measured ones -- this overnight run IS the measurement pass. Promote entries into tags.json with verified:true only after reading the image back."
+  },
+  "why_identity_is_not_an_axis": {
+    "observed": "2026-08-18. generated/aria_clean + aria_float (seed 4242) and generated/aria_stars + aria_anim (seed 20260817) were intended as the same character and came out as two different girls.",
+    "diff": "Every identity-carrying tag differed at once: blue eyes vs purple eyes + star-shaped pupils; 'two side up, purple star hair ornament' vs neither; 'black bowtie' vs 'black turtleneck'; no headphones vs headphones. The seed differed too.",
+    "cause": "In a booru model, identity is carried by a small set of high-weight tags near the FRONT of the prompt. Changing several of them together does not produce a variation of a character, it produces a different character that merely shares the low-information remainder ('white hair, short hair, labcoat').",
+    "consequence_for_this_file": "IDENTITY IS A CONSTANT, NOT AN AXIS. face_lab.py prepends it verbatim to every prompt and offers no way to vary it per-image. Axes may only add expression, framing, lighting, effects and background. Do not add an eye-colour, hair-shape, or outfit axis below -- that is precisely the mistake that produced two Arias.",
+    "chosen_by": "Ari, 2026-08-18, from the four preset images. Reference variant."
+  },
+  "identity": {
+    "note": "FROZEN. Byte-identical to make_dataset.py's IDENTITY prefix so LoRA-trained and non-LoRA generations describe the same character, and matched against assistant/web/aria.jpg. Reordering these tags moves the face -- do not resort them, do not reword them, do not 'improve' them.",
+    "tags": "1girl, solo, white hair, short hair, two side up, purple star hair ornament, blue eyes, white labcoat, black bowtie",
+    "rejected_variants_do_not_use": {
+      "headphone_purple": "1girl, solo, white hair, short hair, purple eyes, headphones, white labcoat, open labcoat, black turtleneck",
+      "why": "This is aria_stars / aria_anim and art/prompts.md's reading. It is a DIFFERENT CHARACTER, kept here only so nobody re-derives it by accident and reintroduces the split. art/prompts.md predates anyone consulting the reference art and should be treated as stale."
+    }
+  },
+  "framing": {
+    "note": "Face work, where 'face' means a BUST SHOT, not a macro crop. Danbooru's 'portrait', 'close-up' and 'face focus' all denote a tight head shot that fills the frame -- they are deliberately absent from every framing below and are suppressed in the negative instead.",
+    "primary": "upper body, looking at viewer",
+    "variants": [
+      "upper body, looking at viewer",
+      "upper body, looking at viewer, straight-on",
+      "upper body, looking at viewer, from above",
+      "upper body, looking at viewer, from below",
+      "upper body, head tilt, looking at viewer",
+      "upper body, from side, profile",
+      "upper body, looking at viewer, dutch angle",
+      "cowboy shot, looking at viewer"
+    ],
+    "avatar_locked": "upper body, looking at viewer",
+    "avatar_locked_note": "MEASURED TWICE, 2026-08-18, seed 4242. First pass (generated/aria_face_probe/) compared framings on ONE cheerful expression and picked 'portrait, head and shoulders'. That was wrong, and wrong in an instructive way: it was judged on a single expression, and across the real canon tier it produced extreme close-ups with the crown and chin cut off (see ariaface_canon_00027_, pouty#3). Second pass (generated/aria_face_probe2/) re-ran the exact failing prompt across wider framings: 'upper body' WITH 'close-up, portrait, face focus' in the negative keeps the whole head, headroom, shoulders and the bowtie while the face stays large. 'cowboy shot' goes too far -- the face shrinks and the model starts drawing a framed-picture border. LESSON: probe framing on a DIFFICULT expression, not a flattering one. NOT FIXED: 'straight-on' still does not reliably level the head."
+  },
+  "canon_emotions": {
+    "note": "Aria's ten real emotion tags from aria-assistant/persona/aria.yaml. This tier runs FIRST and on locked seeds, because without a locked seed ten emotions give ten different girls rather than one girl ten times. Each emotion carries several candidate tag readings -- which emoticon tag actually renders a given mood is exactly what this run is meant to settle.",
+    "hyped": [
+      "open mouth, :d, star-shaped pupils, symbol-shaped pupils, raised eyebrows, excited, blush",
+      "open mouth, xd, star-shaped pupils, symbol-shaped pupils, excited, blush",
+      ":d, sparkling eyes, +_+, raised eyebrows, happy, blush",
+      "open mouth, :d, star-shaped pupils, wide-eyed, excited, motion lines"
+    ],
+    "teasing": [
+      "smug, half-closed eyes, closed mouth, smirk",
+      "smug, half-closed eyes, :3, blush",
+      ";), one eye closed, smug, closed mouth",
+      "smug, half-closed eyes, evil grin, blush"
+    ],
+    "giggly": [
+      "^_^, closed eyes, open mouth, laughing, blush",
+      "closed eyes, open mouth, :d, laughing, blush",
+      "^_^, open mouth, happy, heavy blush",
+      ">_<, open mouth, laughing, blush"
+    ],
+    "pouty": [
+      "pout, puffy cheeks, furrowed brow, closed mouth, blush",
+      "pout, puffy cheeks, >_<, annoyed",
+      "pout, closed mouth, half-closed eyes, looking away, blush",
+      "pout, puffy cheeks, anger vein, closed mouth"
+    ],
+    "smug": [
+      "smug, smirk, half-closed eyes, closed mouth",
+      "smug, evil grin, half-closed eyes",
+      "smug, smirk, closed mouth, looking down at viewer",
+      "smug, :3, half-closed eyes, closed mouth"
+    ],
+    "unimpressed": [
+      "expressionless, half-closed eyes, closed mouth, :|",
+      "=_=, closed mouth, unamused, expressionless",
+      "half-closed eyes, :/, expressionless",
+      "-_-, closed mouth, annoyed, expressionless"
+    ],
+    "exasperated": [
+      "sweatdrop, open mouth, furrowed brow, half-closed eyes",
+      "flying sweatdrops, >_<, open mouth, annoyed",
+      "sweatdrop, =_=, closed mouth, exasperated",
+      "sweatdrop, half-closed eyes, :/, head tilt"
+    ],
+    "proud": [
+      "smile, closed mouth, sparkle, confident",
+      "grin, open mouth, sparkling eyes, proud",
+      "smile, closed eyes, ^_^, confident, sparkle",
+      "smile, open mouth, :d, sparkling eyes, blush, happy"
+    ],
+    "delighted": [
+      "open mouth, :d, sparkling eyes, blush, happy, hearts",
+      "star-shaped pupils, symbol-shaped pupils, open mouth, :d, blush",
+      "+_+, open mouth, :d, sparkle, blush",
+      "heart-shaped pupils, symbol-shaped pupils, open mouth, :d, blush, hearts"
+    ],
+    "warm": [
+      "smile, closed mouth, half-closed eyes, light blush",
+      "smile, closed eyes, ^_^, light blush",
+      "smile, closed mouth, looking at viewer, soft lighting, light blush",
+      ":3, closed mouth, half-closed eyes, light blush"
+    ]
+  },
+  "axes": {
+    "note": "Sampled combinatorially by face_lab.py's deep tier. Booru models degrade past roughly 40 tags, so the sampler draws a SUBSET of axes per prompt rather than one from every axis. Empty strings are deliberate: they let an axis be absent, which is itself a variation worth sampling.",
+    "expression": [
+      "smile, closed mouth",
+      "smile, open mouth",
+      "open mouth, :d",
+      ":d, blush",
+      "^_^, closed eyes",
+      ":3, closed mouth",
+      ";), one eye closed",
+      ";d, one eye closed, open mouth",
+      ">_<, open mouth",
+      "xd, open mouth",
+      "@_@, dizzy",
+      "o_o, wide-eyed",
+      "+_+, sparkling eyes",
+      "x_x, closed eyes",
+      "=_=, closed mouth",
+      "-_-, closed mouth",
+      ":|, expressionless",
+      ":/, closed mouth",
+      ":o, surprised, open mouth",
+      ":p, tongue out",
+      ";p, tongue out, one eye closed",
+      "grin, closed mouth",
+      "evil grin, smug",
+      "smirk, smug",
+      "pout, closed mouth",
+      "frown, closed mouth",
+      "scowl, angry",
+      "glare, angry",
+      "embarrassed, blush, closed mouth",
+      "nervous, sweatdrop, open mouth",
+      "crying, tears, open mouth",
+      "teardrop, half-closed eyes, closed mouth",
+      "surprised, wide-eyed, open mouth",
+      "shocked, wide-eyed, open mouth",
+      "sleepy, half-closed eyes, closed mouth",
+      "yawning, open mouth, sleepy",
+      "determined, serious, closed mouth",
+      "serious, expressionless, closed mouth",
+      "laughing, open mouth, closed eyes",
+      "excited, open mouth, :d",
+      "confused, head tilt, :/",
+      "parted lips, half-closed eyes",
+      "shy, blush, closed mouth, looking away",
+      "happy, smile, open mouth, blush",
+      "annoyed, anger vein, closed mouth",
+      "worried, furrowed brow, closed mouth",
+      "curious, raised eyebrows, parted lips",
+      "wink, one eye closed, smile"
+    ],
+    "eye_effect": [
+      "",
+      "",
+      "",
+      "star-shaped pupils, symbol-shaped pupils",
+      "heart-shaped pupils, symbol-shaped pupils",
+      "sparkling eyes",
+      "glowing eyes",
+      "half-closed eyes",
+      "closed eyes",
+      "wide-eyed",
+      "one eye closed",
+      "looking away",
+      "looking to the side",
+      "looking up",
+      "eyes visible through hair"
+    ],
+    "eye_effect_note": "Empty weighted 3x -- her eyes are BLUE by identity and most frames should just show them. Symbol-shaped pupils recolour the iris, so they read as an expression effect for hyped/delighted, never as part of who she is.",
+    "hair_state": [
+      "",
+      "",
+      "messy hair",
+      "hair between eyes",
+      "blunt bangs",
+      "swept bangs",
+      "hair over one eye",
+      "floating hair",
+      "wind lift",
+      "ahoge",
+      "bedhead",
+      "sidelocks",
+      "hair down",
+      "wet hair"
+    ],
+    "effect": [
+      "",
+      "",
+      "blush",
+      "light blush",
+      "heavy blush",
+      "blush stickers",
+      "sweatdrop",
+      "flying sweatdrops",
+      "anger vein",
+      "notice lines",
+      "spoken heart",
+      "hearts",
+      "sparkle",
+      "motion lines",
+      "nose blush"
+    ],
+    "accessory": [
+      "",
+      "",
+      "",
+      "headphones",
+      "headphones around neck",
+      "glasses",
+      "round eyewear",
+      "semi-rimless eyewear",
+      "hairclip",
+      "hairband",
+      "hand on own cheek",
+      "hands on own cheeks",
+      "index finger raised",
+      "v over eye",
+      "peace sign",
+      "holding pen",
+      "pen in mouth"
+    ],
+    "accessory_note": "Empty weighted 3x. Headphones are an ACCESSORY here, not identity -- the reference art has none, and folding them into the identity block is one of the changes that produced the second Aria.",
+    "lighting": [
+      "",
+      "",
+      "even lighting",
+      "soft lighting",
+      "studio lighting",
+      "rim light",
+      "backlighting",
+      "dramatic lighting",
+      "purple rim light",
+      "monitor glow",
+      "purple monitor glow",
+      "warm lamp light",
+      "golden hour",
+      "cool lighting",
+      "dim lighting",
+      "high key lighting",
+      "cinematic lighting"
+    ],
+    "background": [
+      "white background, simple background",
+      "white background, simple background",
+      "white background, simple background",
+      "white background, simple background",
+      "simple background, light purple background",
+      "simple background, pink background",
+      "simple background, gradient background",
+      "simple background, blue background",
+      "blurry background, depth of field, indoors",
+      "blurry background, depth of field, bokeh, monitor glow"
+    ],
+    "background_note": "'white background, simple background' is weighted 4x by repetition -- the avatar plate needs a flat white key so the page can multiply it against its own panel. BOTH tags are required together; tags.json records that 'simple background' alone still produces a gradient. Floating-star tags are deliberately ABSENT from this whole file: generated/aria_float_00001_.png reproduces the known_failure where 'floating stars, sparkle' overrides a white background into a purple starfield. Her stars live in the hair ornament, which renders fine on white.",
+    "style": [
+      "",
+      "",
+      "anime screencap",
+      "official art",
+      "cel shading",
+      "flat color",
+      "soft shading",
+      "detailed face",
+      "very detailed eyes",
+      "sharp focus",
+      "pastel colors",
+      "vibrant colors",
+      "high contrast"
+    ]
+  },
+  "negative": {
+    "base": "close-up, portrait, face focus, lowres, bad anatomy, bad hands, extra digits, fewer digits, text, error, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry, greyscale, monochrome, multiple views, multiple girls, 2girls, long hair, twintails, blonde hair, cropped head, purple eyes, headphones, gradient hair, multicolored hair, blue hair, colored inner hair, blue shirt",
+    "base_note": "'long hair, twintails, blonde hair' front-loaded per prompts.md -- hair drifting long is the most common failure. 'purple eyes, headphones' are negated because they are the signature tags of the OTHER Aria; without them the model drifts toward the aria_stars character, which is the exact split this file exists to prevent. face_lab.py removes a term from the negative automatically when the positive prompt asks for it. 'gradient hair, multicolored hair, blue hair, colored inner hair' and 'blue shirt' were added 2026-08-18 after the first 16 renders: her hair tips drifted blue and the shirt under the labcoat came out blue every time. The identity block is frozen, so per SKILL.md the correct lever for a recurring unwanted element is the negative, not a reworded positive. 'close-up, portrait, face focus' were front-loaded 2026-08-18 after the first framing choice produced macro crops: in Danbooru these are tight-head-shot tags, and suppressing them is what holds the bust framing. No positive framing in this file uses them, so there is no self-conflict -- and tune_negative() would withdraw them anyway if one ever did.",
+    "portrait_add": "hands, arms",
+    "portrait_add_note": "tags.json, verified 2026-08-17: close-up framing invents a hand near the face unprompted. Dropped automatically when the prompt asks for hands (hand on own cheek, peace sign, v over eye, index finger raised, holding pen)."
+  },
+  "quality_suffix": "masterpiece, high score, great score, absurdres",
+  "render": {
+    "note": "832x1216 is the tall SDXL bucket; prompts.md requires tall for face work so the face sits high in the frame. cfg 5.0 / 28 steps / euler_ancestral is animagine-xl-4.0's measured setting from tags.json -- do NOT carry base SDXL's 7.5 over.",
+    "model": "animagine-xl-4.0.safetensors",
+    "vae": "sdxl_vae_fp16fix.safetensors",
+    "width": 832,
+    "height": 1216,
+    "cfg": 5.0,
+    "steps": 28,
+    "sampler": "euler_ancestral",
+    "scheduler": "normal"
+  },
+  "seeds": {
+    "note": "aria_clean and the LoRA dataset used 4242 and 770000; those are known to render this identity correctly, so the canon tier reuses them rather than gambling on fresh ones. The deep tier varies seeds freely because there the point is coverage, not consistency.",
+    "identity_locks": [
+      4242,
+      770000,
+      20260817,
+      1337,
+      90210
+    ],
+    "deep_base": 8180000
+  },
+  "scene": {
+    "note": "Purple gamer-room scenes -- Ari's ask 2026-08-18, referenced to No Game No Life (Shiro's room: dark, lit almost entirely by monitor glow, violet dominant, screens stacked, cables everywhere). SEPARATE from the face tier on purpose: the avatar page multiplies her against its own panel, so a room behind her becomes a pasted-in rectangle. White stays for the avatar plate; these are for wallpapers, the control panel and the readme. Same frozen identity, so it is unmistakably her in both.",
+    "measured": "MEASURED 2026-08-18, seed 4242, generated/aria_scene_probe/. Seven readings rendered. The first four all came out BLUE despite 'purple theme' being in the prompt -- the model's default dark-room-with-monitors is blue-lit and the single tag loses to it. Weighting it up to (purple theme:1.4) alone (E) was still not enough. What worked (F) was BOTH piling on colour synonyms AND negating the competitor: 'blue theme, blue light, cyan' in the negative. G added rgb/led tags and drifted the star hair ornament orange, so the RGB vocabulary is left out.",
+    "colour_recipe": "purple theme, violet, magenta, neon purple, purple light, purple glow, neon lights",
+    "colour_negative": "blue theme, blue light, cyan",
+    "rooms": [
+      "multiple monitors, computer screen, desk, indoors, night, dark room, messy room, cable, cluttered, computer tower",
+      "multiple monitors, computer screen, desk, office chair, indoors, night, dark room, cable, cluttered, keyboard",
+      "multiple monitors, computer, desk, indoors, night, dark room, messy room, cable, bookshelf, cluttered",
+      "computer screen, desk, indoors, night, dark room, cable, cluttered, computer tower, server room",
+      "multiple monitors, computer screen, desk, indoors, night, dark room, messy room, cable, poster (object), figure, cluttered",
+      "multiple monitors, computer screen, desk, indoors, night, dark room, cable, cluttered, can, instant noodles, messy room",
+      "multiple monitors, computer screen, desk, indoors, night, dark room, cable, cluttered, window, city lights, curtains",
+      "multiple monitors, computer screen, desk, indoors, night, dark room, cable, cluttered, bed, blanket, pillow"
+    ],
+    "activities": [
+      "",
+      "sitting",
+      "sitting, office chair",
+      "leaning back",
+      "looking over shoulder, from behind",
+      "holding controller",
+      "typing",
+      "hand on keyboard",
+      "arms crossed",
+      "peace sign",
+      "headphones, listening to music",
+      "holding cup",
+      "stretching",
+      "sleepy, yawning",
+      "hands up",
+      "pointing at viewer",
+      "leaning forward",
+      "sitting on floor, knees up"
+    ],
+    "framings": [
+      "cowboy shot, looking at viewer",
+      "upper body, looking at viewer",
+      "full body",
+      "cowboy shot, from side",
+      "upper body, from behind, looking back",
+      "cowboy shot, from below",
+      "full body, sitting",
+      "wide shot, scenery"
+    ],
+    "atmosphere": [
+      "",
+      "backlighting",
+      "screen light",
+      "rim light",
+      "lens flare",
+      "chromatic aberration",
+      "light particles",
+      "depth of field",
+      "glowing",
+      "dramatic lighting",
+      "god rays",
+      "bloom"
+    ],
+    "width": 1216,
+    "height": 832,
+    "wide_note": "1216x832 is the wide SDXL bucket -- scenes and wallpapers want landscape, faces want the tall 832x1216.",
+    "rooms_note": "Rooms describe the ROOM only. 'sitting on floor' was removed from one entry on 2026-08-18: it is a pose, and a pose in the room list collided with the activity axis in 38/1200 sampled prompts ('sitting' + 'sitting on floor'). Posture belongs to activities, which already carries 'sitting on floor, knees up'. Keep this list free of body tags."
+  }
+}

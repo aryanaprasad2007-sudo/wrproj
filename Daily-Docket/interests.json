@@ -1,0 +1,44 @@
+{
+  "_comment": "Persistent Exploration lane for The Docket. Whenever Ari logs a NEW interest, append a small, inviting item here (a first step, never a project) plus its Command Center task, and store that task's page id as notionId so the row is checkable. The renderer rotates 3 items per day, so this list can grow past three without burying anything. When an item's Notion task goes Done, add \"retired\": \"<date>\" instead of deleting it — retired items drop out of the lane and the rotation but keep their history and their notionId.",
+  "items": [
+    {
+      "text": "Trading: study one new Pine Script concept this week (e.g. VWAP bands) and jot it in your Swing-Pro folder",
+      "note": "Tied to your trading focus — keep the edge sharpening.",
+      "added": "2026-07-01",
+      "notionId": "3937cd99fe858144b636c1971cf30d08",
+      "retired": "2026-07-26"
+    },
+    {
+      "text": "Style: skim the popular-clothing brand list from today's chat and pick 2–3 brands to actually browse (e.g. Essentials, adidas low-profiles, Aritzia)",
+      "note": "New interest logged 2026-07-08 — popular/designer clothing for the preteen–college range.",
+      "added": "2026-07-08",
+      "notionId": "3977cd99fe8581e2a988d45f86a46fda",
+      "retired": "2026-07-27"
+    },
+    {
+      "text": "Scent: next Sephora/Ulta run, sniff-test 2–3 picks from the Summer section of your new fragrance page (Profondo, Luna Rossa Ocean, Cheirosa '62)",
+      "note": "Fragrance interest logged 2026-07-08 — guide lives in Notion: Fragrance Guide — by Season & Person.",
+      "added": "2026-07-08",
+      "notionId": "3977cd99fe8581438a17c037bbe065ee"
+    },
+    {
+      "text": "Modeling: drop your first 3–5 Pinterest pins into model-dev/inspo — recreation guides get generated from there",
+      "note": "New interest logged 2026-07-13 — photo recreation system lives at Desktop/wrproj/model-dev (inspo → guides → attempts).",
+      "added": "2026-07-13",
+      "notionId": "3aa7cd99fe8581b890f4f4382e2e45f5"
+    },
+    {
+      "text": "Vlogging: edit ONE reference vlog in your ideal style — the style bible and the automated pipeline get reverse-engineered from it",
+      "note": "Adopted 2026-07-26 from an orphan Command Center task (In Progress, waiting on that reference vlog).",
+      "added": "2026-07-26",
+      "notionId": "3a87cd99fe858163b566c4a06f1f69c7"
+    },
+    {
+      "text": "Room: sketch the queen + desk + dresser layout with real walking clearance (~11x12 ft)",
+      "note": "Adopted 2026-07-26 from an orphan Command Center task — room-planning exercise.",
+      "added": "2026-07-26",
+      "notionId": "3a87cd99fe8581d4bb63f41e37ecf8c5",
+      "retired": "2026-07-27"
+    }
+  ]
+}
