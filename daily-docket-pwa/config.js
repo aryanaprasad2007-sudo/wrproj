@@ -30,7 +30,7 @@ export const CONFIG = {
       label: 'School',
       area: null,                 // mixed bag — let each title pick its lane
       enabled: true,
-      // Google id: aryanaprasad2007@gmail.com   ← your primary calendar
+      // Google id: YOUR_EMAIL@gmail.com   ← your primary calendar
       url: '',                    // ⬅ PASTE the secret iCal URL here
     },
     {
