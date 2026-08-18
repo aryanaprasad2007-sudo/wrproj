@@ -1,0 +1,45 @@
+{
+  "_comment": [
+    "Maps what's on screen to an activity category. Edit freely -- this file",
+    "encodes YOUR apps, and is meant to be corrected whenever the log shows",
+    "things landing in 'unknown' or 'browsing'.",
+    "",
+    "IMPORTANT: browser needles match the WINDOW TITLE, which is the page",
+    "title -- not the URL. Brave shows 'Command Center - Notion', never",
+    "'notion.so'. Write brand names as they appear in a tab, not domains.",
+    "",
+    "Matching is case-insensitive substring."
+  ],
+
+  "idle_seconds_for_idle": 120,
+
+  "passive_categories": ["anime", "video"],
+
+  "browser_processes": ["brave.exe", "chrome.exe", "msedge.exe", "firefox.exe", "opera.exe", "zen.exe"],
+
+  "browser_rules": {
+    "school": ["canvas", "ucsc", "gradescope", "webassign", "pearson", "cengage", "google docs", "google scholar", "jstor", "pubmed"],
+    "work": ["notion", "github", "stack overflow", "claude", "anthropic", "localhost", "figma", "chatgpt"],
+    "trading": ["robinhood", "tradingview", "finviz", "thinkorswim"],
+    "anime": ["crunchyroll", "hianime", "aniwatch", "9anime", "myanimelist", "anilist"],
+    "video": ["youtube", "twitch", "netflix", "hulu", "disney+", "max"],
+    "social": ["twitter", "instagram", "reddit", "tiktok", "discord", "facebook", "snapchat"],
+    "shopping": ["amazon", "ebay", "aliexpress", "grailed", "depop", "ssense"]
+  },
+
+  "process_rules": {
+    "work": ["code.exe", "devenv.exe", "pycharm", "idea64.exe", "windowsterminal.exe", "powershell.exe", "pwsh.exe", "cmd.exe", "notion.exe", "obsidian.exe", "claude.exe"],
+    "school": ["acrord32.exe", "sumatrapdf.exe", "winword.exe", "onenote.exe", "zoom.exe", "ms-teams.exe"],
+    "games": ["steam.exe", "steamwebhelper.exe", "javaw.exe", "minecraft.exe", "epicgameslauncher.exe", "riotclientux.exe", "leagueoflegends.exe", "valorant.exe"],
+    "anime": ["mpv.exe", "vlc.exe", "mpc-hc64.exe", "potplayer"],
+    "social": ["discord.exe", "slack.exe", "whatsapp.exe"],
+    "creative": ["photoshop.exe", "premiere.exe", "afterfx.exe", "capcut.exe", "blender.exe", "davinci"],
+    "system": ["explorer.exe", "systemsettings.exe", "taskmgr.exe"]
+  },
+
+  "_notes": {
+    "javaw": "javaw.exe is the Minecraft Fabric instance, but is generic Java. If a Java tool is ever used for school, match it by window title instead.",
+    "youtube": "'video' is kept separate from 'anime' because YouTube is genuinely ambiguous -- lectures and leisure look identical. Split further if the log shows it mattering.",
+    "discord": "Appears in both browser_rules and process_rules; the desktop app is the usual path."
+  }
+}

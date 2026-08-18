@@ -1,0 +1,21 @@
+{
+  "interval_seconds": 15,
+  "camera_index": 0,
+
+  "lazy_streak_to_flash": 3,
+  "away_counts_as_lazy": false,
+
+  "use_claude_when_unsure": true,
+  "claude_model": "claude-haiku-4-5-20251001",
+  "productive_definition": "I am at my desk to work on my computer (coding, writing, reading documents, studying). 'Productive' means I am facing the screen and engaged with work. 'Lazy' means I am on my phone, looking away for a long time, eating/lounging, sleeping, or clearly not working. If you genuinely cannot tell, answer 'unsure'.",
+
+  "flash": {
+    "base_alpha": 0.35,
+    "max_alpha": 0.85,
+    "color": "#ff0000",
+    "duration_seconds": 2.5
+  },
+
+  "log_file": "activity_log.csv",
+  "save_unsure_frames": false
+}

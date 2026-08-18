@@ -1,0 +1,86 @@
+2026-07-31T21:45:00-07:00 | 🌙GETTING HIGH AS FUCK  | end=2026-08-01T00:45:00-07:00 | colorId=1
+2026-08-01T00:45:00-07:00 | 🕯️ Night Ritual → Lights Out | end=2026-08-01T01:30:00-07:00 | colorId=1
+2026-08-01T10:10:00-07:00 | 💳 Set Up Tuition Payment Plan — MyUCSC | end=2026-08-01T10:40:00-07:00 | colorId=11
+2026-08-03T00:00:00Z | 🎓 UCSC Virtual Advising Days (Porter + MCD) | end=2026-08-08T00:00:00Z | colorId=5
+2026-08-03T07:00:00-07:00 | 🌅 Slow Start | end=2026-08-03T07:30:00-07:00 | colorId=1
+2026-08-03T07:30:00-07:00 | ☕ Coffee + Breakfast + Frieren | end=2026-08-03T08:00:00-07:00 | colorId=4
+2026-08-03T08:00:00-07:00 | 🎯 Goal Deep Work (Trading / Math) | end=2026-08-03T09:15:00-07:00 | colorId=3
+2026-08-03T09:15:00-07:00 | 💪 Gym + Walk Home | end=2026-08-03T11:00:00-07:00 | colorId=4
+2026-08-03T11:00:00-07:00 | 💃 Dance / Movement | end=2026-08-03T11:30:00-07:00 | colorId=3
+2026-08-03T11:30:00-07:00 | 🚿 Full Shower + Skincare | end=2026-08-03T12:15:00-07:00 | colorId=1
+2026-08-03T12:15:00-07:00 | 🍳 Lunch + Reset Before Class | end=2026-08-03T13:00:00-07:00 | colorId=4
+2026-08-03T13:00:00-07:00 | 🧪 CHEM 3A — Lecture (online) | end=2026-08-03T15:30:00-07:00 | colorId=7
+2026-08-03T13:00:00-07:00 | 🧪 CHEM 3A Lecture | end=2026-08-03T15:30:00-07:00 | colorId=3
+2026-08-03T15:30:00-07:00 | 📚 CHEM Homework / Study 🛡️ | end=2026-08-03T17:00:00-07:00 | colorId=3
+2026-08-03T17:00:00-07:00 | 🌿 Meal Prep + Loose Ends | end=2026-08-03T17:30:00-07:00 | colorId=1
+2026-08-03T17:30:00-07:00 | 🌙 Recharge | end=2026-08-03T18:00:00-07:00 | colorId=1
+2026-08-03T19:00:00-07:00 | 🗑️ Take out garbage + bins to the street | end=2026-08-03T19:15:00-07:00 | colorId=None
+2026-08-03T19:00:00-07:00 | 📓 Notion Day Recap | end=2026-08-03T19:15:00-07:00 | colorId=1
+2026-08-03T19:15:00-07:00 | 🎮 Free Time / Hobbies | end=2026-08-03T21:45:00-07:00 | colorId=4
+2026-08-03T21:45:00-07:00 | 🌙GETTING HIGH AS FUCK  | end=2026-08-04T00:45:00-07:00 | colorId=1
+2026-08-04T00:45:00-07:00 | 🕯️ Night Ritual → Lights Out | end=2026-08-04T01:30:00-07:00 | colorId=1
+2026-08-04T07:00:00-07:00 | 🌅 Slow Start | end=2026-08-04T07:30:00-07:00 | colorId=1
+2026-08-04T07:30:00-07:00 | ☕ Coffee + Breakfast + Frieren | end=2026-08-04T08:00:00-07:00 | colorId=4
+2026-08-04T08:00:00-07:00 | 🎯 Goal Deep Work (Trading / Math) | end=2026-08-04T09:15:00-07:00 | colorId=3
+2026-08-04T09:15:00-07:00 | 💪 Gym + Walk Home | end=2026-08-04T11:00:00-07:00 | colorId=4
+2026-08-04T11:00:00-07:00 | 💃 Dance / Movement | end=2026-08-04T11:30:00-07:00 | colorId=3
+2026-08-04T11:30:00-07:00 | 🚿 Full Shower + Skincare | end=2026-08-04T12:15:00-07:00 | colorId=1
+2026-08-04T12:15:00-07:00 | 🍳 Lunch + Reset Before Class | end=2026-08-04T13:00:00-07:00 | colorId=4
+2026-08-04T15:30:00-07:00 | 📚 CHEM Homework / Study 🛡️ | end=2026-08-04T17:00:00-07:00 | colorId=3
+2026-08-04T17:00:00-07:00 | 🌿 Meal Prep + Loose Ends | end=2026-08-04T17:30:00-07:00 | colorId=1
+2026-08-04T17:30:00-07:00 | 🌙 Recharge | end=2026-08-04T18:00:00-07:00 | colorId=1
+2026-08-04T19:00:00-07:00 | 📓 Notion Day Recap | end=2026-08-04T19:15:00-07:00 | colorId=1
+2026-08-04T19:15:00-07:00 | 🎮 Free Time / Hobbies | end=2026-08-04T21:45:00-07:00 | colorId=4
+2026-08-04T21:45:00-07:00 | 🌙GETTING HIGH AS FUCK  | end=2026-08-05T00:45:00-07:00 | colorId=1
+2026-08-05T00:00:00Z | 1️⃣ Confirm insurer filed electronically with DMV | end=2026-08-05T00:00:00Z | colorId=6
+2026-08-05T00:45:00-07:00 | 🕯️ Night Ritual → Lights Out | end=2026-08-05T01:30:00-07:00 | colorId=1
+2026-08-05T07:00:00-07:00 | 🌅 Slow Start | end=2026-08-05T07:30:00-07:00 | colorId=1
+2026-08-05T07:30:00-07:00 | ☕ Coffee + Breakfast + Frieren | end=2026-08-05T08:00:00-07:00 | colorId=4
+2026-08-05T08:00:00-07:00 | 🎯 Goal Deep Work (Trading / Math) | end=2026-08-05T09:15:00-07:00 | colorId=3
+2026-08-05T09:15:00-07:00 | 💪 Gym + Walk Home | end=2026-08-05T11:00:00-07:00 | colorId=4
+2026-08-05T11:00:00-07:00 | 💃 Dance / Movement | end=2026-08-05T11:30:00-07:00 | colorId=3
+2026-08-05T11:30:00-07:00 | 🚿 Full Shower + Skincare | end=2026-08-05T12:15:00-07:00 | colorId=1
+2026-08-05T12:15:00-07:00 | 🍳 Lunch + Reset Before Class | end=2026-08-05T13:00:00-07:00 | colorId=4
+2026-08-05T13:00:00-07:00 | 🧪 CHEM 3A — Lecture (online) | end=2026-08-05T15:30:00-07:00 | colorId=7
+2026-08-05T13:00:00-07:00 | 🧪 CHEM 3A Lecture | end=2026-08-05T15:30:00-07:00 | colorId=3
+2026-08-05T15:30:00-07:00 | 📚 CHEM Homework / Study 🛡️ | end=2026-08-05T17:00:00-07:00 | colorId=3
+2026-08-05T17:00:00-07:00 | 🌿 Meal Prep + Loose Ends | end=2026-08-05T17:30:00-07:00 | colorId=1
+2026-08-05T17:30:00-07:00 | 🌙 Recharge | end=2026-08-05T18:00:00-07:00 | colorId=1
+2026-08-05T19:00:00-07:00 | 📓 Notion Day Recap | end=2026-08-05T19:15:00-07:00 | colorId=1
+2026-08-05T19:15:00-07:00 | 🎮 Free Time / Hobbies | end=2026-08-05T21:45:00-07:00 | colorId=4
+2026-08-05T21:45:00-07:00 | 🌙GETTING HIGH AS FUCK  | end=2026-08-06T00:45:00-07:00 | colorId=1
+2026-08-06T00:45:00-07:00 | 🕯️ Night Ritual → Lights Out | end=2026-08-06T01:30:00-07:00 | colorId=1
+2026-08-06T07:00:00-07:00 | 🌅 Slow Start | end=2026-08-06T07:30:00-07:00 | colorId=1
+2026-08-06T07:30:00-07:00 | ☕ Coffee + Breakfast + Frieren | end=2026-08-06T08:00:00-07:00 | colorId=4
+2026-08-06T08:00:00-07:00 | 🎯 Goal Deep Work (Trading / Math) | end=2026-08-06T09:15:00-07:00 | colorId=3
+2026-08-06T08:50:00-07:00 | Appointment at UNION CITY MEDICAL OFFICES-UNC | end=2026-08-06T09:50:00-07:00 | colorId=None
+2026-08-06T09:15:00-07:00 | 💪 Gym + Walk Home | end=2026-08-06T11:00:00-07:00 | colorId=4
+2026-08-06T11:00:00-07:00 | 💃 Dance / Movement | end=2026-08-06T11:30:00-07:00 | colorId=3
+2026-08-06T11:30:00-07:00 | 🚿 Full Shower + Skincare | end=2026-08-06T12:15:00-07:00 | colorId=1
+2026-08-06T12:15:00-07:00 | 🍳 Lunch + Reset Before Class | end=2026-08-06T13:00:00-07:00 | colorId=4
+2026-08-06T14:40:00-07:00 | 🧪 CHEM 3A — Discussion (online) | end=2026-08-06T15:45:00-07:00 | colorId=7
+2026-08-06T14:40:00-07:00 | 🧪 CHEM 3A Discussion | end=2026-08-06T15:45:00-07:00 | colorId=3
+2026-08-06T15:30:00-07:00 | 📚 CHEM Homework / Study 🛡️ | end=2026-08-06T17:00:00-07:00 | colorId=3
+2026-08-06T17:00:00-07:00 | 🌿 Meal Prep + Loose Ends | end=2026-08-06T17:30:00-07:00 | colorId=1
+2026-08-06T17:30:00-07:00 | 🌙 Recharge | end=2026-08-06T18:00:00-07:00 | colorId=1
+2026-08-06T19:00:00-07:00 | 📓 Notion Day Recap | end=2026-08-06T19:15:00-07:00 | colorId=1
+2026-08-06T19:15:00-07:00 | 🎮 Free Time / Hobbies | end=2026-08-06T21:45:00-07:00 | colorId=4
+2026-08-06T21:45:00-07:00 | 🌙GETTING HIGH AS FUCK  | end=2026-08-07T00:45:00-07:00 | colorId=1
+2026-08-07T00:45:00-07:00 | 🕯️ Night Ritual → Lights Out | end=2026-08-07T01:30:00-07:00 | colorId=1
+2026-08-07T07:00:00-07:00 | 🌅 Slow Start | end=2026-08-07T07:30:00-07:00 | colorId=1
+2026-08-07T07:30:00-07:00 | ☕ Coffee + Breakfast + Frieren | end=2026-08-07T08:00:00-07:00 | colorId=4
+2026-08-07T08:00:00-07:00 | 🎯 Goal Deep Work (Trading / Math) | end=2026-08-07T09:15:00-07:00 | colorId=3
+2026-08-07T09:15:00-07:00 | 💪 Gym + Walk Home | end=2026-08-07T11:00:00-07:00 | colorId=4
+2026-08-07T11:00:00-07:00 | 💃 Dance / Movement | end=2026-08-07T11:30:00-07:00 | colorId=3
+2026-08-07T11:30:00-07:00 | 🚿 Full Shower + Skincare | end=2026-08-07T12:15:00-07:00 | colorId=1
+2026-08-07T12:15:00-07:00 | 🍳 Lunch + Reset Before Class | end=2026-08-07T13:00:00-07:00 | colorId=4
+2026-08-07T13:00:00-07:00 | 🧪 CHEM 3A — Lecture (online) | end=2026-08-07T15:30:00-07:00 | colorId=7
+2026-08-07T13:00:00-07:00 | 🧪 CHEM 3A Lecture | end=2026-08-07T15:30:00-07:00 | colorId=3
+2026-08-07T13:00:00-07:00 | CHEM 3A — Test 1 | end=2026-08-07T15:30:00-07:00 | colorId=None
+2026-08-07T15:30:00-07:00 | 📚 CHEM Homework / Study 🛡️ | end=2026-08-07T17:00:00-07:00 | colorId=3
+2026-08-07T17:00:00-07:00 | 🌿 Meal Prep + Loose Ends | end=2026-08-07T17:30:00-07:00 | colorId=1
+2026-08-07T17:30:00-07:00 | 🌙 Recharge | end=2026-08-07T18:00:00-07:00 | colorId=1
+2026-08-07T19:00:00-07:00 | 📓 Notion Day Recap | end=2026-08-07T19:15:00-07:00 | colorId=1
+2026-08-07T19:15:00-07:00 | 🎮 Free Time / Hobbies | end=2026-08-07T21:45:00-07:00 | colorId=4
+2026-08-07T21:45:00-07:00 | 🌙GETTING HIGH AS FUCK  | end=2026-08-08T00:45:00-07:00 | colorId=1
+2026-08-08T00:45:00-07:00 | 🕯️ Night Ritual → Lights Out | end=2026-08-08T01:30:00-07:00 | colorId=1

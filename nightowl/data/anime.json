@@ -1,0 +1,1936 @@
+{
+  "season": "SUMMER",
+  "year": 2026,
+  "fetchedAt": 1785865686.404867,
+  "fetchedAtLocal": "2026-08-04 10:48",
+  "shows": [
+    {
+      "id": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "romaji": "Mushoku Tensei III: Isekai Ittara Honki Dasu",
+      "episodes": 14,
+      "score": 85,
+      "genres": [
+        "Adventure",
+        "Drama",
+        "Ecchi"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx178789-hNXjKFzUq7mk.jpg",
+      "color": "#28bbe4",
+      "url": "https://anilist.co/anime/178789",
+      "nextEpisode": 7,
+      "nextAiringAt": 1786287600
+    },
+    {
+      "id": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "romaji": "Super no Ura de Yani Suu Futari",
+      "episodes": 12,
+      "score": 82,
+      "genres": [
+        "Comedy",
+        "Romance",
+        "Slice of Life"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196187-0dgFi2CPp3xn.jpg",
+      "color": "#f1c9bb",
+      "url": "https://anilist.co/anime/196187",
+      "nextEpisode": 5,
+      "nextAiringAt": 1786028160
+    },
+    {
+      "id": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "romaji": "Youjo Senki II",
+      "episodes": 12,
+      "score": 81,
+      "genres": [
+        "Action",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx135865-T7XIPMAbqcxN.png",
+      "color": "#e46b28",
+      "url": "https://anilist.co/anime/135865",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785933000
+    },
+    {
+      "id": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "romaji": "BLEACH: Sennen Kessen-hen - Kashin-tan",
+      "episodes": 10,
+      "score": 88,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185874-aU3e6tBT6wwA.jpg",
+      "color": "#c084fc",
+      "url": "https://anilist.co/anime/185874",
+      "nextEpisode": 3,
+      "nextAiringAt": 1786197600
+    },
+    {
+      "id": 207141,
+      "title": "Chainsmoker Cat",
+      "romaji": "Yani Neko",
+      "episodes": null,
+      "score": 67,
+      "genres": [
+        "Comedy",
+        "Slice of Life"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207141-h5q5KJPd6vaX.jpg",
+      "color": "#50a1f1",
+      "url": "https://anilist.co/anime/207141",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786030200
+    },
+    {
+      "id": 187538,
+      "title": "BLACK TORCH",
+      "romaji": "BLACK TORCH",
+      "episodes": null,
+      "score": 71,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx187538-fXVXKYUA3VV6.jpg",
+      "color": "#435dff",
+      "url": "https://anilist.co/anime/187538",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786194000
+    },
+    {
+      "id": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "romaji": "Tsuihou Sareta Tensei Juukishi wa Game Chishiki de Musou Suru",
+      "episodes": 26,
+      "score": 67,
+      "genres": [
+        "Action",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx180136-gtMTCRlOD4OE.jpg",
+      "color": "#50c9fe",
+      "url": "https://anilist.co/anime/180136",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786029960
+    },
+    {
+      "id": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "romaji": "Seihantai na Kimi to Boku 2nd Season",
+      "episodes": 13,
+      "score": 81,
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx210031-TppgcHZh46LY.jpg",
+      "color": "#fe5093",
+      "url": "https://anilist.co/anime/210031",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786262400
+    },
+    {
+      "id": 103303,
+      "title": "Sparks of Tomorrow",
+      "romaji": "Nijusseiki Denki Mokuroku: Eureka Evrika",
+      "episodes": 13,
+      "score": 76,
+      "genres": [
+        "Adventure",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 25,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx103303-IF43hFJPPv2Y.png",
+      "color": "#fec950",
+      "url": "https://anilist.co/anime/103303",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786284000
+    },
+    {
+      "id": 133007,
+      "title": "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
+      "romaji": "Mahou Shoujo Madoka\u2606Magica: Walpurgis no Kaiten",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Mahou Shoujo"
+      ],
+      "format": "MOVIE",
+      "status": "NOT_YET_RELEASED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx133007-5gOUXDvzxy9S.jpg",
+      "color": "#e4935d",
+      "url": "https://anilist.co/anime/133007",
+      "nextEpisode": 1,
+      "nextAiringAt": 1787842800
+    },
+    {
+      "id": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
+      "romaji": "Kimi ga Shinu made Koi wo Shitai",
+      "episodes": 13,
+      "score": 75,
+      "genres": [
+        "Drama",
+        "Fantasy",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx187260-WW5RBa5NINRP.jpg",
+      "color": "#e4ae35",
+      "url": "https://anilist.co/anime/187260",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786451400
+    },
+    {
+      "id": 177699,
+      "title": "THE GHOST IN THE SHELL",
+      "romaji": "Koukaku Kidoutai: THE GHOST IN THE SHELL",
+      "episodes": null,
+      "score": 76,
+      "genres": [
+        "Action",
+        "Psychological",
+        "Sci-Fi"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx177699-hnzc1CS5ZSM2.png",
+      "color": "#c084fc",
+      "url": "https://anilist.co/anime/177699",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786456800
+    },
+    {
+      "id": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "romaji": "Otomege Sekai wa Mob ni Kibishii Sekai desu 2",
+      "episodes": 12,
+      "score": 67,
+      "genres": [
+        "Action",
+        "Fantasy",
+        "Mecha"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx159309-wRfh9O1odrDJ.jpg",
+      "color": "#e4c986",
+      "url": "https://anilist.co/anime/159309",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785940200
+    },
+    {
+      "id": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "romaji": "Gaikotsu Kishi-sama, Tadaima Isekai e Odekakechuu II",
+      "episodes": 12,
+      "score": 67,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Comedy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185542-6a9LCWlLHa0T.jpg",
+      "color": "#286bbb",
+      "url": "https://anilist.co/anime/185542",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786366800
+    },
+    {
+      "id": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "romaji": "Rakudai Kenja no Gakuin Musou: Nidome no Tensei, S-Rank Cheat Majutsushi Bouken-roku",
+      "episodes": null,
+      "score": 65,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Fantasy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208044-Pm2UhvApQFUh.jpg",
+      "color": "#f1d61a",
+      "url": "https://anilist.co/anime/208044",
+      "nextEpisode": 7,
+      "nextAiringAt": 1786028400
+    },
+    {
+      "id": 198946,
+      "title": "Clevatess Season 2",
+      "romaji": "Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou",
+      "episodes": 13,
+      "score": 75,
+      "genres": [
+        "Action",
+        "Drama",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198946-IGXmbqBEYRYD.jpg",
+      "color": "#f1bb5d",
+      "url": "https://anilist.co/anime/198946",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785931200
+    },
+    {
+      "id": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "romaji": "Katainaka no Ossan, Kensei ni Naru II",
+      "episodes": null,
+      "score": 71,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Comedy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx194829-bZKwhfo60EuF.jpg",
+      "color": "#aed6e4",
+      "url": "https://anilist.co/anime/194829",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785941160
+    },
+    {
+      "id": 199111,
+      "title": "Grand Blue Dreaming Season 3",
+      "romaji": "Grand Blue Season 3",
+      "episodes": 12,
+      "score": 81,
+      "genres": [
+        "Comedy",
+        "Slice of Life",
+        "Sports"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199111-gBSuBG61ElcW.jpg",
+      "color": "#5daed6",
+      "url": "https://anilist.co/anime/199111",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786374000
+    },
+    {
+      "id": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "romaji": "Tenmaku no Jaadugar",
+      "episodes": null,
+      "score": 82,
+      "genres": [
+        "Drama"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx190569-KnCQLI3Z8hPX.jpg",
+      "color": "#50a1e4",
+      "url": "https://anilist.co/anime/190569",
+      "nextEpisode": 7,
+      "nextAiringAt": 1786199400
+    },
+    {
+      "id": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "romaji": "Saijo no Osewa: Takane no Hanadarake na Meimonkou de, Gakuin Ichi no Ojou-sama (Seikatsu Nouryoku Kaimu) wo Kagenagara Osewa suru Koto ni Narimashita",
+      "episodes": 12,
+      "score": 71,
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx201514-BHAeWhSbcBrT.png",
+      "color": "#e48650",
+      "url": "https://anilist.co/anime/201514",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786210680
+    },
+    {
+      "id": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "romaji": "Kimi no Koto ga Dai Dai Dai Dai Daisuki na 100-nin no Kanojo 3rd Season",
+      "episodes": null,
+      "score": 80,
+      "genres": [
+        "Comedy",
+        "Ecchi",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx200637-QLR5uv9SbQ69.jpg",
+      "color": "#f193bb",
+      "url": "https://anilist.co/anime/200637",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786282200
+    },
+    {
+      "id": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
+      "romaji": "Toumei na Yoru ni Kakeru Kimi to, Me ni Mienai Koi wo Shita.",
+      "episodes": null,
+      "score": 78,
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202269-7KNj8s2fSsJJ.jpg",
+      "color": "#5da1e4",
+      "url": "https://anilist.co/anime/202269",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786363200
+    },
+    {
+      "id": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "romaji": "Koko wa Ore ni Makasete Saki ni Ike to Ittekara 10-nen ga Tattara Densetsu ni Natteita.",
+      "episodes": 12,
+      "score": 65,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Fantasy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199748-PAFk9pGSUmFL.png",
+      "color": "#5dd6f1",
+      "url": "https://anilist.co/anime/199748",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786109400
+    },
+    {
+      "id": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
+      "romaji": "Otome Kaijuu Caram\u00e9liser",
+      "episodes": null,
+      "score": 75,
+      "genres": [
+        "Comedy",
+        "Romance",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx204466-vXMvIs4VOoQd.png",
+      "color": "#e45d78",
+      "url": "https://anilist.co/anime/204466",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786033680
+    },
+    {
+      "id": 197715,
+      "title": "The Villager of Level 999",
+      "romaji": "LV999 no Murabito",
+      "episodes": 12,
+      "score": 61,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Comedy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx197715-KLFLxU24U1uL.png",
+      "color": "#5daef1",
+      "url": "https://anilist.co/anime/197715",
+      "nextEpisode": 7,
+      "nextAiringAt": 1785942000
+    },
+    {
+      "id": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
+      "romaji": "Tenkousaki no Seiso Karen na Bishoujo ga, Mukashi Danshi to Omotte Issho ni Asonda Osananajimi datta Ken",
+      "episodes": 12,
+      "score": 71,
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169583-0ZTdBGrKNIbe.jpg",
+      "color": "#50c9fe",
+      "url": "https://anilist.co/anime/169583",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786372200
+    },
+    {
+      "id": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "romaji": "Hell Mode: Yarikomi-zuki no Gamer wa Haisettei no Isekai de Musou Suru 2nd Season",
+      "episodes": 13,
+      "score": 72,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 25,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209983-sFOcKyqMufxb.jpg",
+      "color": "#0dbbf1",
+      "url": "https://anilist.co/anime/209983",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786118400
+    },
+    {
+      "id": 188139,
+      "title": "Though I Am an Inept Villainess",
+      "romaji": "Futsutsuka na Akujo de wa Gozaimasu ga: Suuguu Chouso Torikae Den",
+      "episodes": 11,
+      "score": 75,
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx188139-1qIJfWxym8FX.jpg",
+      "color": "#0d86fe",
+      "url": "https://anilist.co/anime/188139",
+      "nextEpisode": 5,
+      "nextAiringAt": 1786286760
+    },
+    {
+      "id": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
+      "romaji": "Ryoumin 0-Nin Start no Henkyou Ryoushu-sama",
+      "episodes": null,
+      "score": 67,
+      "genres": [
+        "Action",
+        "Comedy",
+        "Drama"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 25,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196218-UsdTTCrwpDIN.jpg",
+      "color": "#febb50",
+      "url": "https://anilist.co/anime/196218",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786109400
+    },
+    {
+      "id": 177637,
+      "title": "Goodbye, Lara",
+      "romaji": "Sayonara Lara",
+      "episodes": 12,
+      "score": 76,
+      "genres": [
+        "Romance",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx177637-8onaQWqKW1C3.jpg",
+      "color": "#5daee4",
+      "url": "https://anilist.co/anime/177637",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786289400
+    },
+    {
+      "id": 128757,
+      "title": "Young Ladies Don't Play Fighting Games",
+      "romaji": "Tai-Ari deshita.: Ojou-sama wa Kakutou Game nante Shinai",
+      "episodes": 12,
+      "score": 74,
+      "genres": [
+        "Drama"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx128757-Iqc6hTjEYIz4.png",
+      "color": "#436bff",
+      "url": "https://anilist.co/anime/128757",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786447800
+    },
+    {
+      "id": 182616,
+      "title": "The Elusive Samurai Season 2",
+      "romaji": "Nige Jouzu no Wakagimi 2nd Season",
+      "episodes": 12,
+      "score": 75,
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx182616-ZOCgArw9cgqI.jpg",
+      "color": "#e45050",
+      "url": "https://anilist.co/anime/182616",
+      "nextEpisode": 4,
+      "nextAiringAt": 1786113000
+    },
+    {
+      "id": 198409,
+      "title": "The World's Strongest Rearguard",
+      "romaji": "Sekai Saikyou no Kouei: Meikyuukoku no Shinjin Tansakusha",
+      "episodes": 12,
+      "score": 56,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198409-EiWJXfYnvfu4.png",
+      "color": "#0dbbfe",
+      "url": "https://anilist.co/anime/198409",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786280400
+    },
+    {
+      "id": 169582,
+      "title": "The Insipid Prince's Furtive Grab for the Throne",
+      "romaji": "Saikyou Degarashi Ouji no Anyaku Teii Arasoi: Munou wo Enjiru SS Rank Ouji wa Koui Keishou-sen wo Kage kara Shihai suru",
+      "episodes": 12,
+      "score": 60,
+      "genres": [
+        "Action",
+        "Comedy",
+        "Drama"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169582-quL8VMg45fcu.png",
+      "color": "#f1e4c9",
+      "url": "https://anilist.co/anime/169582",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786363020
+    },
+    {
+      "id": 186863,
+      "title": "The Cat and the Dragon",
+      "romaji": "Neko to Ryuu",
+      "episodes": null,
+      "score": 76,
+      "genres": [
+        "Adventure",
+        "Fantasy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx186863-AO4efoB8HuzA.png",
+      "color": "#e4e45d",
+      "url": "https://anilist.co/anime/186863",
+      "nextEpisode": 7,
+      "nextAiringAt": 1786190400
+    },
+    {
+      "id": 206521,
+      "title": "The World Is Dancing",
+      "romaji": "World Is Dancing",
+      "episodes": 13,
+      "score": 72,
+      "genres": [
+        "Drama"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206521-ecJuDgjth84C.png",
+      "color": "#e45d78",
+      "url": "https://anilist.co/anime/206521",
+      "nextEpisode": 7,
+      "nextAiringAt": 1786366800
+    },
+    {
+      "id": 199066,
+      "title": "Hanaori-san Still Wants to Fight in the Next Life",
+      "romaji": "Hanaori-san wa Tensei Shite mo Kenka ga Shitai",
+      "episodes": null,
+      "score": 67,
+      "genres": [
+        "Comedy",
+        "Romance",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199066-YXDVsguvFZMm.jpg",
+      "color": "#43bbe4",
+      "url": "https://anilist.co/anime/199066",
+      "nextEpisode": 5,
+      "nextAiringAt": 1786208400
+    },
+    {
+      "id": 192800,
+      "title": "Heroine? Saint? No, I\u2019m an All-Works Maid (And Proud of It)!",
+      "romaji": "Heroine? Seijo? Iie, All Works Maid desu (Ko)!",
+      "episodes": 12,
+      "score": 70,
+      "genres": [
+        "Comedy",
+        "Fantasy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx192800-r8zlO0VY0jJP.jpg",
+      "color": "#f1e4ae",
+      "url": "https://anilist.co/anime/192800",
+      "nextEpisode": 7,
+      "nextAiringAt": 1785936600
+    },
+    {
+      "id": 199408,
+      "title": "A Livid Lady\u2019s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires",
+      "romaji": "Buchigire Reijou wa Houfuku wo Chikaimashita.: Madousho no Chikara de Sokoku wo Tataki Tsubushimasu",
+      "episodes": 12,
+      "score": 68,
+      "genres": [
+        "Drama",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx199408-ocRWG4pRWl8f.png",
+      "color": "#f1ae35",
+      "url": "https://anilist.co/anime/199408",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786368600
+    },
+    {
+      "id": 196219,
+      "title": "The Oblivious Saint Can't Contain Her Power",
+      "romaji": "Mujikaku Seijo wa Kyou mo Muishiki ni Chikara wo Tare Nagasu",
+      "episodes": null,
+      "score": 64,
+      "genres": [
+        "Drama",
+        "Fantasy",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196219-imvC0rbk4VzH.jpg",
+      "color": "#5daee4",
+      "url": "https://anilist.co/anime/196219",
+      "nextEpisode": 7,
+      "nextAiringAt": 1786453200
+    },
+    {
+      "id": 194219,
+      "title": "The Ogre's Bride",
+      "romaji": "Oni no Hanayome",
+      "episodes": 12,
+      "score": 69,
+      "genres": [
+        "Drama",
+        "Fantasy",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b194219-56EhyK775lga.jpg",
+      "color": "#ff7835",
+      "url": "https://anilist.co/anime/194219",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786203000
+    },
+    {
+      "id": 207674,
+      "title": "KAMUI ---He's behind you",
+      "romaji": "Ushiro no Shoumen Kamui-san",
+      "episodes": 12,
+      "score": 57,
+      "genres": [
+        "Comedy",
+        "Ecchi",
+        "Supernatural"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 12,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207674-BT8lFAwH1WrL.jpg",
+      "color": "#c084fc",
+      "url": "https://anilist.co/anime/207674",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786120200
+    },
+    {
+      "id": 197178,
+      "title": "ONE PIECE HEROINES",
+      "romaji": "ONE PIECE HEROINES",
+      "episodes": 1,
+      "score": 78,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Drama"
+      ],
+      "format": "SPECIAL",
+      "status": "FINISHED",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx197178-Ui8PY9HQbNgu.jpg",
+      "color": "#e45d86",
+      "url": "https://anilist.co/anime/197178",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 211711,
+      "title": "My Hero Academia: I am a hero too",
+      "romaji": "Boku no Hero Academia: I am a hero too",
+      "episodes": 1,
+      "score": 77,
+      "genres": [],
+      "format": "SPECIAL",
+      "status": "FINISHED",
+      "duration": 6,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx211711-Oy6R5cmGHLCL.jpg",
+      "color": "#f1d61a",
+      "url": "https://anilist.co/anime/211711",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 198709,
+      "title": "Victoria of Many Faces",
+      "romaji": "Tefuda ga Oome no Victoria",
+      "episodes": 9,
+      "score": 71,
+      "genres": [
+        "Action",
+        "Drama",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198709-3PFLvU6eqPvf.jpg",
+      "color": "#5da1e4",
+      "url": "https://anilist.co/anime/198709",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786460400
+    },
+    {
+      "id": 209504,
+      "title": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+      "romaji": "Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita",
+      "episodes": 12,
+      "score": 61,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Comedy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209504-yRxHWxKuNGtg.jpg",
+      "color": "#bbe40d",
+      "url": "https://anilist.co/anime/209504",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786370400
+    },
+    {
+      "id": 211308,
+      "title": "THE RIBBON HERO",
+      "romaji": "THE RIBBON HERO",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Action",
+        "Fantasy",
+        "Mahou Shoujo"
+      ],
+      "format": "MOVIE",
+      "status": "NOT_YET_RELEASED",
+      "duration": 109,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b211308-88VZiAPkkXZV.jpg",
+      "color": "#f12843",
+      "url": "https://anilist.co/anime/211308",
+      "nextEpisode": 1,
+      "nextAiringAt": 1786179660
+    },
+    {
+      "id": 203880,
+      "title": "Dara-san of the Reiwa Era",
+      "romaji": "Reiwa no Dara-san",
+      "episodes": 13,
+      "score": 63,
+      "genres": [
+        "Comedy",
+        "Horror",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx203880-lnruKftb27Nr.png",
+      "color": "#c084fc",
+      "url": "https://anilist.co/anime/203880",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786019400
+    },
+    {
+      "id": 209961,
+      "title": "SHIBOYUGI: Playing Death Games to Put Food on the Table 44: CLOUDY BEACH",
+      "romaji": "Shibou Yuugi de Meshi wo Kuu. 44: CLOUDY BEACH",
+      "episodes": 1,
+      "score": 70,
+      "genres": [
+        "Action",
+        "Drama",
+        "Mystery"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": 89,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209961-EKMAWTp299Kt.jpg",
+      "color": "#c084fc",
+      "url": "https://anilist.co/anime/209961",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 208225,
+      "title": "The Duke\u2019s Son Claims He Won\u2019t Love Me Yet Showers Me with Adoration",
+      "romaji": "\"Kimi wo Aisuru Ki wa nai\" to Itta Jiki Koushaku-sama ga Naze ka Dekiai Shitekimasu",
+      "episodes": 12,
+      "score": 65,
+      "genres": [
+        "Fantasy",
+        "Romance"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208225-HJbCC0Z4xRp3.jpg",
+      "color": "#e4bb28",
+      "url": "https://anilist.co/anime/208225",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786206600
+    },
+    {
+      "id": 196356,
+      "title": "My Stepmother and Stepsisters Aren\u2019t Wicked",
+      "romaji": "Ibitte Konai Gibo to Gishi",
+      "episodes": null,
+      "score": 64,
+      "genres": [
+        "Comedy",
+        "Slice of Life"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196356-2TNt2b9tu0jm.jpg",
+      "color": "#93f1c9",
+      "url": "https://anilist.co/anime/196356",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785940200
+    },
+    {
+      "id": 207809,
+      "title": "Red River",
+      "romaji": "Sora wa Akai Kawa no Hotori",
+      "episodes": null,
+      "score": 60,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Drama"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207809-cpS7CAyjN7iP.jpg",
+      "color": "#e4bb5d",
+      "url": "https://anilist.co/anime/207809",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786466100
+    },
+    {
+      "id": 188525,
+      "title": "Draw This, Then Die!",
+      "romaji": "Kore Kaite Shine",
+      "episodes": 12,
+      "score": 75,
+      "genres": [
+        "Comedy",
+        "Slice of Life"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx188525-uWhw4rQcqOyF.jpg",
+      "color": "#e48650",
+      "url": "https://anilist.co/anime/188525",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786113000
+    },
+    {
+      "id": 204060,
+      "title": "Iron Wok Jan!",
+      "romaji": "Tetsunabe no Jan!",
+      "episodes": null,
+      "score": 69,
+      "genres": [
+        "Action",
+        "Comedy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 23,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx204060-bKhovD8jAlW8.jpg",
+      "color": "#f1931a",
+      "url": "https://anilist.co/anime/204060",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786264200
+    },
+    {
+      "id": 185875,
+      "title": "Magical Girl Lyrical Nanoha EXCEEDS Gun Blaze Vengeance",
+      "romaji": "Mahou Shoujo Lyrical Nanoha EXCEEDS Gun Blaze Vengeance",
+      "episodes": 12,
+      "score": 66,
+      "genres": [
+        "Action",
+        "Comedy",
+        "Drama"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185875-XMvDVlIUZODx.jpg",
+      "color": "#e46b43",
+      "url": "https://anilist.co/anime/185875",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786204800
+    },
+    {
+      "id": 196017,
+      "title": "Grow Up Show",
+      "romaji": "Grow Up Show: Himawari no Circus-dan",
+      "episodes": null,
+      "score": 70,
+      "genres": [
+        "Adventure",
+        "Slice of Life",
+        "Sports"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196017-GynDNdbDzqzk.jpg",
+      "color": "#f1ae1a",
+      "url": "https://anilist.co/anime/196017",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786201200
+    },
+    {
+      "id": 203490,
+      "title": "Please Excuse My Younger Brothers",
+      "romaji": "Uchi no Otouto-domo ga Sumimasen",
+      "episodes": 24,
+      "score": 68,
+      "genres": [
+        "Comedy",
+        "Romance",
+        "Slice of Life"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx203490-YQXiymUiDQNA.jpg",
+      "color": "#fef150",
+      "url": "https://anilist.co/anime/203490",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786114800
+    },
+    {
+      "id": 208754,
+      "title": "Unanswered//butterfly: Sword Art Online",
+      "romaji": "Unanswered//butterfly: Sword Art Online",
+      "episodes": 1,
+      "score": 60,
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": 110,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208754-333Nyh5abrqS.png",
+      "color": "#e4a150",
+      "url": "https://anilist.co/anime/208754",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 214031,
+      "title": "Mob Psycho 100 10th Anniversary Special Movie",
+      "romaji": "Mob Psycho 100: 10 Shuunen Kinen Tokubetsu Eizou",
+      "episodes": 1,
+      "score": 76,
+      "genres": [
+        "Comedy",
+        "Slice of Life",
+        "Supernatural"
+      ],
+      "format": "SPECIAL",
+      "status": "FINISHED",
+      "duration": 2,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx214031-VjZ9YM1NsmJd.jpg",
+      "color": "#e44378",
+      "url": "https://anilist.co/anime/214031",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 108992,
+      "title": "Mebius Dust",
+      "romaji": "Mebius Dust",
+      "episodes": null,
+      "score": 50,
+      "genres": [
+        "Action",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx108992-skuOsfmLmMd2.jpg",
+      "color": "#50bbc9",
+      "url": "https://anilist.co/anime/108992",
+      "nextEpisode": 5,
+      "nextAiringAt": 1786026600
+    },
+    {
+      "id": 185692,
+      "title": "Magilumiere Magical Girls Inc. Season 2",
+      "romaji": "Kabushiki Gaisha Magi Lumiere 2nd Season",
+      "episodes": null,
+      "score": 66,
+      "genres": [
+        "Action",
+        "Comedy",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx185692-1a8huwOIx7gw.jpg",
+      "color": "#5dc9e4",
+      "url": "https://anilist.co/anime/185692",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786204500
+    },
+    {
+      "id": 198376,
+      "title": "BanG Dream! YUME\u221eMITA",
+      "romaji": "BanG Dream! Yume\u221eMita",
+      "episodes": 13,
+      "score": 73,
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Music"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx198376-sc5qcFv0RSH9.jpg",
+      "color": "#a1f150",
+      "url": "https://anilist.co/anime/198376",
+      "nextEpisode": 8,
+      "nextAiringAt": 1786024800
+    },
+    {
+      "id": 209669,
+      "title": "Hana-Kimi Season 2",
+      "romaji": "Hanazakari no Kimitachi e 2nd Season",
+      "episodes": 13,
+      "score": 68,
+      "genres": [
+        "Comedy",
+        "Drama",
+        "Romance"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209669-7GlPe2ra5f1i.jpg",
+      "color": "#436be4",
+      "url": "https://anilist.co/anime/209669",
+      "nextEpisode": 7,
+      "nextAiringAt": 1785945600
+    },
+    {
+      "id": 206249,
+      "title": "Recommendations from Iwamoto-Senpai",
+      "romaji": "Iwamoto-senpai no Suisen",
+      "episodes": null,
+      "score": 53,
+      "genres": [
+        "Action",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206249-1AUSry416wGz.png",
+      "color": "#fed650",
+      "url": "https://anilist.co/anime/206249",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786195800
+    },
+    {
+      "id": 206819,
+      "title": "Kimi to Hanabi to Yakusoku to",
+      "romaji": "Kimi to Hanabi to Yakusoku to",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Romance"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206819-9VJOdSC6yFET.jpg",
+      "color": "#d6a178",
+      "url": "https://anilist.co/anime/206819",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 200230,
+      "title": "Let's go KAIKIGUMI",
+      "romaji": "Let's Go Kaikigumi",
+      "episodes": 12,
+      "score": 55,
+      "genres": [
+        "Comedy",
+        "Horror",
+        "Supernatural"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx200230-YuzdgbXSgi38.png",
+      "color": "#e45d43",
+      "url": "https://anilist.co/anime/200230",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786260600
+    },
+    {
+      "id": 201667,
+      "title": "Bungo Stray Dogs WAN! 2",
+      "romaji": "Bungou Stray Dogs Wan! 2",
+      "episodes": 12,
+      "score": 73,
+      "genres": [
+        "Comedy",
+        "Slice of Life",
+        "Supernatural"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 12,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx201667-oqaW97DQ7HUj.jpg",
+      "color": "#e46b5d",
+      "url": "https://anilist.co/anime/201667",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786020000
+    },
+    {
+      "id": 169080,
+      "title": "Anime AzurLane: Slow Ahead! Season 2",
+      "romaji": "Azur Lane: Bisoku Zenshin! Ni!!",
+      "episodes": 12,
+      "score": 61,
+      "genres": [
+        "Ecchi",
+        "Slice of Life"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 9,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169080-el4sMLlqMxeI.png",
+      "color": "#fefe28",
+      "url": "https://anilist.co/anime/169080",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786291200
+    },
+    {
+      "id": 213847,
+      "title": "Star Wars: Visions Presents - The Ninth Jedi",
+      "romaji": "Star Wars: Visions - Kyuuninme no Jedi",
+      "episodes": 8,
+      "score": null,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Sci-Fi"
+      ],
+      "format": "ONA",
+      "status": "FINISHED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213847-wnpCDRo5r1eR.jpg",
+      "color": "#5de4ae",
+      "url": "https://anilist.co/anime/213847",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 202429,
+      "title": "Wareware wa Uchuujin",
+      "romaji": "Wareware wa Uchuujin",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Drama"
+      ],
+      "format": "MOVIE",
+      "status": "NOT_YET_RELEASED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202429-RwSR4o3WmD04.jpg",
+      "color": "#e4ae50",
+      "url": "https://anilist.co/anime/202429",
+      "nextEpisode": 1,
+      "nextAiringAt": 1790262000
+    },
+    {
+      "id": 213665,
+      "title": "Saved By the Ice Cold Prince's Embrace",
+      "romaji": "Migawari Reijou wo Sukutta no wa Reikoku Mujihi na Koori no Ouji no Ai deshita",
+      "episodes": null,
+      "score": 48,
+      "genres": [
+        "Fantasy",
+        "Romance"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213665-E6byznDKrKY0.png",
+      "color": "#1aaee4",
+      "url": "https://anilist.co/anime/213665",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786452900
+    },
+    {
+      "id": 202717,
+      "title": "Chiikawa: Ningyo no Shima no Himitsu",
+      "romaji": "Chiikawa: Ningyo no Shima no Himitsu",
+      "episodes": 1,
+      "score": 62,
+      "genres": [
+        "Comedy",
+        "Slice of Life"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": 99,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx202717-kHDn7BRiP9CR.jpg",
+      "color": "#43bbe4",
+      "url": "https://anilist.co/anime/202717",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213666,
+      "title": "Perfect Addiction",
+      "romaji": "Perfect Addiction",
+      "episodes": null,
+      "score": 51,
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 5,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213666-nnKcumRblZi1.jpg",
+      "color": "#e4bba1",
+      "url": "https://anilist.co/anime/213666",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785934800
+    },
+    {
+      "id": 207254,
+      "title": "Thunder 3",
+      "romaji": "Thunder 3",
+      "episodes": null,
+      "score": 52,
+      "genres": [
+        "Adventure",
+        "Drama",
+        "Sci-Fi"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx207254-StcuNpmZTDCL.jpg",
+      "color": "#1a93e4",
+      "url": "https://anilist.co/anime/207254",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785944640
+    },
+    {
+      "id": 195833,
+      "title": "Flaming Dodgeball Girl Danko",
+      "romaji": "Honoo no Toukyuujyo Dodge Danko",
+      "episodes": 12,
+      "score": 57,
+      "genres": [
+        "Comedy",
+        "Sports"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx195833-h7x6i3NQWROA.jpg",
+      "color": "#f1860d",
+      "url": "https://anilist.co/anime/195833",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786370400
+    },
+    {
+      "id": 176373,
+      "title": "Shiranuhi",
+      "romaji": "Shiranuhi",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Supernatural"
+      ],
+      "format": "MOVIE",
+      "status": "NOT_YET_RELEASED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx176373-355WYOUefrCt.jpg",
+      "color": "#f1e4bb",
+      "url": "https://anilist.co/anime/176373",
+      "nextEpisode": 1,
+      "nextAiringAt": 1787238000
+    },
+    {
+      "id": 209800,
+      "title": "Yoroi-Shinden Samurai Troopers Cour 2",
+      "romaji": "Yoroi Shinden Samurai Troopers Part 2",
+      "episodes": 12,
+      "score": 52,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Sci-Fi"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx209800-v3TIdNz1AV0X.jpg",
+      "color": "#e4a143",
+      "url": "https://anilist.co/anime/209800",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786458600
+    },
+    {
+      "id": 213831,
+      "title": "Snack Hazama",
+      "romaji": "Snack HAZAMA",
+      "episodes": 12,
+      "score": 51,
+      "genres": [
+        "Comedy",
+        "Ecchi",
+        "Supernatural"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 12,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213831-jrH7JR6feW1q.png",
+      "color": "#e48628",
+      "url": "https://anilist.co/anime/213831",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786120920
+    },
+    {
+      "id": 196223,
+      "title": "Cyborg 009: Nemesis",
+      "romaji": "Cyborg 009: Nemesis",
+      "episodes": 3,
+      "score": null,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Sci-Fi"
+      ],
+      "format": "ONA",
+      "status": "FINISHED",
+      "duration": 30,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx196223-IGxBuIsascyV.jpg",
+      "color": "#3586ff",
+      "url": "https://anilist.co/anime/196223",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 211232,
+      "title": "Majo no Tani no Yoru",
+      "romaji": "Majo no Tani no Yoru",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Fantasy"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx211232-Bthde3cpWCtq.png",
+      "color": "#e4c943",
+      "url": "https://anilist.co/anime/211232",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213961,
+      "title": "Youjo Shenki 2",
+      "romaji": "Youjo Shenki 2",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Comedy",
+        "Fantasy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 2,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b213961-x2ZvvtkYSTC9.png",
+      "color": "#f1d693",
+      "url": "https://anilist.co/anime/213961",
+      "nextEpisode": 5,
+      "nextAiringAt": 1785942000
+    },
+    {
+      "id": 212652,
+      "title": "Kidou Keisatsu Patlabor EZY File 2",
+      "romaji": "Kidou Keisatsu Patlabor EZY File 2",
+      "episodes": 3,
+      "score": null,
+      "genres": [
+        "Mecha"
+      ],
+      "format": "OVA",
+      "status": "NOT_YET_RELEASED",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx212652-ZDAdpsFuFiGB.png",
+      "color": "#78c9e4",
+      "url": "https://anilist.co/anime/212652",
+      "nextEpisode": 1,
+      "nextAiringAt": 1787238000
+    },
+    {
+      "id": 213750,
+      "title": "Bananya 10th Anniversary Special",
+      "romaji": "Bananya: At-Home Party",
+      "episodes": 1,
+      "score": 61,
+      "genres": [
+        "Adventure",
+        "Comedy",
+        "Fantasy"
+      ],
+      "format": "SPECIAL",
+      "status": "FINISHED",
+      "duration": 8,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213750-5hVyApOz4YXe.png",
+      "color": "#f1f150",
+      "url": "https://anilist.co/anime/213750",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 208829,
+      "title": "Crayon Shin-chan: Kikikaikai! Ora no Youkai Vacation",
+      "romaji": "Crayon Shin-chan: Kikikaikai! Ora no Youkai Vacation",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Comedy"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208829-I72LfY7BgEZA.jpg",
+      "color": "#e49343",
+      "url": "https://anilist.co/anime/208829",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213359,
+      "title": "Theatre of Darkness: Yamishibai 17",
+      "romaji": "Yami Shibai 17",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Horror",
+        "Supernatural"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213359-VDIZoZHMA0LI.jpg",
+      "color": "#c084fc",
+      "url": "https://anilist.co/anime/213359",
+      "nextEpisode": 5,
+      "nextAiringAt": 1786299600
+    },
+    {
+      "id": 208824,
+      "title": "Plannosaurus Gachi Koseibutsu-bu",
+      "romaji": "Plannosaurus Gachi Koseibutsu-bu",
+      "episodes": null,
+      "score": null,
+      "genres": [],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 5,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx208824-JeKq65nNiFhA.png",
+      "color": "#d6e41a",
+      "url": "https://anilist.co/anime/208824",
+      "nextEpisode": 5,
+      "nextAiringAt": 1786226400
+    },
+    {
+      "id": 214070,
+      "title": "Dust of the Simulacrum",
+      "romaji": "Sazin no Nakade",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Action",
+        "Sci-Fi"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": 21,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx214070-DvLRZXO5xGo6.png",
+      "color": "#863528",
+      "url": "https://anilist.co/anime/214070",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213506,
+      "title": "Hokuto no Ken: Kenou-gun Zako-tachi no Banka Part 2",
+      "romaji": "Hokuto no Ken: Kenou-gun Zako-tachi no Banka Part 2",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Comedy"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 4,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213506-vr9kwJjMvXV8.jpg",
+      "color": "#febb50",
+      "url": "https://anilist.co/anime/213506",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213908,
+      "title": "Rusuban",
+      "romaji": "Rusuban",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Slice of Life"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": 13,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213908-ZBUHQxLVUzSW.jpg",
+      "color": "#e4bb5d",
+      "url": "https://anilist.co/anime/213908",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 214068,
+      "title": "Echo",
+      "romaji": "Moshi, Korekara Umarerunonara",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Drama",
+        "Fantasy"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": 20,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx214068-th35W8qQmycd.png",
+      "color": "#355de4",
+      "url": "https://anilist.co/anime/214068",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 212308,
+      "title": "Pan no Akachan (TV)",
+      "romaji": "Pan no Akachan (TV)",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Comedy"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 2,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx212308-HUdh20Djd7cm.jpg",
+      "color": "#1abbd6",
+      "url": "https://anilist.co/anime/212308",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786145400
+    },
+    {
+      "id": 213861,
+      "title": "Let's Roll, Cinnamoroll! 2",
+      "romaji": "Let's Roll, Cinnamoroll! 2",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Slice of Life"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 4,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213861-PNBuQOrphcbK.png",
+      "color": "#f1bb43",
+      "url": "https://anilist.co/anime/213861",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 206682,
+      "title": "Soreike! Anpanman: Pantan to Yakusoku no Hoshi",
+      "romaji": "Soreike! Anpanman: Pantan to Yakusoku no Hoshi",
+      "episodes": 1,
+      "score": null,
+      "genres": [
+        "Comedy",
+        "Fantasy"
+      ],
+      "format": "MOVIE",
+      "status": "FINISHED",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx206682-4WTTVkPfiVPh.png",
+      "color": "#e48628",
+      "url": "https://anilist.co/anime/206682",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 205116,
+      "title": "Aware! Meisaku-kun (2026)",
+      "romaji": "Aware! Meisaku-kun (2026)",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Comedy"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 3,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx205116-160t0jWDkIdK.png",
+      "color": "#ffc91a",
+      "url": "https://anilist.co/anime/205116",
+      "nextEpisode": 6,
+      "nextAiringAt": 1786290300
+    },
+    {
+      "id": 213426,
+      "title": "Chikyuu Daisuki! Kikkun",
+      "romaji": "Chikyuu Daisuki! Kikkun",
+      "episodes": 52,
+      "score": null,
+      "genres": [
+        "Sci-Fi"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": 2,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213426-6CWFD7ZbHbQJ.png",
+      "color": "#43aef1",
+      "url": "https://anilist.co/anime/213426",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213427,
+      "title": "Pie no Mi: Oshi no Mori e Youkoso!",
+      "romaji": "Pie no Mi: Oshi no Mori e Youkoso!",
+      "episodes": 8,
+      "score": null,
+      "genres": [
+        "Comedy"
+      ],
+      "format": "ONA",
+      "status": "RELEASING",
+      "duration": 2,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213427-lRj8vpcMoPLG.png",
+      "color": "#e4d65d",
+      "url": "https://anilist.co/anime/213427",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 213097,
+      "title": "TOMICA & TOM Season 2",
+      "romaji": "TOMICA & TOM Season 2",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Slice of Life"
+      ],
+      "format": "TV_SHORT",
+      "status": "RELEASING",
+      "duration": null,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx213097-gyDmsm7qyRYV.png",
+      "color": "#f1ae35",
+      "url": "https://anilist.co/anime/213097",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 214703,
+      "title": "Ghost Meets Gal!",
+      "romaji": "Ghost Meets Gal!",
+      "episodes": null,
+      "score": null,
+      "genres": [
+        "Comedy",
+        "Fantasy"
+      ],
+      "format": "TV_SHORT",
+      "status": "NOT_YET_RELEASED",
+      "duration": 2,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx214703-iXoaVH6UkiZd.png",
+      "color": "#5daee4",
+      "url": "https://anilist.co/anime/214703",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    },
+    {
+      "id": 21,
+      "title": "ONE PIECE",
+      "romaji": "ONE PIECE",
+      "episodes": null,
+      "score": 87,
+      "genres": [
+        "Action",
+        "Adventure",
+        "Comedy"
+      ],
+      "format": "TV",
+      "status": "RELEASING",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx21-ELSYx3yMPcKM.jpg",
+      "color": "#e49335",
+      "url": "https://anilist.co/anime/21",
+      "nextEpisode": 1173,
+      "nextAiringAt": 1786284960
+    },
+    {
+      "id": 178025,
+      "title": "Gachiakuta",
+      "romaji": "Gachiakuta",
+      "episodes": 24,
+      "score": 82,
+      "genres": [
+        "Action",
+        "Drama",
+        "Fantasy"
+      ],
+      "format": "TV",
+      "status": "FINISHED",
+      "duration": 24,
+      "cover": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx178025-cWJKEsZynkil.jpg",
+      "color": "#e4a150",
+      "url": "https://anilist.co/anime/178025",
+      "nextEpisode": null,
+      "nextAiringAt": null
+    }
+  ],
+  "stale": false
+}

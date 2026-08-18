@@ -1,0 +1,463 @@
+/* ============================================================================
+   Grimoire Calendar — plum vellum, hairline foil, moon phases.
+
+   Structure comes from an astronomer's ledger: hairline rules, serif display
+   type, a moon glyph on every day. Detailing comes from Ari's HUD reference —
+   corner ticks on every panel, monospace numerals for anything you read as a
+   number (times, dates, counts).
+
+   The metallic is ONE variable, --foil. Antique gold is the classic grimoire
+   read; rose-violet matches the wallpapers Ari actually collected. Both ship;
+   `<body data-foil="rose">` switches. See dayMark() in js/local.js for the
+   only piece of this file's logic that lives in JS.
+   ========================================================================== */
+
+:root {
+  /* --- surfaces: plum vellum, darkest at the edges --------------------- */
+  --void:      #08050f;
+  --plum-900:  #0d0719;
+  --plum-800:  #140c26;
+  --plum-700:  #1c1133;
+  --plum-600:  #261745;
+
+  /* --- foil: the metallic. Overridden wholesale by [data-foil] --------- */
+  --foil:      #e0b25a;
+  --foil-dim:  rgba(224, 178, 90, 0.26);
+  --foil-hair: rgba(224, 178, 90, 0.16);
+  --foil-text: #f3e3bd;
+  --foil-glow: rgba(224, 178, 90, 0.55);
+
+  /* --- accents: violet carries events, rose carries "yours" ------------ */
+  --violet:    #a77bff;
+  --violet-dim: rgba(167, 123, 255, 0.18);
+  --rose:      #ff9ad5;
+  --rose-dim:  rgba(255, 154, 213, 0.16);
+
+  /* --- ink ------------------------------------------------------------- */
+  --ink:       #efe7ff;
+  --ink-soft:  #bcaadf;
+  --ink-faint: #8676ab;
+
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Times New Roman', serif;
+  --sans:  'Quicksand', 'Segoe UI', system-ui, sans-serif;
+  --mono:  'Cascadia Code', ui-monospace, 'Consolas', 'SFMono-Regular', monospace;
+
+  --r-lg: 16px;
+  --r-md: 10px;
+  --r-sm: 5px;
+
+  --pad: clamp(14px, 2.6vw, 26px);
+  --rail: 340px;
+
+  color-scheme: dark;
+}
+
+/* Rose-violet foil — the palette Ari's reference wallpapers actually use. */
+body[data-foil='rose'] {
+  --foil:      #e79ad8;
+  --foil-dim:  rgba(231, 154, 216, 0.28);
+  --foil-hair: rgba(231, 154, 216, 0.17);
+  --foil-text: #ffdcf4;
+  --foil-glow: rgba(231, 154, 216, 0.55);
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; min-height: 100%; }
+
+body {
+  background: var(--plum-900);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   The sky. Three stacked layers, all fixed and non-interactive:
+     .sky-photo  an optional wallpaper (Ari's sakura shots), heavily dimmed
+     .sky-stars  CSS-only starfield, so it works with no image at all
+     .sky-veil   a vignette that pulls the corners down so text stays legible
+
+   Everything is dimmed hard on purpose. A busy background behind small text is
+   the single fastest way to make a calendar unreadable, and readability is the
+   whole point of this thing.
+   -------------------------------------------------------------------------- */
+.sky-photo, .sky-stars, .sky-veil {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+
+.sky-photo {
+  background-size: cover;
+  background-position: center;
+  opacity: 0;                       /* set by app.js once a wallpaper is chosen */
+  filter: saturate(0.85) brightness(0.55);
+  transition: opacity 600ms ease;
+}
+
+.sky-stars {
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 28% 62%, #dcd2ff, transparent),
+    radial-gradient(1.6px 1.6px at 44% 11%, #fff, transparent),
+    radial-gradient(1px 1px at 58% 74%, #c3aaff, transparent),
+    radial-gradient(1.2px 1.2px at 71% 29%, #fff, transparent),
+    radial-gradient(1px 1px at 84% 57%, #ffe9f8, transparent),
+    radial-gradient(1.5px 1.5px at 92% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 7% 83%, #cbb9ff, transparent),
+    radial-gradient(1px 1px at 36% 91%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 64% 45%, #fff, transparent),
+    radial-gradient(1px 1px at 22% 40%, #f3d9ff, transparent),
+    radial-gradient(1.3px 1.3px at 50% 88%, #fff, transparent);
+  animation: twinkle 8s ease-in-out infinite;
+}
+@keyframes twinkle { 0%, 100% { opacity: 0.7 } 50% { opacity: 1 } }
+
+.sky-veil {
+  background:
+    radial-gradient(900px 500px at 78% -8%, rgba(120, 70, 210, 0.20), transparent 70%),
+    radial-gradient(760px 420px at 4% 108%, rgba(200, 90, 180, 0.14), transparent 70%),
+    radial-gradient(120% 90% at 50% 50%, transparent 40%, var(--plum-900) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-stars { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Panels. The corner ticks are the detail lifted from the HUD reference — four
+   1px L-brackets instead of a full border, so the panel reads as an instrument
+   without boxing the content in.
+   -------------------------------------------------------------------------- */
+.panel {
+  position: relative;
+  background: rgba(20, 12, 38, 0.72);
+  border: 1px solid var(--foil-hair);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 70px -30px var(--foil-dim), 0 20px 50px -30px rgba(0,0,0,0.9);
+}
+.panel::before, .panel::after {
+  content: ''; position: absolute; width: 13px; height: 13px; pointer-events: none;
+  border-color: var(--foil); border-style: solid; opacity: 0.65;
+}
+.panel::before { top: -1px; left: -1px;  border-width: 1px 0 0 1px; border-radius: var(--r-lg) 0 0 0; }
+.panel::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; border-radius: 0 0 var(--r-lg) 0; }
+
+/* ---------------------------------------------------------------------------
+   Shell
+   -------------------------------------------------------------------------- */
+.shell {
+  position: relative; z-index: 1;
+  max-width: 1360px; margin: 0 auto;
+  padding: var(--pad) var(--pad) 60px;
+}
+
+.topbar {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 18px;
+}
+
+.wordmark {
+  font-family: var(--serif);
+  font-size: clamp(23px, 3.2vw, 33px);
+  letter-spacing: 0.055em;
+  margin: 0; font-weight: 400; color: var(--foil-text);
+  text-shadow: 0 0 26px var(--foil-glow);
+}
+.wordmark .sub {
+  display: block; font-family: var(--mono);
+  font-size: 10.5px; letter-spacing: 0.30em; text-transform: uppercase;
+  color: var(--ink-faint); margin-top: 5px; text-shadow: none;
+}
+
+.toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-soft);
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--foil-hair); border-radius: var(--r-sm);
+  padding: 7px 12px; cursor: pointer;
+  transition: color 140ms, border-color 140ms, background 140ms;
+}
+.btn:hover  { color: var(--foil-text); border-color: var(--foil-dim); background: rgba(255,255,255,0.07); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--plum-900), 0 0 0 3px var(--foil); }
+.btn[aria-pressed='true'] { color: var(--foil-text); border-color: var(--foil); background: var(--foil-dim); }
+.btn.icon { padding: 7px 10px; font-size: 13px; }
+
+/* ---------------------------------------------------------------------------
+   Two-column body: month grid + agenda rail
+   -------------------------------------------------------------------------- */
+.body-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: minmax(0, 1fr) var(--rail);
+  align-items: start;
+}
+@media (max-width: 980px) {
+  .body-grid { grid-template-columns: minmax(0, 1fr); }
+  :root { --rail: auto; }
+}
+
+/* Same track as the month grid, so the ring fills the space under it instead
+   of the rail (which usually runs taller — a full agenda plus the note card)
+   leaving a gap. */
+.col-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+/* ---------------------------------------------------------------------------
+   Countdown ring — a live pie-timer for whatever's in progress or up next,
+   independent of the selected day. Foil is already this app's "active now"
+   colour (see .day.today, .slot.now), so the ring reuses it rather than
+   inventing a third accent.
+   -------------------------------------------------------------------------- */
+.countdown-card {
+  display: flex; align-items: center; justify-content: center; gap: 32px;
+  padding: 26px 28px;
+}
+.countdown-card.is-empty { padding: 26px; }
+.countdown-empty {
+  font-family: var(--serif); font-style: italic;
+  color: var(--ink-faint); font-size: 16px;
+}
+
+.countdown-ring-wrap {
+  position: relative; flex: none;
+  width: clamp(150px, 15vw, 200px); height: clamp(150px, 15vw, 200px);
+}
+.countdown-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--foil-hair); stroke-width: 9; }
+.ring-arc {
+  fill: none; stroke: var(--foil); stroke-width: 9; stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--foil-glow));
+}
+.countdown-card.is-current .ring-arc { animation: ring-pulse 2.4s ease-in-out infinite; }
+@keyframes ring-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px var(--foil-glow)); }
+  50%      { filter: drop-shadow(0 0 13px var(--foil-glow)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .countdown-card.is-current .ring-arc { animation: none; }
+}
+
+.countdown-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.countdown-pct   { font-family: var(--mono); font-size: clamp(28px, 4vw, 38px); font-weight: 700; color: var(--foil-text); }
+.countdown-clock { font-family: var(--mono); font-size: clamp(12px, 1.3vw, 15px); letter-spacing: 0.03em; color: var(--ink-faint); }
+
+.countdown-info { min-width: 0; max-width: 420px; }
+.countdown-eyebrow {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 8px;
+}
+.countdown-title {
+  font-family: var(--serif); font-size: clamp(22px, 2.6vw, 28px); line-height: 1.25;
+  color: var(--foil-text); overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .countdown-card { flex-wrap: wrap; text-align: center; }
+  .countdown-info { max-width: 100%; }
+}
+
+/* ---------------------------------------------------------------------------
+   Month grid
+   -------------------------------------------------------------------------- */
+.month { padding: 16px 16px 18px; }
+
+.month-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  padding-bottom: 12px; margin-bottom: 12px;
+  border-bottom: 1px solid var(--foil-hair);
+}
+.month-title {
+  font-family: var(--serif); font-size: 21px; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--foil-text); margin: 0; font-weight: 400;
+}
+.month-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.11em; color: var(--ink-faint); }
+.month-nav { display: flex; gap: 6px; }
+
+.dow-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; margin-bottom: 7px; }
+.dow-row span {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.20em;
+  text-transform: uppercase; text-align: center; color: var(--ink-faint);
+}
+
+.day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; }
+
+.day {
+  position: relative; display: flex; flex-direction: column;
+  min-height: 92px; padding: 7px 8px 8px;
+  /* A grid item defaults to min-width:auto, meaning it refuses to shrink below
+     its content. One nowrap event chip ("Daylight Saving Time ends") is then
+     enough to push the 1fr track wider than its share and shove the Saturday
+     column out of the panel — and the day headers stop lining up with the
+     columns. min-width:0 lets the track win and the chip ellipsise instead. */
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid var(--foil-hair); border-radius: var(--r-md);
+  cursor: pointer; text-align: left; color: inherit; font: inherit;
+  transition: border-color 140ms, background 140ms, transform 140ms;
+}
+.day:hover { border-color: var(--foil-dim); background: rgba(255,255,255,0.055); transform: translateY(-1px); }
+.day:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--plum-900), 0 0 0 3px var(--foil); }
+.day.pad { opacity: 0.26; cursor: default; }
+.day.pad:hover { transform: none; background: rgba(255,255,255,0.022); border-color: var(--foil-hair); }
+
+.day.today {
+  border-color: var(--foil);
+  background: linear-gradient(180deg, var(--foil-dim), rgba(255,255,255,0.02));
+  box-shadow: 0 0 26px -8px var(--foil-glow);
+}
+.day.selected { box-shadow: 0 0 0 1px var(--foil), 0 0 26px -10px var(--foil-glow); }
+
+.day-num {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--ink); letter-spacing: 0.02em; line-height: 1;
+}
+.day.today .day-num { color: var(--foil-text); }
+
+.day-top { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+
+/* The moon glyph — the one piece of pure ornament that also carries data. */
+.moon { font-size: 11px; line-height: 1; color: var(--foil); opacity: 0.55; }
+.day.today .moon { opacity: 0.95; }
+
+.day-events {
+  margin-top: 5px; display: flex; flex-direction: column; gap: 2px;
+  overflow: hidden; min-width: 0;   /* same reason as .day above */
+}
+
+.ev {
+  font-size: 10px; line-height: 1.35; font-weight: 600;
+  padding: 1.5px 5px; border-radius: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: var(--violet-dim); color: #ddcaff;
+  border-left: 2px solid var(--violet);
+}
+.ev.local { background: var(--rose-dim); color: #ffd8ef; border-left-color: var(--rose); }
+.ev.more  { background: none; color: var(--ink-faint); border-left: none; padding-left: 2px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; }
+
+/* Dots view — the default. Colours come from areas.js, the same vocabulary The
+   Docket uses, so an event is the same colour on both boards. */
+.day-dots {
+  margin-top: 6px; min-width: 0;
+  display: flex; flex-wrap: wrap; gap: 3.5px; align-content: flex-start;
+}
+.dot-ev {
+  width: 6px; height: 6px; border-radius: 99px;
+  opacity: 0.9; flex: none;
+}
+.day.today .dot-ev { opacity: 1; }
+.dot-more {
+  font-family: var(--mono); font-size: 8.5px; line-height: 6px;
+  color: var(--ink-faint); letter-spacing: 0.02em; align-self: center;
+}
+
+/* The mood mirror: bottom-right mark, driven by dayMark() in js/local.js.
+   The colour is set inline per mood, so the glow uses currentColor to follow it
+   — a hardcoded rose shadow under a gold glyph reads as a rendering bug. */
+.day-mark {
+  position: absolute; right: 7px; bottom: 6px;
+  font-size: 11px; line-height: 1;
+  color: var(--rose);
+  text-shadow: 0 0 7px currentColor;
+}
+
+/* ---------------------------------------------------------------------------
+   Agenda rail
+   -------------------------------------------------------------------------- */
+.rail { display: flex; flex-direction: column; gap: 14px; }
+
+.rail-card { padding: 15px 16px 16px; }
+
+.rail-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding-bottom: 10px; margin-bottom: 11px; border-bottom: 1px solid var(--foil-hair);
+}
+.rail-title {
+  font-family: var(--serif); font-size: 16px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--foil-text); margin: 0; font-weight: 400;
+}
+.rail-sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; color: var(--ink-faint); }
+
+.agenda { display: flex; flex-direction: column; gap: 8px; }
+
+.slot {
+  display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 10px; align-items: start;
+  padding: 8px 9px; border-radius: var(--r-md);
+  background: rgba(255,255,255,0.028);
+  border: 1px solid transparent; border-left: 2px solid var(--violet);
+  transition: background 140ms, border-color 140ms;
+}
+.slot:hover { background: rgba(255,255,255,0.06); }
+.slot.local { border-left-color: var(--rose); background: var(--rose-dim); }
+.slot.past  { opacity: 0.42; }
+.slot.now   { border-color: var(--foil); background: var(--foil-dim); }
+
+.slot-time { font-family: var(--mono); font-size: 10.5px; color: var(--ink-faint); letter-spacing: 0.03em; padding-top: 1px; }
+.slot.now .slot-time { color: var(--foil-text); }
+.slot-title { font-size: 13px; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+.slot-meta  { font-size: 10.5px; color: var(--ink-faint); margin-top: 2px; }
+
+.empty {
+  font-family: var(--serif); font-style: italic;
+  color: var(--ink-faint); font-size: 13.5px; padding: 14px 2px; text-align: center;
+}
+
+/* --- the hybrid layer's editor: notes that are yours, not Google's -------- */
+.note-label {
+  display: block; font-family: var(--mono); font-size: 9.5px;
+  letter-spacing: 0.17em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 6px;
+}
+.note-box {
+  width: 100%; min-height: 74px; resize: vertical;
+  background: rgba(0,0,0,0.28); color: var(--ink);
+  border: 1px solid var(--foil-hair); border-radius: var(--r-md);
+  padding: 9px 10px; font-family: var(--sans); font-size: 13px; line-height: 1.5;
+}
+.note-box:focus { outline: none; border-color: var(--foil-dim); box-shadow: 0 0 0 2px var(--foil-dim); }
+.note-box::placeholder { color: var(--ink-faint); font-style: italic; }
+
+.mood-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 11px 0 4px; }
+.mood {
+  font-size: 15px; line-height: 1; padding: 6px 8px; cursor: pointer;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--foil-hair);
+  border-radius: var(--r-sm); transition: border-color 140ms, background 140ms, transform 140ms;
+}
+.mood:hover { transform: translateY(-1px); border-color: var(--foil-dim); }
+.mood[aria-pressed='true'] { border-color: var(--rose); background: var(--rose-dim); box-shadow: 0 0 14px -4px var(--rose); }
+
+.save-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.save-hint { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; color: var(--ink-faint); }
+
+/* ---------------------------------------------------------------------------
+   Status line — sync state, borrowed straight from the HUD reference
+   -------------------------------------------------------------------------- */
+.statusline {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 16px; padding: 9px 14px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--ink-faint);
+  border: 1px solid var(--foil-hair); border-radius: var(--r-sm);
+  background: rgba(0,0,0,0.25);
+}
+.statusline .pip { width: 6px; height: 6px; border-radius: 99px; background: var(--ink-faint); }
+.statusline.ok   .pip { background: #7ee0a8; box-shadow: 0 0 9px #7ee0a8; }
+.statusline.warn .pip { background: var(--foil); box-shadow: 0 0 9px var(--foil); }
+.statusline.err  .pip { background: #ff7a9c; box-shadow: 0 0 9px #ff7a9c; }
+.statusline .spacer { margin-left: auto; }
+
+.legend { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; margin-left: 6px; }
+.legend-item { display: inline-flex; align-items: center; gap: 5px; }
+.legend-dot { width: 6px; height: 6px; border-radius: 99px; flex: none; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "model": "ollama/wrproj-coder-30b",
+  "small_model": "ollama/wrproj-coder-7b",
+
+  "instructions": ["CLAUDE.md", "WHOAMI.md"],
+
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "wrproj-coder-30b": {
+          "name": "Qwen3 Coder 30B-A3B (32k ctx)",
+          "tools": true,
+          "limit": { "context": 32768, "output": 8192 }
+        },
+        "wrproj-coder-7b": {
+          "name": "Qwen2.5 Coder 7B (24k ctx, fast)",
+          "tools": true,
+          "limit": { "context": 24576, "output": 4096 }
+        }
+      }
+    }
+  }
+}

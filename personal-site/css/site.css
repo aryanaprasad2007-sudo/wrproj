@@ -1,0 +1,232 @@
+/* ============================================================================
+   Aryan Prasad — personal site. Plum vellum, hairline foil, moon phases —
+   the same visual family as Grimoire Calendar, because this and Grimoire live
+   on the same desk. Tokens copied verbatim from grimoire-calendar/css/grimoire.css
+   so the two never drift into two different "brands" for one person.
+
+   This file adds the site-specific layer on top: hero, section cards, the
+   life-aspect nav, tag chips, and a lightbox-free photo grid (images arrive
+   later — see img/README in this folder).
+   ========================================================================== */
+
+:root {
+  --void:      #08050f;
+  --plum-900:  #0d0719;
+  --plum-800:  #140c26;
+  --plum-700:  #1c1133;
+  --plum-600:  #261745;
+
+  --foil:      #e79ad8;
+  --foil-dim:  rgba(231, 154, 216, 0.28);
+  --foil-hair: rgba(231, 154, 216, 0.17);
+  --foil-text: #ffdcf4;
+  --foil-glow: rgba(231, 154, 216, 0.55);
+
+  --violet:    #a77bff;
+  --violet-dim: rgba(167, 123, 255, 0.18);
+  --rose:      #ff9ad5;
+  --rose-dim:  rgba(255, 154, 213, 0.16);
+  --gold:      #e0b25a;
+  --gold-dim:  rgba(224, 178, 90, 0.22);
+
+  --ink:       #efe7ff;
+  --ink-soft:  #bcaadf;
+  --ink-faint: #8676ab;
+
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Times New Roman', serif;
+  --sans:  'Quicksand', 'Segoe UI', system-ui, sans-serif;
+  --mono:  'Cascadia Code', ui-monospace, 'Consolas', 'SFMono-Regular', monospace;
+
+  --r-lg: 18px;
+  --r-md: 10px;
+  --r-sm: 6px;
+  --pad: clamp(16px, 3vw, 40px);
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100%; }
+
+body {
+  background: var(--plum-900);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* --- sky: identical mechanism to Grimoire ---------------------------------- */
+.sky-stars, .sky-veil { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.sky-stars {
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 28% 62%, #dcd2ff, transparent),
+    radial-gradient(1.6px 1.6px at 44% 11%, #fff, transparent),
+    radial-gradient(1px 1px at 58% 74%, #c3aaff, transparent),
+    radial-gradient(1.2px 1.2px at 71% 29%, #fff, transparent),
+    radial-gradient(1px 1px at 84% 57%, #ffe9f8, transparent),
+    radial-gradient(1.5px 1.5px at 92% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 7% 83%, #cbb9ff, transparent),
+    radial-gradient(1px 1px at 36% 91%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 64% 45%, #fff, transparent),
+    radial-gradient(1px 1px at 22% 40%, #f3d9ff, transparent),
+    radial-gradient(1.3px 1.3px at 50% 88%, #fff, transparent);
+  animation: twinkle 8s ease-in-out infinite;
+}
+@keyframes twinkle { 0%, 100% { opacity: 0.7 } 50% { opacity: 1 } }
+.sky-veil {
+  background:
+    radial-gradient(900px 500px at 78% -8%, rgba(120, 70, 210, 0.20), transparent 70%),
+    radial-gradient(760px 420px at 4% 108%, rgba(200, 90, 180, 0.14), transparent 70%),
+    radial-gradient(120% 90% at 50% 50%, transparent 40%, var(--plum-900) 100%);
+}
+@media (prefers-reduced-motion: reduce) { .sky-stars { animation: none; } }
+
+/* --- panel, lifted from Grimoire ------------------------------------------- */
+.panel {
+  position: relative;
+  background: rgba(20, 12, 38, 0.72);
+  border: 1px solid var(--foil-hair);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 70px -30px var(--foil-dim), 0 20px 50px -30px rgba(0,0,0,0.9);
+}
+.panel::before, .panel::after {
+  content: ''; position: absolute; width: 14px; height: 14px; pointer-events: none;
+  border-color: var(--foil); border-style: solid; opacity: 0.65;
+}
+.panel::before { top: -1px; left: -1px;  border-width: 1px 0 0 1px; border-radius: var(--r-lg) 0 0 0; }
+.panel::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; border-radius: 0 0 var(--r-lg) 0; }
+
+/* --- shell / nav ------------------------------------------------------------ */
+.shell { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: var(--pad) var(--pad) 80px; }
+
+.topnav {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: 14px var(--pad);
+  background: rgba(13, 7, 25, 0.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--foil-hair);
+}
+.brand {
+  font-family: var(--serif); font-size: 18px; letter-spacing: 0.06em;
+  color: var(--foil-text); text-decoration: none; text-shadow: 0 0 18px var(--foil-glow);
+}
+.navlinks { display: flex; gap: 4px; flex-wrap: wrap; }
+.navlinks a {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-soft); text-decoration: none; padding: 7px 10px; border-radius: var(--r-sm);
+  border: 1px solid transparent; transition: color 140ms, border-color 140ms, background 140ms;
+}
+.navlinks a:hover { color: var(--foil-text); border-color: var(--foil-hair); background: rgba(255,255,255,0.04); }
+
+/* --- hero -------------------------------------------------------------------- */
+.hero { padding: 64px var(--pad) 40px; text-align: center; }
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 14px;
+}
+.hero-name {
+  font-family: var(--serif); font-weight: 400; margin: 0;
+  font-size: clamp(38px, 7vw, 62px); letter-spacing: 0.03em;
+  color: var(--foil-text); text-shadow: 0 0 32px var(--foil-glow);
+}
+.hero-tagline {
+  max-width: 640px; margin: 18px auto 0;
+  font-size: clamp(15px, 2vw, 18px); color: var(--ink-soft); line-height: 1.7;
+}
+.hero-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 24px; }
+.tag {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 6px 12px; border-radius: 99px; border: 1px solid var(--foil-hair);
+  color: var(--ink-soft); background: rgba(255,255,255,0.03);
+}
+
+/* --- portrait ring (placeholder until photos land) --------------------------- */
+.portrait {
+  width: 148px; height: 148px; margin: 0 auto 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 32% 28%, var(--plum-600), var(--plum-900));
+  border: 1px solid var(--foil-dim);
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.02), 0 0 44px -10px var(--foil-glow);
+  font-family: var(--serif); font-size: 13px; color: var(--ink-faint); text-align: center; padding: 10px;
+}
+.portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* --- sections ------------------------------------------------------------- */
+section.aspect { margin-top: 44px; scroll-margin-top: 84px; padding: 28px var(--pad) 30px; }
+
+.aspect-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding-bottom: 14px; margin-bottom: 18px; border-bottom: 1px solid var(--foil-hair);
+}
+.aspect-eyebrow {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.aspect-title {
+  font-family: var(--serif); font-weight: 400; margin: 4px 0 0;
+  font-size: clamp(22px, 3vw, 30px); color: var(--foil-text);
+}
+.aspect-body { color: var(--ink-soft); font-size: 15px; }
+.aspect-body p { margin: 0 0 14px; }
+.aspect-body p:last-child { margin-bottom: 0; }
+
+/* highlight rows — the little "moments" list under a section */
+.moments { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.moment {
+  display: grid; grid-template-columns: 96px minmax(0,1fr); gap: 14px; align-items: start;
+  padding: 10px 12px; border-radius: var(--r-md);
+  background: rgba(255,255,255,0.028); border-left: 2px solid var(--violet);
+}
+.moment.rose { border-left-color: var(--rose); background: var(--rose-dim); }
+.moment.gold { border-left-color: var(--gold); background: var(--gold-dim); }
+.moment-when {
+  font-family: var(--mono); font-size: 10.5px; color: var(--ink-faint); letter-spacing: 0.04em; padding-top: 2px;
+}
+.moment-what { font-size: 14px; color: var(--ink); }
+.moment-what b { color: var(--foil-text); font-weight: 600; }
+
+/* photo grid — empty-state friendly */
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 18px; }
+.photo-slot {
+  aspect-ratio: 1; border-radius: var(--r-md); overflow: hidden;
+  border: 1px dashed var(--foil-hair); background: rgba(255,255,255,0.02);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9.5px; color: var(--ink-faint); text-align: center; padding: 6px;
+}
+.photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+/* link cards — used by the Notion hub */
+.linkgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
+.linkcard {
+  display: block; padding: 14px 16px; border-radius: var(--r-md);
+  border: 1px solid var(--foil-hair); background: rgba(255,255,255,0.03);
+  color: inherit; text-decoration: none; transition: border-color 140ms, background 140ms, transform 140ms;
+}
+.linkcard:hover { border-color: var(--foil-dim); background: rgba(255,255,255,0.06); transform: translateY(-1px); }
+.linkcard-title { font-family: var(--serif); font-size: 15px; color: var(--foil-text); }
+.linkcard-sub { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint); margin-top: 4px; }
+
+/* caveat / disclosure note — used once, on Markets */
+.note {
+  margin-top: 16px; padding: 12px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--gold-dim); background: rgba(224,178,90,0.06);
+  font-size: 12.5px; color: var(--ink-soft); line-height: 1.6;
+}
+.note b { color: var(--gold); }
+
+footer.sitefoot {
+  margin-top: 60px; padding: 20px var(--pad); text-align: center;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; color: var(--ink-faint);
+}
+
+@media (max-width: 640px) {
+  .moment { grid-template-columns: 1fr; gap: 4px; }
+  .moment-when { padding-top: 0; }
+}

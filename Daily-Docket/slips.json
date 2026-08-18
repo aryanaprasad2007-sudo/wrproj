@@ -1,0 +1,114 @@
+{
+  "nid:3a87cd99fe858178ba1ae93e3c77e574": {
+    "first": "Tuesday, July 28, 2026",
+    "last": "Tuesday, July 28, 2026",
+    "count": 1,
+    "text": "Call DMV case worker — confirm insurance mailed + registration/ticket status",
+    "area": "Admin",
+    "cleared": "Tuesday, July 28, 2026"
+  },
+  "nid:3a87cd99fe858196b328f761e9dce3b4": {
+    "first": "Tuesday, July 28, 2026",
+    "last": "Thursday, August 6, 2026",
+    "count": 8,
+    "text": "Call Public Authority for IHSS Registry — provider line (510) 577-5694",
+    "area": "Admin",
+    "cleared": "Sunday, August 9, 2026"
+  },
+  "nid:3a87cd99fe8581c39285c5654e839edf": {
+    "first": "Tuesday, July 28, 2026",
+    "last": "Wednesday, July 29, 2026",
+    "count": 2,
+    "text": "Pick up IHSS form for Grandmother",
+    "area": "Admin",
+    "cleared": "Friday, July 31, 2026"
+  },
+  "nid:3aa7cd99fe85815abedbf2416d76e472": {
+    "first": "Wednesday, July 29, 2026",
+    "last": "Wednesday, July 29, 2026",
+    "count": 1,
+    "text": "UCSC How-to Session: Enrollment & MyUCSC — Zoom 2:00 PM",
+    "area": "School",
+    "cleared": "Friday, July 31, 2026"
+  },
+  "nid:3ab7cd99fe8581eda9c2ecae47200399": {
+    "first": "Saturday, August 1, 2026",
+    "last": "Thursday, August 6, 2026",
+    "count": 5,
+    "text": "Attend IHSS Provider Orientation + submit signed SOC 426/70-8/W-4 packet (bring original SSN card + photo ID)",
+    "area": "Admin",
+    "cleared": "Sunday, August 9, 2026"
+  },
+  "nid:38f7cd99fe8581508f64cdfb8c97e4bc": {
+    "first": "Monday, August 3, 2026",
+    "last": "Thursday, August 6, 2026",
+    "count": 4,
+    "text": "Set up tuition payment plan (or schedule full payment)",
+    "area": "Admin",
+    "cleared": "Sunday, August 9, 2026"
+  },
+  "nid:38f7cd99fe8581aba521e4efb47cb74d": {
+    "first": "Monday, August 3, 2026",
+    "last": "Monday, August 3, 2026",
+    "count": 1,
+    "text": "Receive enrollment appointment time",
+    "area": "School",
+    "cleared": "Monday, August 3, 2026"
+  },
+  "nid:3b17cd99fe858124b6d2c807d6c5b782": {
+    "first": "Wednesday, August 5, 2026",
+    "last": "Thursday, August 6, 2026",
+    "count": 2,
+    "text": "Email UCSC (with your roommate) to request his college/school change",
+    "area": "School",
+    "cleared": "Sunday, August 9, 2026"
+  },
+  "nid:3b27cd99fe8581f6be84fa72bb5069bf": {
+    "first": "Thursday, August 6, 2026",
+    "last": "Thursday, August 6, 2026",
+    "count": 1,
+    "text": "CHEM 3A Test 1 logistics — sign Academic Integrity Contract, choose in-person/remote, submit Gradescope template if remote",
+    "area": "School",
+    "cleared": "Sunday, August 9, 2026"
+  },
+  "nid:3b17cd99fe85815ca530f0953b33e3b5": {
+    "first": "Thursday, August 6, 2026",
+    "last": "Thursday, August 6, 2026",
+    "count": 1,
+    "text": "Confirm insurer filed electronically with DMV",
+    "area": "Admin",
+    "cleared": "Sunday, August 9, 2026"
+  },
+  "txt:df1f26e4dfed": {
+    "first": "Monday, August 10, 2026",
+    "last": "Monday, August 10, 2026",
+    "count": 1,
+    "text": "CHEM 3A — Gradescope Template Assignment (REQUIRED for those preparing to take remote test/exam) (10 pts)",
+    "area": "School",
+    "cleared": "Monday, August 10, 2026"
+  },
+  "nid:3b87cd99fe8581e583d4f17751fdbe8c": {
+    "first": "Monday, August 10, 2026",
+    "last": "Monday, August 10, 2026",
+    "count": 1,
+    "text": "CHEM 3A — Gradescope Template Assignment (REQUIRED for those preparing to take remote test/exam) (10 pts)",
+    "area": "School",
+    "cleared": "Tuesday, August 11, 2026"
+  },
+  "nid:3b77cd99fe8581ba8e39e742f0d480be": {
+    "first": "Tuesday, August 11, 2026",
+    "last": "Wednesday, August 12, 2026",
+    "count": 2,
+    "text": "Pay DMV fix-it ticket",
+    "area": "Admin",
+    "cleared": "Wednesday, August 12, 2026"
+  },
+  "nid:3b97cd99fe8581549a2ac70696e0aaf5": {
+    "first": "Monday, August 17, 2026",
+    "last": "Monday, August 17, 2026",
+    "count": 1,
+    "text": "Send Primerica fingerprint confirmation/receipt to RLC",
+    "area": "Admin",
+    "cleared": "Monday, August 17, 2026"
+  }
+}

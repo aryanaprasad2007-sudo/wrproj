@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSYCHOWL</title>
+<style>
+/* ============================================================
+   PSYCHOWL — the observatory.
+   One owl, one room, everything measured. Grimoire's plum-foil
+   lineage underneath; Y2K-cute on top; readability always wins.
+   ============================================================ */
+:root{
+  --void:#08050f; --plum-900:#0d0719; --plum-800:#140c26; --plum-700:#1c1133;
+  --foil:#e79ad8; --foil-dim:rgba(231,154,216,.28); --foil-hair:rgba(231,154,216,.17);
+  --foil-text:#ffdcf4; --foil-glow:rgba(231,154,216,.55);
+  --violet:#a77bff; --rose:#ff9ad5; --rose-dim:rgba(255,154,213,.16);
+  --bg1:var(--plum-900); --bg2:var(--plum-800); --card:rgba(20,12,38,.76);
+  --ink:#f2ebff; --sub:#c3b2e6; --line:var(--foil-hair); --soft:rgba(255,255,255,.05);
+  --shadow:inset 0 0 70px -30px var(--foil-dim), 0 20px 50px -30px rgba(0,0,0,.85);
+  --ok:#7ee0a8; --warn:#ffc48a; --bad:#ff6b81;
+  --serif:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --sans:'Quicksand','Segoe UI',system-ui,sans-serif;
+  --mono:'Cascadia Code',ui-monospace,'Consolas',monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:24px 20px 60px;font-family:var(--sans);color:var(--ink);
+  background:linear-gradient(150deg,var(--bg1),var(--bg2));min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%,#fff,transparent),
+    radial-gradient(1px 1px at 28% 62%,#dcd2ff,transparent),
+    radial-gradient(1.6px 1.6px at 44% 11%,#fff,transparent),
+    radial-gradient(1px 1px at 58% 74%,#c3aaff,transparent),
+    radial-gradient(1.2px 1.2px at 71% 29%,#fff,transparent),
+    radial-gradient(1px 1px at 84% 57%,#ffe9f8,transparent),
+    radial-gradient(1.5px 1.5px at 92% 20%,#fff,transparent),
+    radial-gradient(1px 1px at 7% 83%,#cbb9ff,transparent),
+    radial-gradient(1.2px 1.2px at 37% 40%,#fff,transparent);
+  opacity:.55;animation:twinkle 8s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.5}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){body::before,.sparkle,.owl-blink{animation:none!important}}
+.wrap{max-width:1240px;margin:0 auto;position:relative;z-index:1}
+a{color:inherit;text-decoration:none}
+
+/* ---------- cards ---------- */
+.card{position:relative;background:var(--card);backdrop-filter:blur(10px);
+  border:1px solid var(--line);border-radius:22px;padding:20px 22px;
+  box-shadow:var(--shadow);margin-bottom:18px}
+.card::before,.card::after{content:'';position:absolute;width:11px;height:11px;
+  border-color:var(--foil);border-style:solid;opacity:.6;pointer-events:none}
+.card::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.card::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0}
+h2{font-family:var(--serif);font-weight:400;font-size:17px;letter-spacing:.05em;
+  margin:0 0 14px;display:flex;align-items:center;gap:9px;color:var(--foil-text)}
+h2 em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--sub);
+  font-weight:600;margin-left:auto;letter-spacing:.05em}
+.sparkle{position:absolute;color:var(--foil);opacity:.5;pointer-events:none;
+  font-size:12px;animation:sparkleFloat 4.2s ease-in-out infinite;z-index:2}
+@keyframes sparkleFloat{0%,100%{opacity:.15;transform:translateY(0) scale(.9)}
+  50%{opacity:.85;transform:translateY(-5px) scale(1.15)}}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;
+  flex-wrap:wrap;margin-bottom:20px}
+.brand{font-family:var(--serif);font-size:31px;margin:0 0 3px;letter-spacing:.02em}
+.brand span{background:linear-gradient(100deg,var(--foil-text),var(--rose),var(--violet));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .moon{font-size:22px;-webkit-text-fill-color:initial;margin-left:6px}
+.sub{color:var(--sub);font-size:13.5px;margin:0}
+.clock{font-family:var(--mono);font-size:44px;font-weight:700;letter-spacing:-1.5px;
+  line-height:1;color:var(--foil-text);text-shadow:0 0 26px var(--foil-glow);text-align:right}
+.pill{display:inline-block;margin-top:7px;padding:4px 13px;border-radius:999px;
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--foil-text);background:var(--foil-dim);
+  border:1px solid var(--foil-hair)}
+
+/* ---------- the scrying mirror (live feed) ---------- */
+.mirror-card{padding:16px}
+/* wind-down walkthrough, shown only once the routine is actually running */
+#routine{margin-top:12px}
+#routine .rt{border-top:1px solid rgba(233,168,216,.18);padding-top:11px;
+  font-size:13.5px;line-height:1.55}
+#routine .rt b{color:var(--accent,#e9a8d8);font-weight:600}
+#routine .rt .when{opacity:.6;font-size:12px;margin-left:6px}
+#routine .rt-item{margin-top:6px;padding-left:15px;position:relative;opacity:.86}
+#routine .rt-item::before{content:'\2022';position:absolute;left:3px;opacity:.55}
+#routine .rt-soft{opacity:.68;font-size:13px;line-height:1.55}
+.mirror{position:relative;border-radius:16px;overflow:hidden;background:var(--void);
+  border:1px solid var(--foil-hair);
+  box-shadow:0 0 34px -8px var(--glowc,var(--foil-glow)), inset 0 0 60px -30px #000;
+  transition:box-shadow 1.2s ease}
+.mirror img{display:block;width:100%;height:auto;min-height:200px}
+.mirror .chip{position:absolute;left:12px;bottom:12px;display:flex;gap:8px;align-items:center;
+  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em;
+  background:rgba(8,5,15,.72);border:1px solid var(--foil-hair);border-radius:999px;
+  padding:6px 14px;backdrop-filter:blur(6px)}
+.mirror .chip .dot{width:8px;height:8px;border-radius:50%;background:currentColor;
+  box-shadow:0 0 10px -1px currentColor}
+.mirror .veil{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  text-align:center;background:rgba(8,5,15,.86);color:var(--sub);font-size:14px;padding:20px}
+.mirror.lost .veil{display:flex}
+.mirror .rec{position:absolute;right:12px;top:12px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.2em;color:var(--rose);background:rgba(8,5,15,.72);
+  border:1px solid var(--foil-hair);border-radius:999px;padding:5px 11px}
+.mirror .rec::before{content:'●';margin-right:6px;animation:recblink 1.6s step-end infinite}
+@keyframes recblink{50%{opacity:.15}}
+.mirrorbar{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.mirrorbar button{font-family:var(--mono);font-size:11.5px;font-weight:650;letter-spacing:.04em;
+  padding:8px 14px;border-radius:11px;border:1px solid var(--line);background:var(--soft);
+  color:var(--ink);cursor:pointer;transition:transform .14s,border-color .14s}
+.mirrorbar button:hover{transform:translateY(-2px);border-color:var(--foil)}
+.mirrorbar .why{font-size:12px;color:var(--sub);flex:1;min-width:160px}
+
+/* ---------- the owl ---------- */
+.owlrow{display:flex;gap:12px;align-items:flex-start;margin-top:12px}
+.owl{font-size:30px;line-height:1;filter:drop-shadow(0 0 10px var(--foil-dim));
+  animation:owlbob 5s ease-in-out infinite}
+@keyframes owlbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.owlsay{font-size:13.5px;line-height:1.55;color:var(--foil-text);background:var(--rose-dim);
+  border:1px solid var(--foil-hair);border-radius:4px 14px 14px 14px;padding:9px 13px;flex:1}
+/* Her actual words get the lit treatment; anything that is merely a status
+   about her renders muted + italic so it can never read as her speaking.
+   See setAria(). */
+.owlsay.is-aria{background:var(--rose-dim);box-shadow:inset 0 0 0 1px rgba(233,168,216,.22)}
+.owlsay.is-status{background:rgba(255,255,255,.03);box-shadow:none}
+.owlsay.is-status #owlText{opacity:.55;font-style:italic}
+.owlsay .owlnote{display:block;margin-top:7px;font-size:12px;opacity:.62;font-style:italic}
+.ariabar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.ariabtn{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  cursor:pointer;padding:5px 11px;border-radius:99px;color:var(--sub);
+  background:rgba(255,255,255,.04);border:1px solid rgba(233,168,216,.28);transition:.18s}
+.ariabtn:hover{color:var(--foil-text);border-color:rgba(233,168,216,.55)}
+.ariabtn[aria-pressed="true"]{color:#f6e9f5;border-color:rgba(233,168,216,.75);
+  background:rgba(233,168,216,.16)}
+.ariabtn[disabled]{opacity:.4;cursor:default}
+.ariahint{font-size:11.5px;opacity:.58;line-height:1.4}
+.owlsay .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--sub);
+  text-transform:uppercase;display:block;margin-bottom:2px}
+
+/* ---------- grid + shared bits ---------- */
+.grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(0,1fr);gap:18px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
+.muted{color:var(--sub);font-size:13px;line-height:1.55}
+.s-on_plan{color:var(--ok)} .s-drifting{color:var(--warn)}
+.s-off_plan{color:var(--bad)} .s-unknown{color:var(--sub)}
+.mrow{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12.5px}
+.mrow .name{font-family:var(--mono);width:132px;color:var(--sub)}
+.mrow .min{font-family:var(--mono);width:58px;text-align:right;color:var(--foil-text)}
+.bar{height:7px;border-radius:4px;background:var(--soft);overflow:hidden;flex:1}
+.bar i{display:block;height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--rose),var(--violet))}
+.mrow.hero .name,.mrow.hero .min{color:var(--foil-text);font-weight:700}
+.mrow.hero .bar i{box-shadow:0 0 12px -2px var(--foil-glow)}
+.row{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.row:last-child{border-bottom:none}
+.row b{font-size:13.5px;font-weight:650}
+.row .why{font-size:12px;color:var(--sub)}
+.moments{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.moments img{width:100px;height:auto;border-radius:9px;border:1px solid var(--line)}
+.moments .cap{font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:3px}
+.doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.doors a{background:var(--soft);border:1px solid var(--line);border-radius:13px;
+  padding:13px 8px;text-align:center;font-size:13px;font-weight:650;
+  transition:transform .15s,border-color .15s}
+.doors a:hover{transform:translateY(-3px);border-color:var(--foil)}
+.doors a small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--sub);
+  margin-top:3px;letter-spacing:.06em}
+/* ---------- week strip, streak, next-up, spotify ---------- */
+.weekstrip{display:flex;gap:6px;align-items:flex-end;height:44px;margin-top:12px}
+.weekstrip .wbar{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.weekstrip .wbar i{display:block;width:100%;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(180deg,var(--rose),var(--violet));min-height:3px;
+  box-shadow:0 0 10px -3px var(--foil-glow)}
+.weekstrip .wbar.today i{background:linear-gradient(180deg,var(--foil-text),var(--rose))}
+.weekstrip .wbar span{font-family:var(--mono);font-size:9.5px;color:var(--sub);letter-spacing:.04em}
+.weekstrip .wbar.today span{color:var(--foil-text);font-weight:700}
+.weeklabel{font-family:var(--mono);font-size:10.5px;color:var(--sub);margin-top:8px;letter-spacing:.04em}
+
+.streak{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);
+  font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--foil-text);
+  background:var(--foil-dim);border:1px solid var(--foil-hair);border-radius:999px;
+  padding:3px 11px;margin-left:8px}
+
+.nextup{font-size:12px;color:var(--sub);margin-top:8px}
+.nextup b{color:var(--foil-text);font-weight:650}
+
+.spotify-chip{position:absolute;left:12px;top:12px;display:none;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;color:var(--foil-text);
+  background:rgba(8,5,15,.72);border:1px solid var(--foil-hair);border-radius:999px;
+  padding:6px 12px 6px 8px;backdrop-filter:blur(6px);max-width:78%}
+.spotify-chip.on{display:inline-flex}
+.spotify-chip .note{animation:notebounce 1.8s ease-in-out infinite}
+@keyframes notebounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.spotify-chip .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.aria{font-size:13.5px;line-height:1.55;color:var(--foil-text);background:var(--rose-dim);
+  border:1px solid var(--foil-hair);border-radius:12px;padding:10px 13px;margin-top:10px}
+.aria .who{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--sub);
+  text-transform:uppercase;display:block;margin-bottom:3px}
+footer{text-align:center;color:var(--sub);font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.05em;margin-top:26px}
+footer b{color:var(--foil-text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <p class="brand"><span>PSYCHOWL</span><span class="moon" id="moon"></span></p>
+    <p class="sub" id="greet">the observatory is open</p>
+  </div>
+  <div>
+    <div class="clock" id="clock">--:--</div>
+    <div style="text-align:right"><span class="pill" id="phase">--</span></div>
+  </div>
+</header>
+
+<div class="grid">
+  <div>
+    <div class="card mirror-card">
+      <span class="sparkle" style="top:10px;right:100px">&#10022;</span>
+      <span class="sparkle" style="bottom:70px;right:26px;animation-delay:1.4s;font-size:9px">&#10022;</span>
+      <h2>The room, live<em><a href="/tracker">full tracker &#8599;</a></em></h2>
+      <div class="mirror" id="mirror">
+        <img id="feed" alt="live room feed">
+        <div class="rec" id="rec">LIVE</div>
+        <div class="chip s-unknown" id="chip"><span class="dot"></span><span id="chipText">waking the owl&hellip;</span></div>
+        <div class="spotify-chip" id="spotifyChip">
+          <span class="note">&#9834;</span><span class="txt" id="spotifyText"></span>
+        </div>
+        <div class="veil" id="veil"></div>
+      </div>
+      <div class="mirrorbar">
+        <button id="feedBtn">pause feed</button>
+        <span class="why" id="whyLine"></span>
+      </div>
+      <div class="owlrow">
+        <!-- Was the owl, swapped per observed_mode. It's Aria's block now, so
+             the avatar is constant: it marks who is speaking, and the mode is
+             already on the chip over the feed. One character to change. -->
+        <div class="owl" id="ariaFace">&#127800;</div>
+        <div class="owlsay">
+          <span class="tag" id="owlTag">aria &middot; listening</span>
+          <span id="owlText">watching&hellip;</span>
+          <span class="owlnote" id="owlNote"></span>
+        </div>
+      </div>
+      <div class="ariabar">
+        <button id="ariaToggle" class="ariabtn" aria-pressed="false">&hellip;</button>
+        <span class="ariahint" id="ariaHint"></span>
+      </div>
+      <div class="nextup" id="nextUp"></div>
+    </div>
+
+    <div class="card">
+      <h2>Today, measured<em id="modeMeta"></em><span class="streak" id="streakBadge" style="display:none"></span></h2>
+      <div id="modeTotals"><p class="muted">nothing logged yet today.</p></div>
+      <div class="weeklabel">deep work, last 7 days</div>
+      <div class="weekstrip" id="weekStrip"></div>
+      <div class="moments" id="moments"></div>
+    </div>
+
+    <div class="card">
+      <h2>Doors</h2>
+      <div class="doors" id="doors"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <span class="sparkle" style="top:14px;right:60px;animation-delay:.7s">&#10022;</span>
+      <h2>The Docket<em id="docketDate"></em></h2>
+      <div id="docket"><p class="muted">no docket data on disk.</p></div>
+    </div>
+
+    <div class="card">
+      <h2>NightOwl<em>rhythm</em></h2>
+      <div id="nightowl" class="muted">reading&hellip;</div>
+      <div id="routine"></div>
+    </div>
+  </div>
+</div>
+
+<footer><b>psychowl</b> &middot; nothing leaves this machine &middot; every word above traces to a log row &#128156;</footer>
+</div>
+
+<script>
+/* Opened as file:// this page has no server and nothing to show; explain and
+   hop over if psychowl is up. */
+if (location.protocol === "file:") {
+  const URL_ = "http://127.0.0.1:8787/";
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelector(".wrap").innerHTML =
+      `<div class="card" style="max-width:560px;margin:12vh auto"><h2>Wrong door</h2>
+      <p class="muted">This file was opened directly, so it has no server behind it.
+      Psychowl lives at <a href="${URL_}" style="color:var(--foil-text)"><b>${URL_}</b></a>
+      — run <b style="font-family:var(--mono)">no hub</b> if it isn't up.</p>
+      <p class="muted" id="probe">checking whether the server is running&hellip;</p></div>`;
+    fetch(URL_ + "api/psychowl", {cache:"no-store"})
+      .then(r => { if (r.ok) location.replace(URL_); })
+      .catch(() => { document.getElementById("probe").textContent =
+        "server not reachable — start it with: no hub  (or: py -3.12 src/dashboard.py)"; });
+  });
+  throw new Error("file:// — psychowl must be served");
+}
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $ = id => document.getElementById(id);
+
+/* ---------- clock, greeting, moon ---------- */
+let RHYTHM = {wake:"07:30", bedtime:"01:30", windDownMinutes:60};
+let ARIA_MODE=null, ARIA_BUSY=false;   // see "who is speaking in the ledger"
+let PLAN = [];               // Perfect Ari's blocks; see renderNextUp() below
+function hm(s){const p=s.split(":");return {h:+p[0],m:+p[1]};}
+function windowFor(now){
+  const w=hm(RHYTHM.wake), b=hm(RHYTHM.bedtime);
+  let wake=new Date(now); wake.setHours(w.h,w.m,0,0);
+  if(now<wake) wake=new Date(wake.getTime()-864e5);
+  let bed=new Date(wake); bed.setHours(b.h,b.m,0,0);
+  if(bed<=wake) bed=new Date(bed.getTime()+864e5);
+  return {wake,bed,wd:new Date(bed.getTime()-RHYTHM.windDownMinutes*6e4)};
+}
+/* Moon phase from the mean synodic month -- the same arithmetic every
+   paper almanac uses. Anchor: the new moon of 2000-01-06 18:14 UTC. */
+function moonGlyph(){
+  const synodic=29.530588853;
+  const days=(Date.now()/864e5) - (new Date(Date.UTC(2000,0,6,18,14))/864e5);
+  const age=((days % synodic) + synodic) % synodic;
+  const g=["\u{1F311}","\u{1F312}","\u{1F313}","\u{1F314}","\u{1F315}","\u{1F316}","\u{1F317}","\u{1F318}"];
+  return g[Math.floor(age/synodic*8+.5)%8];
+}
+const GREETS=[
+  [5,12,"good morning, ari"],[12,17,"good afternoon, ari"],
+  [17,22,"good evening, ari"],[22,24,"late hours, ari"],[0,5,"the owl keeps watch"]];
+function tick(){
+  const now=new Date(), W=windowFor(now), hr=now.getHours();
+  $("clock").textContent=now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false});
+  $("phase").textContent = now>=W.bed?"past bedtime":now>=W.wd?"wind-down":"day";
+  const g=GREETS.find(x=>hr>=x[0]&&hr<x[1]);
+  $("greet").textContent=(g?g[2]:"hello")+" · "+
+    now.toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"});
+  $("moon").textContent=moonGlyph();
+  renderNextUp();      // counts down between the 60s /api/psychowl refreshes
+  renderRoutine();
+}
+setInterval(tick,1000); tick();
+
+/* ---------- tonight's wind-down, one step at a time ----------
+   Anchored to the live wake->bed window rather than to the calendar day, so
+   the after-midnight steps (00:15, 00:35) land tonight instead of jumping
+   back to this morning. Silent until 30 minutes before the first step --
+   a routine card sitting there at 2pm is just clutter, and the whole point
+   of this card is that it shows up when it's wanted and not before. */
+function anchorTime(hhmm, W){
+  const t=hm(hhmm), d=new Date(W.wake); d.setHours(t.h,t.m,0,0);
+  return d<W.wake ? new Date(d.getTime()+864e5) : d;
+}
+function renderRoutine(){
+  const el=$("routine"); if(!el) return;
+  const rt=(RHYTHM&&RHYTHM.routine)||{};
+  const steps=(rt.steps||[]).filter(s=>s&&s.time);
+  if(!steps.length){ el.innerHTML=""; return; }
+
+  const now=new Date(), W=windowFor(now);
+  const at=steps.map(s=>({...s, at:anchorTime(s.time,W)}));
+  const lightsOut=anchorTime(rt.lightsOutTime||"00:45", W);
+  const teaser=new Date(at[0].at.getTime()-30*6e4);
+
+  if(now<teaser){ el.innerHTML=""; return; }
+
+  if(now<at[0].at){
+    const m=Math.round((at[0].at-now)/6e4);
+    el.innerHTML=`<div class="rt rt-soft">\u{1F319} wind-down in ${m}m &mdash; no rush, finish what you're on.</div>`;
+    return;
+  }
+  if(now>=lightsOut){
+    el.innerHTML=`<div class="rt rt-soft">\u{1F4A4} ${esc(rt.stillAwake||"")}</div>`;
+    return;
+  }
+  let i=0; for(let k=0;k<at.length;k++){ if(now>=at[k].at) i=k; }
+  const cur=at[i];
+  el.innerHTML=`<div class="rt"><b>✨ ${esc(cur.title)}</b>`+
+    `<span class="when">step ${i+1} of ${at.length} &middot; from ${esc(cur.time)}</span>`+
+    (cur.items||[]).map(t=>`<div class="rt-item">${esc(t)}</div>`).join("")+`</div>`;
+}
+
+/* ---------- the live mirror: self-healing, not precisely-timed ----------
+   Earlier theory: a static `<img src="/stream">` failed (naturalWidth stuck
+   at 0, `complete` true anyway) because this page's THREE concurrent boot
+   fetches raced the stream's connection setup, and deferring src until they
+   settled would fix it. Retested on theater.html, which fires only ONE boot
+   fetch: same failure anyway. So the timing theory was wrong, or incomplete
+   -- what reliably works, proven repeatedly, is simply reassigning src AGAIN
+   at any point after the first attempt. The honest fix is a watchdog that
+   keeps retrying (cache-busted, so each attempt is a genuinely new request)
+   until a frame actually decodes, then leaves a healthy stream alone. */
+let feedOn=false;
+function setFeed(on){
+  feedOn=on;
+  $("feed").src = on ? "/stream" : "";
+  $("rec").style.display = on ? "" : "none";
+  $("feedBtn").textContent = on ? "pause feed" : "resume feed";
+}
+function armFeedWatchdog(){
+  setInterval(()=>{
+    if(!feedOn) return;                        // paused on purpose -- leave it
+    const f=$("feed");
+    if(f.naturalWidth > 0) return;              // healthy -- do nothing
+    f.src = "/stream?r=" + Date.now();          // force a genuinely new request
+  }, 3000);
+}
+armFeedWatchdog();
+$("feedBtn").addEventListener("click",()=>setFeed(!feedOn));
+$("ariaToggle").addEventListener("click",toggleAria);
+paintAriaSwitch();
+/* A hidden tab decoding MJPEG forever is pure waste. Detach only if the tab
+   stays hidden for a while -- a quick alt-tab shouldn't drop the connection --
+   and remember whether the pause was ours, so a user-paused feed stays paused. */
+let hideTimer=null, pausedByUs=false;
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    if(feedOn) hideTimer=setTimeout(()=>{ setFeed(false); pausedByUs=true; }, 20000);
+  } else {
+    clearTimeout(hideTimer);
+    if(pausedByUs){ pausedByUs=false; setFeed(true); }
+  }
+});
+
+/* ---------- Aria ----------
+   This block is hers. There is no second voice.
+
+   The old "owl's ledger" -- owlLine(), a local string template that rephrased
+   the facts table with no model involved -- was DELETED 2026-08-17 at Ari's
+   ask: "it should literally be replaced by aria". It is deliberately not kept
+   as a fallback, because a fallback is exactly how a template ends up wearing
+   her name on a bad night.
+
+   So when she is not speaking, this block says so and shows nothing else. The
+   three silent states are all honest about which one they are:
+
+     observing   she was never asked. No turn spent. See maybe_ask_aria().
+     offline     her server did not answer. aria_link.ask_aria() returns None
+                 rather than a placeholder; this is the other end of that rule.
+     warming up  asked, hasn't answered yet -- she speaks at most once/120s.
+
+   Anything that is not her actual words gets .is-status, which renders muted
+   and italic, so status text can never be misread as something she said.
+
+   ARIA_MODE/ARIA_BUSY are declared near RHYTHM at the top rather than here:
+   paintAriaSwitch() is wired next to the feedBtn listener, which runs earlier
+   in the script than this block, and a `let` read before its declaration
+   throws (temporal dead zone) instead of reading undefined -- which killed
+   the whole script on load. */
+
+function setAria(d,dev){
+  const mode=d.aria_mode||"speaking", a=d.aria;
+  const tag=$("owlTag"), txt=$("owlText"), note=$("owlNote"), box=txt.parentElement;
+  ARIA_MODE=mode;
+  paintAriaSwitch();
+
+  if(mode==="speaking" && a && a.text){
+    // She is asked at most every 120s, so her line can lag the verdict.
+    // Unmarked, "back on track!" under a DRIFTING banner reads as her being
+    // wrong rather than her being two minutes behind.
+    const stale = a.about && dev.status && a.about !== dev.status;
+    box.classList.add("is-aria"); box.classList.remove("is-status");
+    tag.textContent = "aria"+(a.emotion?" · "+a.emotion:"")+(a.at?" · "+a.at:"");
+    txt.textContent = a.text;
+    note.textContent = stale
+      ? `said while you were ${a.about.replace(/_/g," ")} — she hasn't been asked about this change yet.`
+      : "";
+    return;
+  }
+
+  box.classList.remove("is-aria"); box.classList.add("is-status");
+  if(mode!=="speaking"){
+    tag.textContent = "aria · observing";
+    txt.textContent = "here, watching with you. not saying anything.";
+    note.textContent = "";
+  } else if(d.aria_reachable===false){
+    tag.textContent = "aria · offline";
+    txt.textContent = "her server isn't answering, so there's nothing from her right now.";
+    note.textContent = "start it with py -3.12 run_server.py in aria-assistant/";
+  } else {
+    tag.textContent = "aria · listening";
+    txt.textContent = "thinking…";
+    note.textContent = "";
+  }
+}
+
+function paintAriaSwitch(){
+  const b=$("ariaToggle"), h=$("ariaHint");
+  if(!b) return;
+  const speaking = ARIA_MODE==="speaking";
+  b.textContent = ARIA_BUSY ? "…" : (speaking ? "aria · speaking" : "aria · observing");
+  b.setAttribute("aria-pressed", speaking ? "true" : "false");
+  b.disabled = ARIA_BUSY;
+  h.textContent = speaking
+    ? "she reads the facts table and answers. click to let her just watch."
+    : "present, and silent — no turns spent. click to let her speak.";
+}
+
+async function toggleAria(){
+  if(ARIA_BUSY) return;
+  ARIA_BUSY=true; paintAriaSwitch();
+  const want = ARIA_MODE==="speaking" ? "observing" : "speaking";
+  try{
+    const r=await fetch("/api/aria/mode",{method:"POST",
+      headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:want})});
+    if(r.ok) ARIA_MODE=(await r.json()).mode;
+  }catch(e){ /* leave the old mode showing; pollState will re-sync the truth */ }
+  ARIA_BUSY=false; paintAriaSwitch(); pollState();
+}
+
+async function pollState(){
+  try{
+    const d=await (await fetch("/api/state",{cache:"no-store"})).json();
+    const mir=$("mirror");
+    if(!d.ready){
+      $("chip").className="chip s-unknown";
+      $("chipText").textContent="tracker warming up…"; return;
+    }
+    const f=d.facts||{}, dev=f.deviation||{}, st=dev.status||"unknown";
+    $("chip").className="chip s-"+st;
+    $("chipText").textContent=
+      `${f.observed_mode||"?"} · ${f.camera_sees||"?"}`+
+      (f.block_name?` · ${f.block_emoji||""} ${f.block_name}`:"");
+    $("whyLine").textContent=f.why_the_tracker_says_so||"";
+    mir.classList.toggle("lost", d.camera_ok===false);
+    $("veil").innerHTML = d.camera_ok===false
+      ? "the camera feed is down — <b>camera_lost</b>, a fact about the rig, not about you"
+      : "";
+    mir.style.setProperty("--glowc",
+      st==="on_plan"?"rgba(126,224,168,.5)":st==="off_plan"?"rgba(255,107,129,.5)":
+      st==="drifting"?"rgba(255,196,138,.45)":"var(--foil-glow)");
+    setAria(d,dev);
+  }catch(e){
+    $("chip").className="chip s-off_plan";
+    $("chipText").textContent="tracker loop unreachable";
+  }
+}
+async function pollMoments(){
+  try{
+    const m=await (await fetch("/api/moments",{cache:"no-store"})).json();
+    $("moments").innerHTML=m.slice(0,5).map(x=>
+      `<div><img src="/moments/${esc(x.file)}" alt="">`+
+      `<div class="cap">${esc(x.time)} ${esc(x.mode)}</div></div>`).join("");
+  }catch(e){}
+}
+
+/* ---------- disk summary ---------- */
+async function pollSummary(){
+  let s;
+  try{ s=await (await fetch("/api/psychowl",{cache:"no-store"})).json(); }
+  catch(e){ return; }
+
+  if(s.nightowl){
+    RHYTHM=s.nightowl;
+    const n=s.nightowl;
+    $("nightowl").innerHTML=
+      `mode <b>${esc(n.mode||"?")}</b> · wake ${esc(n.wake)} · bed ${esc(n.bedtime)}`+
+      (n.focusMinutesToday?` · ${n.focusMinutesToday}m focus banked`:``);
+  }
+  const md=s.modes||{};
+  $("modeMeta").textContent = md.runs?`${md.runs} runs · ${md.trackedMinutes}m`:"";
+  if(md.totals&&md.totals.length){
+    const max=Math.max(...md.totals.map(t=>t.minutes),1);
+    $("modeTotals").innerHTML=md.totals.map(t=>
+      `<div class="mrow${t.mode==="deep_work"?" hero":""}">`+
+      `<span class="name">${t.mode==="deep_work"?"\u{1F4AA} ":""}${esc(t.mode)}</span>`+
+      `<div class="bar"><i style="width:${(100*t.minutes/max).toFixed(0)}%"></i></div>`+
+      `<span class="min">${t.minutes}m</span></div>`).join("");
+  }
+  const dk=s.docket;
+  if(dk){
+    $("docketDate").textContent=dk.date||"";
+    let h="";
+    if(dk.nowTask) h+=`<div class="row"><div><b>&#9655; ${esc(dk.nowTask.text)}</b>`+
+      `<div class="why">${esc(dk.nowTask.why||"")}</div></div></div>`;
+    h+=(dk.topPriorities||[]).slice(0,3).map(t=>
+      `<div class="row"><div><b>${esc(t.text)}</b></div></div>`).join("");
+    if(dk.slippedCount) h+=`<p class="muted s-drifting">${dk.slippedCount} task(s) slipping</p>`;
+    $("docket").innerHTML=h||'<p class="muted">docket is empty.</p>';
+  }
+  /* The Morning brief card was removed 2026-08-17 (Ari: "I don't need this").
+     /brief and /api/psychowl's brief payload are both left intact -- the files
+     are still on disk and still reachable, this page just doesn't surface a
+     card whose main output had become "this is from eleven days ago". */
+  const doors=[
+    ["FocusFlow","/focus","pomodoro + tasks"],
+    ["Grimoire","/grimoire/","starry calendar"],
+    ["Tracker","/tracker","the raw panel"],
+    ["Solo Leveling","/solo","hunter progression"],
+  ];
+  if(s.apps&&!s.apps.focusflow) doors.shift();
+  $("doors").innerHTML=doors.map(d=>
+    `<a href="${d[1]}" target="_blank">${d[0]}<small>${d[2]}</small></a>`).join("");
+
+  const streakEl=$("streakBadge");
+  if(s.streak&&s.streak.days>0){
+    streakEl.style.display="";
+    streakEl.textContent=`\u{1F525} ${s.streak.days} day${s.streak.days===1?"":"s"}`;
+  } else streakEl.style.display="none";
+
+  if(s.week&&s.week.length){
+    const max=Math.max(...s.week.map(w=>w.minutes),1);
+    $("weekStrip").innerHTML=s.week.map(w=>
+      `<div class="wbar${w.isToday?" today":""}" title="${esc(w.label)}: ${w.minutes}m">`+
+      `<i style="height:${Math.max(4,100*w.minutes/max)}%"></i>`+
+      `<span>${esc(w.label[0])}</span></div>`).join("");
+  }
+
+  PLAN = s.plan || [];
+  renderNextUp();
+
+  const sp=s.spotify, chip=$("spotifyChip");
+  if(sp && sp.track){
+    chip.classList.add("on");
+    $("spotifyText").textContent = `${sp.track}${sp.artist?" — "+sp.artist:""}`;
+  } else chip.classList.remove("on");
+}
+
+/* ---------- next up: Perfect Ari's own blocks, no separate schedule ------
+   PLAN is the same block list profile_plan.py already resolves the current
+   block from; this just finds the NEXT one and how long until it starts,
+   using the identical half-open/wraps-midnight tiling rule (ported here so
+   the client can count down between the 60s summary refreshes without
+   re-fetching). Declared near RHYTHM at the top of the script, NOT here --
+   tick() calls renderNextUp() on its very first, immediate invocation
+   (`tick();` right after its own definition), which runs before this point
+   in the file. A `let` here would leave PLAN in the temporal dead zone for
+   that first call and throw, halting every top-level statement after it in
+   this script block -- including the feed watchdog and both event listeners
+   below. Caught by re-reading the file after writing it, not by running it. */
+function renderNextUp(){
+  const el=$("nextUp");
+  if(!PLAN.length){ el.textContent=""; return; }
+  const now=new Date(), hhmm=now.toTimeString().slice(0,5);
+  let next=PLAN.find(b=>b.start>hhmm);
+  if(!next) next=PLAN[0];
+  const [h,m]=next.start.split(":").map(Number);
+  let at=new Date(now); at.setHours(h,m,0,0);
+  if(at<=now) at.setDate(at.getDate()+1);
+  const mins=Math.round((at-now)/6e4);
+  const when = mins<1 ? "now" : mins<60 ? `in ${mins}m` : `in ${Math.floor(mins/60)}h ${mins%60}m`;
+  el.innerHTML=`next: ${esc(next.emoji||"")} <b>${esc(next.name)}</b> ${when}`;
+}
+
+setFeed(true);
+pollState(); pollMoments(); pollSummary();
+setInterval(pollState,12000);
+setInterval(pollMoments,30000);
+setInterval(pollSummary,60000);
+</script>
+</body>
+</html>

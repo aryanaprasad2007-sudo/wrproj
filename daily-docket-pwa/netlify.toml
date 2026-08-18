@@ -1,0 +1,35 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+  # Nothing to build — it's static files.
+  command = ""
+
+# The service worker must be allowed to control the whole site.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# /ics is routed by netlify/functions/ics.mjs (see its `config.path` export),
+# which reads the secret URL from the ICS_URL environment variable.
+#
+# If you'd rather skip the function entirely, delete netlify/functions/ics.mjs
+# and uncomment this instead — but note the URL then lives in this file, which
+# means it lives in your repo:
+#
+# [[redirects]]
+#   from = "/ics"
+#   to = "https://calendar.google.com/calendar/ical/YOU%40gmail.com/private-KEY/basic.ics"
+#   status = 200
+#   force = true

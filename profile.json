@@ -1,0 +1,84 @@
+{
+  "_comment": [
+    "Perfect Ari, as a machine-readable day. This is what finally lets",
+    "plan_for_now() return something (open item #8) -- the profile IS the plan",
+    "until The Docket is wired in.",
+    "",
+    "The important column is `away_ok`. Being out of frame at 09:15 is not a",
+    "failure to detect him, it is him at the gym, which is the plan working. A",
+    "dashboard that reads `absent` as drift would flag him hardest at exactly",
+    "the moments he is most on-plan. Roughly half this day is meant to happen",
+    "away from the desk.",
+    "",
+    "`modes` lists what the resolver may emit while still being on plan. Empty",
+    "means 'anything goes' -- free time is free. Blocks are half-open",
+    "[start, next_start), so they tile the day with no gaps and no overlap."
+  ],
+
+  "name": "Perfect Ari",
+  "grace_minutes": 20,
+
+  "_grace_note": [
+    "How late a block may start before drift is called. Twenty minutes is",
+    "deliberately generous: the point is to notice a block that did not happen,",
+    "not to police the clock. A tighter number turns this into a stopwatch."
+  ],
+
+  "blocks": [
+    { "start": "07:00", "name": "Wake up",        "emoji": "🌅",
+      "away_ok": true,  "modes": [],
+      "note": "Slow start, stretch it out. No snooze-spiral." },
+
+    { "start": "07:30", "name": "Coffee + Frieren", "emoji": "☕",
+      "away_ok": true,  "modes": ["watching", "leisure", "recovery", "away"],
+      "note": "Breakfast with something on in the background. Peaceful." },
+
+    { "start": "08:00", "name": "Deep work",      "emoji": "🧠",
+      "away_ok": false, "modes": ["deep_work", "work_paused"],
+      "note": "Trading review or math. Brain locked in, zero distractions." },
+
+    { "start": "09:15", "name": "Gym",            "emoji": "💪",
+      "away_ok": true,  "modes": ["away"],
+      "note": "Empty floor, your favourite time. Walk home clears your head." },
+
+    { "start": "11:00", "name": "Dance",          "emoji": "💃",
+      "away_ok": true,  "modes": ["away"],
+      "note": "You never skip the thing that makes you you." },
+
+    { "start": "11:30", "name": "Shower + reset", "emoji": "🚿",
+      "away_ok": true,  "modes": ["away"],
+      "note": "Skincare, reset." },
+
+    { "start": "12:15", "name": "Lunch",          "emoji": "🍽️",
+      "away_ok": true,  "modes": [],
+      "note": "Actually enjoyed, not rushed." },
+
+    { "start": "13:00", "name": "Chem lecture",   "emoji": "📚",
+      "away_ok": true,  "modes": ["deep_work", "work_paused", "away"],
+      "note": "You show up sharp and you get it." },
+
+    { "start": "15:30", "name": "Protected study", "emoji": "✏️",
+      "away_ok": false, "modes": ["deep_work", "work_paused"],
+      "note": "No phone, no chaos." },
+
+    { "start": "17:00", "name": "Meal prep",      "emoji": "🍳",
+      "away_ok": true,  "modes": ["away"],
+      "note": "Feeding future-you well." },
+
+    { "start": "19:00", "name": "Notion recap",   "emoji": "📝",
+      "away_ok": false, "modes": ["deep_work", "work_paused"],
+      "note": "Quick pass so you know where every part of your life stands." },
+
+    { "start": "19:15", "name": "Free time",      "emoji": "🎮",
+      "away_ok": true,  "modes": [],
+      "note": "Beat Saber, gaming, anime, whatever fills your cup." },
+
+    { "start": "21:45", "name": "Wind down",      "emoji": "🌙",
+      "away_ok": true,  "modes": [],
+      "note": "Creative time, maybe stargazing if the sky is clear." },
+
+    { "start": "01:00", "name": "Night ritual",   "emoji": "😴",
+      "away_ok": true,  "modes": ["away", "recovery"],
+      "note": "Lights out, ready to do it all again." }
+  ]
+}

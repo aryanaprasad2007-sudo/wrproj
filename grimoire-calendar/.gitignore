@@ -1,0 +1,11 @@
+# Your secret iCal URLs. A Google "secret address in iCal format" is a bearer
+# token — anyone with the URL can read that calendar forever. Never commit it.
+config.local.js
+
+# Exported margins may contain personal notes.
+grimoire-notes-*.json
+
+__pycache__/
+*.pyc
+Thumbs.db
+desktop.ini
