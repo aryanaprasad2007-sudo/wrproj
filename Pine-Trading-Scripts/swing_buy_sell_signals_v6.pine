@@ -1,0 +1,113 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © @Apeaverage & @SXDXST_FB6 (Impulse MACD)  •  Refined by Akash (SMA/RSI/MACD)
+// Swing edition: clean Buy/Sell signals on the chart. Pine v6.
+//
+// WHAT CHANGED FOR SWING TRADING
+//   • It's now an INDICATOR (no orders/backtest) that paints only BUY / SELL labels on price.
+//   • TREND FILTER added (200 EMA by default): longs only above the trend, shorts only below it.
+//     This is the single biggest upgrade — it stops you fading the dominant trend.
+//   • Signals are now trend-aligned CONFLUENCE: trend + MACD cross + RSI momentum, with the
+//     Impulse MACD as an optional extra confirmation. Fewer, higher-quality signals.
+//   • NON-REPAINTING by default: a signal only prints once the bar closes (confirmed).
+//   • ONE SIGNAL PER SWING: you get a single BUY, then nothing until the setup flips to SELL,
+//     instead of a cluster of arrows down a trend.
+//   • RSI role flipped from "buy oversold" (a scalp/mean-reversion idea) to momentum
+//     confirmation (>50 long / <50 short), which fits trend-following swing entries.
+//
+//   Best on 4H / Daily charts. Tune the trend length + RSI levels to your market.
+
+//@version=6
+indicator("Swing Buy/Sell Signals (Impulse + MACD + RSI)", shorttitle="SWING_BSS", overlay=true)
+
+// ── Trend filter ────────────────────────────────────────────────────────────────────
+gT = "Trend filter"
+useTrend  = input.bool(true,  "Use trend filter", group=gT)
+trendType = input.string("EMA", "Trend MA type", options=["EMA", "SMA"], group=gT)
+trendLen  = input.int(200, "Trend length", minval=1, group=gT)
+showTrend = input.bool(true, "Show trend line", group=gT)
+
+// ── MACD ──────────────────────────────────────────────────────────────────────────────
+gM = "MACD"
+fastLength   = input.int(12, "MACD fast", minval=1, group=gM)
+slowLength   = input.int(26, "MACD slow", minval=1, group=gM)
+signalLength = input.int(9,  "MACD signal", minval=1, group=gM)
+
+// ── RSI (momentum confirmation) ───────────────────────────────────────────────────────
+gR = "RSI"
+rsiLength     = input.int(14, "RSI length", minval=1, group=gR)
+rsiLongLevel  = input.int(50, "RSI long min (momentum up above this)", group=gR)
+rsiShortLevel = input.int(50, "RSI short max (momentum down below this)", group=gR)
+
+// ── Impulse MACD (optional confirmation) ──────────────────────────────────────────────
+gI = "Impulse MACD"
+useImpulse   = input.bool(true, "Require Impulse MACD confirmation", group=gI)
+lengthMA     = input.int(34, "Impulse channel/MA length", minval=1, group=gI)
+lengthSignal = input.int(9,  "Impulse signal length", minval=1, group=gI)
+
+// ── Signal behaviour ──────────────────────────────────────────────────────────────────
+gS = "Signals"
+confirmClose = input.bool(true, "Signal only on confirmed close (no repaint)", group=gS)
+oneShot      = input.bool(true, "One signal per swing (alternate Buy/Sell)", group=gS)
+
+// ── Functions ───────────────────────────────────────────────────────────────────────
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    ema1 + (ema1 - ema2)
+
+// ── Trend ───────────────────────────────────────────────────────────────────────────
+trendMA = trendType == "EMA" ? ta.ema(close, trendLen) : ta.sma(close, trendLen)
+bull = not useTrend or close > trendMA
+bear = not useTrend or close < trendMA
+
+// ── Impulse MACD ────────────────────────────────────────────────────────────────────
+src = hlc3
+hi  = calc_smma(high, lengthMA)
+lo  = calc_smma(low,  lengthMA)
+mi  = calc_zlema(src, lengthMA)
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)
+impBull = not useImpulse or md > sb
+impBear = not useImpulse or md < sb
+
+// ── MACD + RSI ──────────────────────────────────────────────────────────────────────
+[macdValue, signalValue, _] = ta.macd(close, fastLength, slowLength, signalLength)
+macdUp = ta.crossover(macdValue, signalValue)
+macdDn = ta.crossunder(macdValue, signalValue)
+
+rsiValue   = ta.rsi(close, rsiLength)
+rsiLongOK  = rsiValue > rsiLongLevel
+rsiShortOK = rsiValue < rsiShortLevel
+
+// ── Raw, trend-aligned confluence triggers ────────────────────────────────────────────
+rawBuy  = bull and macdUp and impBull and rsiLongOK
+rawSell = bear and macdDn and impBear and rsiShortOK
+
+// ── Clean up: confirmed close + one-per-swing alternation ─────────────────────────────
+confirmed = not confirmClose or barstate.isconfirmed
+
+var int bias = 0   // +1 after a Buy, -1 after a Sell
+buy  = rawBuy  and confirmed and (not oneShot or bias <= 0)
+sell = rawSell and confirmed and (not oneShot or bias >= 0)
+if buy
+    bias := 1
+if sell
+    bias := -1
+
+// ── Plots: just the trend line + Buy/Sell labels ──────────────────────────────────────
+plot(showTrend and useTrend ? trendMA : na, "Trend MA",
+     color = bull ? color.new(color.teal, 0) : color.new(color.red, 0), linewidth=2)
+
+plotshape(buy,  "Buy",  shape.labelup,   location.belowbar, color.new(color.green, 0),
+     text="BUY",  textcolor=color.white, size=size.small)
+plotshape(sell, "Sell", shape.labeldown, location.abovebar, color.new(color.red, 0),
+     text="SELL", textcolor=color.white, size=size.small)
+
+// ── Alerts ────────────────────────────────────────────────────────────────────────────
+alertcondition(buy,  "Swing Buy",  "SWING BUY signal")
+alertcondition(sell, "Swing Sell", "SWING SELL signal")

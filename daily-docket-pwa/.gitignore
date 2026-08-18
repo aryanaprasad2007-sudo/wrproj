@@ -1,0 +1,11 @@
+# Your private overrides — this is the safe place for the secret iCal URL.
+config.local.js
+
+# tooling / OS noise
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.netlify/
+.vercel/
+node_modules/

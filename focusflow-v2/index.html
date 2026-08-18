@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "FocusFlow",
+  "schemaVersion": 1,
+  "description": "FocusFlow v2 — an enchanted-garden Pomodoro timer. Fully offline as a plain file; gains a Docket task pull, calendar overrun warnings and a Spotify now-playing widget when opened as a Cowork artifact.",
+  "mcpTools": [
+    "mcp__f8f8675f-d173-480c-a4aa-70563862fbc4__list_events",
+    "mcp__479a401b-6abf-414c-a640-637153ee1d92__find-tasks-by-date",
+    "mcp__479a401b-6abf-414c-a640-637153ee1d92__complete-tasks",
+    "mcp__479a401b-6abf-414c-a640-637153ee1d92__add-comments",
+    "mcp__255a1d9a-f031-401d-85f2-4bed88fff239__get_currently_playing"
+  ],
+  "mcpServerNames": ["Google Calendar", "Todoist", "Spotify"]
+}
+</script>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FocusFlow — Enchanted Garden</title>
+<style>
+/* ============================================================
+   THEME — deep-night plum garden. Moonlight silver + lavender,
+   one luminous teal-green accent for the active/running state.
+   Break modes shift the accent warmer (dawn/dusk) so mode reads
+   at a glance without text.
+   ============================================================ */
+:root{
+  color-scheme: dark;
+  --bg-0:#0f0a18; --bg-1:#140d1f; --bg-2:#1c1330; --bg-3:#241a3d;
+  --ink:#ece6f7; --ink-dim:#b7abd1; --ink-faint:#7e6f97;
+  --lavender:#c7b8ef; --silver:#dcd6e8;
+  --accent:#7ce8c4; --accent-dim:#4fae91; --accent-glow:rgba(124,232,196,.35);
+  --line:rgba(236,230,247,.12); --line-soft:rgba(236,230,247,.07);
+  --glass:rgba(32,23,54,.58); --glass-strong:rgba(28,20,48,.82);
+  --danger:#ff9a9a;
+  --radius-lg:22px; --radius-md:14px; --radius-sm:9px;
+  --serif:'Iowan Old Style', Palatino, Georgia, serif;
+  --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --shadow-glow: 0 0 40px -10px var(--accent-glow);
+}
+/* Break palettes — warmer, dawn/dusk. Swapped via [data-mode] on <body>. */
+body[data-mode="short"]{ --accent:#ffb27a; --accent-dim:#d98c56; --accent-glow:rgba(255,178,122,.35); }
+body[data-mode="long"]{ --accent:#ff8fa8; --accent-dim:#d9678a; --accent-glow:rgba(255,143,168,.35); }
+/* Night mode (post wind-down) — dimmer, calmer, no harsh alarm colour. */
+body[data-night="1"]{ --ink-dim:#9c8fb8; }
+body[data-night="1"] .stage{ filter:brightness(.86) saturate(.85); }
+
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0; background:radial-gradient(ellipse at 50% -10%, var(--bg-2), var(--bg-0) 65%);
+  color:var(--ink); font:15px/1.5 var(--sans);
+  min-height:100vh; overflow-x:hidden;
+  transition:background .8s ease;
+}
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+a{ color:var(--accent); }
+button{ font:inherit; color:inherit; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+#scene{ position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+.app-shell{ position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column;
+  padding:14px 16px 96px; gap:14px; }
+
+/* ---------- topbar ---------- */
+.topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.brand{ display:flex; align-items:center; gap:8px; font-family:var(--serif); font-size:19px; letter-spacing:.02em; }
+.brand-glyph{ font-size:20px; filter:drop-shadow(0 0 8px var(--accent-glow)); }
+.mode-pill{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--bg-0);
+  background:var(--accent); padding:4px 11px; border-radius:99px; font-weight:700; }
+.topnav{ display:flex; gap:8px; flex-wrap:wrap; }
+.iconbtn{ background:var(--glass); border:1px solid var(--line); border-radius:99px; padding:8px 14px;
+  cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px; backdrop-filter:blur(10px); }
+.iconbtn:hover{ border-color:var(--accent); color:var(--accent); }
+
+/* ---------- layout ---------- */
+.layout{ display:grid; grid-template-columns:minmax(0,1fr) 280px; gap:20px; align-items:start; flex:1; }
+@media (max-width:900px){ .layout{ grid-template-columns:1fr; } }
+
+/* ---------- stage / ring ---------- */
+.stage{ display:flex; flex-direction:column; align-items:center; gap:20px; padding:18px 10px; }
+.ring-wrap{ position:relative; width:min(100%,320px); max-width:320px; aspect-ratio:1; margin:0 auto; }
+.ring-wrap svg{ width:100%; height:100%; overflow:visible; }
+.ring-track{ fill:none; stroke:var(--line); stroke-width:5; }
+.ring-vine{ fill:none; stroke:var(--accent); stroke-width:5; stroke-linecap:round;
+  transform:rotate(-90deg); transform-origin:50% 50%; transition:stroke .6s ease; filter:drop-shadow(0 0 6px var(--accent-glow)); }
+.ring-leaf{ opacity:0; transition:opacity .5s ease, transform .5s ease; transform:scale(.4); transform-origin:center; }
+.ring-leaf.on{ opacity:1; transform:scale(1); }
+.ring-bloom{ opacity:0; transform:scale(.3); transform-origin:center;
+  transition:opacity .7s ease, transform .7s cubic-bezier(.2,1.4,.4,1); }
+.ring-bloom.on{ opacity:1; transform:scale(1); }
+.ring-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center; padding:0 20px; }
+.clock{ font-family:var(--serif); font-size:clamp(38px,9vw,54px); font-variant-numeric:tabular-nums; letter-spacing:.01em; line-height:1; }
+.mode-label{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); }
+.active-task{ font-size:13px; color:var(--lavender); min-height:18px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.session-dots{ display:flex; gap:7px; margin-top:2px; font-size:15px; }
+.session-dots span{ opacity:.35; transition:opacity .4s ease, transform .4s ease; }
+.session-dots span.on{ opacity:1; transform:translateY(-2px); }
+
+.controls{ display:flex; align-items:center; gap:14px; }
+.ctrl-btn{ border-radius:99px; cursor:pointer; border:1px solid var(--line); background:var(--glass); backdrop-filter:blur(10px); }
+.ctrl-btn.ghost{ width:46px; height:46px; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.ctrl-btn.ghost:hover{ border-color:var(--accent); color:var(--accent); }
+.ctrl-btn.primary{ padding:14px 40px; font-size:16px; font-weight:600; background:var(--accent); color:var(--bg-0); border:none; box-shadow:var(--shadow-glow); }
+.ctrl-btn.primary:hover{ filter:brightness(1.08); }
+.ctrl-btn.primary.running{ background:transparent; color:var(--accent); border:1.5px solid var(--accent); box-shadow:none; }
+
+.banner{ width:min(92vw,420px); border-radius:var(--radius-md); padding:12px 16px; background:var(--glass-strong);
+  border:1px solid var(--line); display:flex; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap; }
+.banner.alarm{ border-color:var(--accent); }
+.banner p{ margin:0; font-size:13px; flex:1; min-width:140px; }
+.banner .row{ display:flex; gap:8px; }
+.banner button{ border-radius:99px; padding:7px 14px; font-size:12.5px; cursor:pointer; border:1px solid var(--line); background:var(--bg-2); }
+.banner button.primary{ background:var(--accent); color:var(--bg-0); border:none; font-weight:600; }
+[hidden]{ display:none !important; }
+
+/* ---------- side rail ---------- */
+.rail{ display:flex; flex-direction:column; gap:12px; }
+.panel{ background:var(--glass); border:1px solid var(--line); border-radius:var(--radius-md);
+  padding:13px 15px; backdrop-filter:blur(10px); }
+.panel h3{ margin:0 0 8px; font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); font-weight:700; }
+.panel .empty{ color:var(--ink-faint); font-size:12.5px; font-style:italic; }
+.wx-row{ display:flex; align-items:center; gap:10px; }
+.wx-icon{ font-size:26px; }
+.wx-temp{ font-family:var(--serif); font-size:22px; }
+.wx-meta{ font-size:11.5px; color:var(--ink-dim); }
+.cal-next{ font-size:13px; }
+.cal-count{ font-size:11.5px; color:var(--accent); margin-top:2px; }
+.msg-text{ font-size:13px; color:var(--lavender); line-height:1.5; }
+.quote-text{ font-size:12.5px; font-style:italic; color:var(--ink-dim); }
+.np-row{ display:flex; align-items:center; gap:8px; }
+.np-dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 6px var(--accent); flex:0 0 auto; }
+.np-name{ font-size:13px; }
+.np-artist{ font-size:11.5px; color:var(--ink-dim); }
+
+/* ---------- garden bed strip ---------- */
+.garden-bed{ position:fixed; left:0; right:0; bottom:0; z-index:2; padding:9px 16px;
+  background:linear-gradient(0deg, var(--bg-0) 40%, transparent); display:flex; gap:3px; align-items:flex-end;
+  min-height:40px; overflow-x:auto; font-size:17px; }
+.garden-bed .seed{ opacity:.5; font-size:13px; }
+
+/* ---------- drawers ---------- */
+.overlay{ position:fixed; inset:0; background:rgba(8,5,14,.55); backdrop-filter:blur(2px); z-index:10; opacity:0;
+  pointer-events:none; transition:opacity .25s ease; }
+.overlay.open{ opacity:1; pointer-events:auto; }
+.drawer{ position:fixed; top:0; right:0; height:100%; width:min(92vw,380px); background:var(--glass-strong);
+  border-left:1px solid var(--line); z-index:11; transform:translateX(105%); transition:transform .3s cubic-bezier(.3,.9,.4,1);
+  display:flex; flex-direction:column; backdrop-filter:blur(16px); }
+.drawer.open{ transform:translateX(0); }
+.drawer-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid var(--line); }
+.drawer-head h2{ margin:0; font-family:var(--serif); font-size:19px; font-weight:600; }
+.drawer-close{ background:none; border:none; font-size:20px; cursor:pointer; color:var(--ink-dim); line-height:1; padding:4px; }
+.drawer-close:hover{ color:var(--accent); }
+.drawer-body{ padding:16px 18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:16px; }
+
+/* form bits reused in settings/tasks */
+.field{ display:flex; flex-direction:column; gap:5px; }
+.field-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+label{ font-size:13px; color:var(--ink-dim); }
+input[type="number"], input[type="text"], input[type="time"]{
+  background:var(--bg-1); border:1px solid var(--line); color:var(--ink); border-radius:var(--radius-sm);
+  padding:8px 10px; font-size:13.5px; width:100%; }
+input[type="checkbox"]{ width:17px; height:17px; accent-color:var(--accent); }
+input[type="range"]{ accent-color:var(--accent); width:100%; }
+.section-title{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); font-weight:700;
+  border-top:1px solid var(--line-soft); padding-top:14px; margin-top:2px; }
+.section-title:first-child{ border-top:none; padding-top:0; margin-top:0; }
+.btn{ border-radius:99px; padding:9px 16px; font-size:13px; cursor:pointer; border:1px solid var(--line); background:var(--bg-2); }
+.btn:hover{ border-color:var(--accent); color:var(--accent); }
+.btn.danger:hover{ border-color:var(--danger); color:var(--danger); }
+.btn.block{ width:100%; text-align:center; }
+.status-chip{ font-size:10.5px; padding:2px 8px; border-radius:99px; border:1px solid var(--line); color:var(--ink-faint); }
+.status-chip.ok{ color:var(--accent); border-color:var(--accent-dim); }
+
+/* tasks */
+.task-input-row{ display:flex; gap:8px; }
+.task-input-row input{ flex:1; }
+.task-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.task-list li{ display:flex; align-items:center; gap:9px; padding:8px 9px; border-radius:var(--radius-sm); border:1px solid var(--line-soft); }
+.task-list li.active{ border-color:var(--accent); background:rgba(124,232,196,.06); }
+.task-list li.done .t-text{ text-decoration:line-through; color:var(--ink-faint); }
+.t-check{ width:16px; height:16px; border-radius:5px; border:2px solid var(--line); flex:0 0 auto; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; }
+.t-check.on{ background:var(--accent); border-color:var(--accent); color:var(--bg-0); }
+.t-text{ flex:1; font-size:13.5px; cursor:pointer; word-break:break-word; }
+.t-time{ font-size:10.5px; color:var(--ink-faint); white-space:nowrap; }
+.t-del{ background:none; border:none; color:var(--ink-faint); cursor:pointer; font-size:13px; padding:2px 4px; }
+.t-del:hover{ color:var(--danger); }
+.t-src{ font-size:9.5px; color:var(--accent); border:1px solid var(--accent-dim); border-radius:6px; padding:0 5px; }
+.drawer-tabs{ display:flex; gap:6px; }
+.drawer-tabs button{ flex:1; padding:8px; border-radius:var(--radius-sm); border:1px solid var(--line); background:var(--bg-2); cursor:pointer; font-size:12px; }
+.drawer-tabs button.on{ border-color:var(--accent); color:var(--accent); }
+
+/* sounds */
+.sound-layer{ display:flex; align-items:center; gap:10px; }
+.sound-layer .ico{ width:26px; text-align:center; font-size:16px; }
+.sound-layer .name{ width:80px; font-size:12.5px; }
+.preset-row{ display:flex; gap:8px; flex-wrap:wrap; }
+
+/* stats */
+.stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.stat-tile{ background:var(--bg-1); border:1px solid var(--line-soft); border-radius:var(--radius-sm); padding:10px; text-align:center; }
+.stat-tile b{ display:block; font-family:var(--serif); font-size:19px; }
+.stat-tile span{ font-size:10px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em; }
+.bars{ display:flex; align-items:flex-end; gap:6px; height:70px; }
+.bars .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; justify-content:flex-end; height:100%; }
+.bars .bar{ width:100%; border-radius:4px 4px 0 0; background:var(--accent-dim); min-height:2px; }
+.bars .lbl{ font-size:9.5px; color:var(--ink-faint); }
+.heatmap{ display:grid; grid-template-columns:repeat(12,1fr); gap:3px; }
+.heatmap .cell{ aspect-ratio:1; border-radius:3px; background:var(--bg-1); border:1px solid var(--line-soft); }
+.growth-box{ display:flex; align-items:center; gap:12px; }
+.growth-emoji{ font-size:34px; }
+.growth-bar{ flex:1; height:8px; border-radius:99px; background:var(--bg-1); overflow:hidden; }
+.growth-bar i{ display:block; height:100%; background:linear-gradient(90deg,var(--accent-dim),var(--accent)); }
+.task-totals li{ display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px solid var(--line-soft); }
+
+@media (max-width:380px){
+  .app-shell{ padding:10px 8px 90px; }
+  .ctrl-btn.primary{ padding:12px 26px; font-size:14.5px; }
+  .drawer{ width:100vw; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
+</style>
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand"><span class="brand-glyph">🌙</span><span>FocusFlow</span></div>
+    <div class="mode-pill" id="modePill">Focus</div>
+    <nav class="topnav" aria-label="Panels">
+      <button class="iconbtn" id="btnTasks" aria-haspopup="dialog">🍃 Tasks</button>
+      <button class="iconbtn" id="btnSounds" aria-haspopup="dialog">🎐 Sounds</button>
+      <button class="iconbtn" id="btnStats" aria-haspopup="dialog">📈 Stats</button>
+      <button class="iconbtn" id="btnSettings" aria-haspopup="dialog" aria-label="Settings">⚙️</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 300 300" role="img" aria-hidden="true">
+          <circle class="ring-track" cx="150" cy="150" r="130"></circle>
+          <circle class="ring-vine" id="ringVine" cx="150" cy="150" r="130"></circle>
+          <g id="ringLeaves"></g>
+          <text id="ringBloom" class="ring-bloom" x="150" y="34" text-anchor="middle" font-size="26">🌸</text>
+        </svg>
+        <div class="ring-center">
+          <div class="clock" id="clock" aria-hidden="true">25:00</div>
+          <div class="mode-label" id="modeLabel">Focus session</div>
+          <div class="active-task" id="activeTaskLabel"></div>
+          <div class="session-dots" id="sessionDots"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="ctrl-btn ghost" id="btnSkip" aria-label="Skip session (S)" title="Skip (S)">⏭</button>
+        <button class="ctrl-btn primary" id="btnStart" aria-label="Start or pause (Space)">Start</button>
+        <button class="ctrl-btn ghost" id="btnReset" aria-label="Reset (R)" title="Reset (R)">↺</button>
+      </div>
+
+      <div class="sr-only" role="status" aria-live="polite" id="liveStatus"></div>
+
+      <div class="banner" id="calWarning" hidden>
+        <p id="calWarningText"></p>
+        <div class="row">
+          <button id="calShorten">Shorten &amp; start</button>
+          <button id="calStartAnyway" class="primary">Start anyway</button>
+        </div>
+      </div>
+
+      <div class="banner alarm" id="alarmBanner" hidden>
+        <p id="alarmText">Session complete.</p>
+        <div class="row">
+          <button id="alarmNext" class="primary">Start next</button>
+          <button id="alarmStop">Stop</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="rail" id="rail">
+      <div class="panel" id="wxPanel" hidden>
+        <h3>Weather</h3>
+        <div class="wx-row">
+          <span class="wx-icon" id="wxIcon">⛅</span>
+          <div><span class="wx-temp" id="wxTemp">--°</span><div class="wx-meta" id="wxMeta"></div></div>
+        </div>
+      </div>
+
+      <div class="panel" id="calPanel" hidden>
+        <h3>Next up</h3>
+        <div class="cal-next" id="calNext"></div>
+        <div class="cal-count" id="calCountdown"></div>
+      </div>
+
+      <div class="panel" id="msgPanel" hidden>
+        <h3>Today</h3>
+        <div class="msg-text" id="msgText"></div>
+      </div>
+
+      <div class="panel" id="quotePanel">
+        <h3>Quote</h3>
+        <div class="quote-text" id="quoteText"></div>
+      </div>
+
+      <div class="panel" id="npPanel" hidden>
+        <h3>Now playing</h3>
+        <div class="np-row"><span class="np-dot" id="npDot"></span>
+          <div><div class="np-name" id="npName"></div><div class="np-artist" id="npArtist"></div></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="garden-bed" id="gardenBed" aria-label="Today's planted flowers" role="img"></div>
+
+<!-- ============ Drawers ============ -->
+<div class="overlay" id="overlay"></div>
+
+<div class="drawer" id="drawerTasks" role="dialog" aria-modal="true" aria-labelledby="tasksTitle" hidden>
+  <div class="drawer-head"><h2 id="tasksTitle">Tasks</h2><button class="drawer-close" data-close>✕</button></div>
+  <div class="drawer-body">
+    <div class="task-input-row">
+      <input type="text" id="taskInput" placeholder="Add a task…" maxlength="140">
+      <button class="btn" id="taskAdd">Plant</button>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+    <div id="docketSection" hidden>
+      <div class="section-title">From your Docket</div>
+      <ul class="task-list" id="docketList"></ul>
+    </div>
+    <button class="btn block" id="taskClearDone">Clear completed</button>
+  </div>
+</div>
+
+<div class="drawer" id="drawerSounds" role="dialog" aria-modal="true" aria-labelledby="soundsTitle" hidden>
+  <div class="drawer-head"><h2 id="soundsTitle">Ambient sounds</h2><button class="drawer-close" data-close>✕</button></div>
+  <div class="drawer-body">
+    <div class="field">
+      <label for="masterVol">Master volume</label>
+      <input type="range" id="masterVol" min="0" max="1" step="0.01">
+    </div>
+    <div class="preset-row">
+      <button class="btn" id="presetGrove">🌙 Moonlit Grove</button>
+      <button class="btn" id="presetOff">Silence</button>
+    </div>
+    <div class="section-title">Layers</div>
+    <div class="sound-layer"><span class="ico">🌧</span><span class="name">Rain</span><input type="range" data-layer="rain" min="0" max="1" step="0.01"></div>
+    <div class="sound-layer"><span class="ico">🍃</span><span class="name">Wind</span><input type="range" data-layer="wind" min="0" max="1" step="0.01"></div>
+    <div class="sound-layer"><span class="ico">🦗</span><span class="name">Crickets</span><input type="range" data-layer="crickets" min="0" max="1" step="0.01"></div>
+    <div class="sound-layer"><span class="ico">🌊</span><span class="name">Stream</span><input type="range" data-layer="stream" min="0" max="1" step="0.01"></div>
+    <div class="sound-layer"><span class="ico">⛈</span><span class="name">Thunder</span><input type="range" data-layer="thunder" min="0" max="1" step="0.01"></div>
+    <div class="sound-layer"><span class="ico">〰️</span><span class="name">Brown noise</span><input type="range" data-layer="brown" min="0" max="1" step="0.01"></div>
+  </div>
+</div>
+
+<div class="drawer" id="drawerStats" role="dialog" aria-modal="true" aria-labelledby="statsTitle" hidden>
+  <div class="drawer-head"><h2 id="statsTitle">Stats</h2><button class="drawer-close" data-close>✕</button></div>
+  <div class="drawer-body">
+    <div class="stat-grid">
+      <div class="stat-tile"><b id="stToday">0m</b><span>Today</span></div>
+      <div class="stat-tile"><b id="stWeek">0m</b><span>This week</span></div>
+      <div class="stat-tile"><b id="stAll">0h</b><span>All-time</span></div>
+      <div class="stat-tile"><b id="stSessions">0</b><span>Sessions today</span></div>
+      <div class="stat-tile"><b id="stAvg">0m</b><span>Avg session</span></div>
+      <div class="stat-tile"><b id="stStreak">0</b><span>Streak (best <span id="stBest">0</span>)</span></div>
+    </div>
+
+    <div class="section-title">Garden growth</div>
+    <div class="growth-box">
+      <span class="growth-emoji" id="growthEmoji">🌱</span>
+      <div style="flex:1">
+        <div style="font-size:12.5px;margin-bottom:4px" id="growthLabel">Sprout</div>
+        <div class="growth-bar"><i id="growthFill" style="width:0%"></i></div>
+        <div style="font-size:10.5px;color:var(--ink-faint);margin-top:4px" id="growthNext"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Last 7 days</div>
+    <div class="bars" id="bars7"></div>
+
+    <div class="section-title">Last 12 weeks</div>
+    <div class="heatmap" id="heatmap12"></div>
+
+    <div class="section-title">Time by task</div>
+    <ul class="task-totals" id="taskTotals"></ul>
+
+    <button class="btn block" id="statsExport">Export stats as JSON</button>
+  </div>
+</div>
+
+<div class="drawer" id="drawerSettings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <div class="drawer-head"><h2 id="settingsTitle">Settings</h2><button class="drawer-close" data-close>✕</button></div>
+  <div class="drawer-body">
+    <div class="field"><label for="setName">Your name</label><input type="text" id="setName" maxlength="30"></div>
+
+    <div class="section-title">Durations (minutes)</div>
+    <div class="field-row"><label for="setFocus">Focus</label><input type="number" id="setFocus" min="1" max="180" style="width:70px"></div>
+    <div class="field-row"><label for="setShort">Short break</label><input type="number" id="setShort" min="1" max="60" style="width:70px"></div>
+    <div class="field-row"><label for="setLong">Long break</label><input type="number" id="setLong" min="1" max="90" style="width:70px"></div>
+    <div class="field-row"><label for="setInterval">Long break after N sessions</label><input type="number" id="setInterval" min="1" max="12" style="width:70px"></div>
+
+    <div class="section-title">Behavior</div>
+    <div class="field-row"><label for="setAutoBreak">Auto-start breaks</label><input type="checkbox" id="setAutoBreak"></div>
+    <div class="field-row"><label for="setAutoFocus">Auto-start focus</label><input type="checkbox" id="setAutoFocus"></div>
+    <div class="field-row"><label for="setNotify">Desktop notifications</label><input type="checkbox" id="setNotify"></div>
+    <div class="field-row"><label for="setRepeat">Repeat alarm until dismissed</label><input type="checkbox" id="setRepeat"></div>
+
+    <div class="section-title">Night mode</div>
+    <div class="field-row"><label for="setNightEnabled">Enable night mode</label><input type="checkbox" id="setNightEnabled"></div>
+    <div class="field-row"><label for="setBedtime">Wind-down begins</label><input type="time" id="setBedtime" style="width:110px"></div>
+    <div class="field-row"><label for="setWindDown">Wind-down length (min)</label><input type="number" id="setWindDown" min="0" max="240" style="width:70px"></div>
+    <div style="font-size:11px;color:var(--ink-faint)">Mirrors NightOwl's config default — not a live sync. Edit here if you change it in NightOwl.</div>
+
+    <div class="section-title">Integrations</div>
+    <div class="field-row"><label>Daily Docket <span class="status-chip" id="statDocket">checking…</span></label><input type="checkbox" id="setIntDocket"></div>
+    <div class="field-row"><label>Grimoire Calendar <span class="status-chip" id="statGrimoire">unreachable</span></label><input type="checkbox" id="setIntGrimoire" disabled></div>
+    <div class="field-row"><label>NightOwl <span class="status-chip" id="statNightowl">write-only</span></label><input type="checkbox" id="setIntNightowl"></div>
+
+    <div class="section-title">Data</div>
+    <button class="btn block danger" id="resetData">Reset all data on this device</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+(function(){
+
+/* ============================================================
+   Store — versioned localStorage wrapper. Never throws on
+   corrupt data; every read falls back to a safe default.
+   Reuses v1's exact keys (ff.settings/ff.tasks/ff.stats/
+   ff.name/ff.activeTask) so a browser that shares file://
+   storage across documents (Chromium does) carries v1 data
+   forward with zero extra step. migrate() only ever adds
+   fields via Object.assign — it never drops what was there.
+   ============================================================ */
+var Store = (function(){
+  var VERSION = 3;
+  function get(k, fallback){
+    try{ var v = localStorage.getItem(k); return v === null ? fallback : JSON.parse(v); }
+    catch(e){ return fallback; }
+  }
+  function set(k, v){
+    try{ localStorage.setItem(k, JSON.stringify(v)); return true; }
+    catch(e){ return false; }
+  }
+  function remove(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+  var DEFAULT_SETTINGS = {
+    focus:25, short:10, long:30, interval:4,
+    autoBreak:true, autoFocus:false, notify:false, volume:0.5, repeatAlarm:true,
+    ambient:{ rain:0, wind:0, crickets:0, stream:0, thunder:0, brown:0 },
+    integrations:{ docket:true, grimoire:false, nightowl:true },
+    nightMode:{ enabled:true, bedtime:"20:00", windDownMinutes:60 },
+    ver:VERSION
+  };
+  var DEFAULT_STATS = { days:{}, totalSeconds:0, totalSessions:0, longestStreak:0, taskTotals:{} };
+
+  function migrate(){
+    var s = get('ff.settings', null);
+    s = Object.assign({}, DEFAULT_SETTINGS, s || {});
+    s.ambient = Object.assign({}, DEFAULT_SETTINGS.ambient, s.ambient || {});
+    s.integrations = Object.assign({}, DEFAULT_SETTINGS.integrations, s.integrations || {});
+    s.nightMode = Object.assign({}, DEFAULT_SETTINGS.nightMode, s.nightMode || {});
+    s.ver = VERSION;
+    set('ff.settings', s);
+
+    var st = get('ff.stats', null);
+    st = Object.assign({}, DEFAULT_STATS, st || {});
+    if(typeof st.days !== 'object' || !st.days) st.days = {};
+    if(typeof st.taskTotals !== 'object' || !st.taskTotals) st.taskTotals = {};
+    if(typeof st.longestStreak !== 'number') st.longestStreak = 0;
+    set('ff.stats', st);
+
+    var tasks = get('ff.tasks', []);
+    if(!Array.isArray(tasks)) tasks = [];
+    tasks = tasks.map(function(t){ return Object.assign({ source:'user' }, t); });
+    set('ff.tasks', tasks);
+
+    var name = get('ff.name', '');
+    if(typeof name !== 'string') name = '';
+    var activeTaskId = get('ff.activeTask', null);
+
+    return { settings:s, stats:st, tasks:tasks, name:name, activeTaskId:activeTaskId };
+  }
+
+  return { get:get, set:set, remove:remove, migrate:migrate, DEFAULT_SETTINGS:DEFAULT_SETTINGS, DEFAULT_STATS:DEFAULT_STATS };
+})();
+
+var boot = Store.migrate();
+var settings = boot.settings;
+var stats = boot.stats;
+var tasks = boot.tasks;
+var userName = boot.name;
+var activeTaskId = boot.activeTaskId;
+
+/* ============================================================
+   Timer — wall-clock accurate. Countdown is always derived from
+   a target epoch timestamp, never accumulated tick-by-tick, so
+   drift, tab throttling and laptop sleep can't desync it: on
+   resume we just recompute (targetTs - Date.now()) once.
+   ============================================================ */
+var Timer = (function(){
+  var mode = 'focus';           // focus | short | long
+  var remaining = 0;            // seconds; authoritative only while paused
+  var sessionTotal = 0;         // seconds this specific session started with (ring's 0% baseline) —
+                                 // usually durFor(mode), but a shortened calendar-overrun session
+                                 // needs its own baseline or the ring would render pre-grown at 0%.
+  var targetTs = null;          // epoch ms when running; null while paused
+  var running = false;
+  var focusCount = 0;           // completed focus sessions in the current interval cycle
+  var intervalId = null;
+  var listeners = { tick:[], complete:[], modechange:[] };
+
+  function durFor(m){
+    if(m === 'focus') return settings.focus*60;
+    if(m === 'short') return settings.short*60;
+    return settings.long*60;
+  }
+  function on(evt, fn){ listeners[evt].push(fn); }
+  function emit(evt, arg){ listeners[evt].forEach(function(fn){ fn(arg); }); }
+
+  function recompute(){
+    if(running && targetTs !== null){
+      remaining = Math.max(0, Math.round((targetTs - Date.now())/1000));
+    }
+    return remaining;
+  }
+
+  function setMode(m, opts){
+    stop_();
+    mode = m;
+    remaining = durFor(m);
+    sessionTotal = remaining;
+    emit('modechange', { mode:mode, opts:opts||{} });
+  }
+  function stop_(){
+    running = false; targetTs = null;
+    if(intervalId){ clearInterval(intervalId); intervalId = null; }
+  }
+  function start(){
+    if(running) return;
+    running = true;
+    targetTs = Date.now() + remaining*1000;
+    if(intervalId) clearInterval(intervalId);
+    intervalId = setInterval(tick, 250);
+    tick();
+  }
+  function pause(){
+    if(!running) return;
+    recompute();
+    running = false; targetTs = null;
+    if(intervalId){ clearInterval(intervalId); intervalId = null; }
+    emit('tick', remaining);
+  }
+  function toggle(){ running ? pause() : start(); }
+  function reset(){
+    stop_();
+    remaining = durFor(mode);
+    sessionTotal = remaining;
+    emit('tick', remaining);
+  }
+  /* Used only by the calendar-overrun "shorten & start" action: overrides the
+     countdown (and its ring baseline) for the current session without
+     touching settings.focus. */
+  function setRemaining(sec){
+    stop_();
+    remaining = Math.max(1, Math.round(sec));
+    sessionTotal = remaining;
+    emit('tick', remaining);
+  }
+  function tick(){
+    if(!running) return;
+    recompute();
+    emit('tick', remaining);
+    if(remaining <= 0){
+      stop_();
+      var completedMode = mode;
+      if(completedMode === 'focus') focusCount++;
+      emit('complete', completedMode);
+    }
+  }
+  /* Catch up instantly on tab return / wake instead of waiting up to 250ms,
+     and instead of the countdown silently "jumping" without visual update. */
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden && running) tick();
+  });
+
+  return {
+    on:on,
+    get mode(){ return mode; },
+    get remaining(){ return recompute(); },
+    get running(){ return running; },
+    get focusCount(){ return focusCount; },
+    set focusCount(v){ focusCount = v; },
+    get total(){ return sessionTotal; },
+    durFor:durFor, setMode:setMode, start:start, pause:pause, toggle:toggle, reset:reset, setRemaining:setRemaining
+  };
+})();
+
+/* ============================================================
+   Tasks — CRUD over the shared `tasks` array. Docket-sourced
+   tasks (source:'docket') live in the same array so "focus
+   seconds this session" accrues the same way regardless of
+   origin; GardenBridge is the only thing that ever sets
+   source:'docket' or writes docketId.
+   ============================================================ */
+var Tasks = (function(){
+  function save(){ Store.set('ff.tasks', tasks); }
+  function all(){ return tasks; }
+  function get(id){ return tasks.filter(function(t){ return t.id === id; })[0] || null; }
+  function add(text){
+    var v = (text||'').trim();
+    if(!v) return null;
+    var t = { id: Date.now()+''+Math.floor(Math.random()*999), text:v, done:false, source:'user', focusSeconds:0 };
+    tasks.push(t); save();
+    return t;
+  }
+  function toggleDone(id){
+    var t = get(id);
+    if(!t) return;
+    t.done = !t.done;
+    if(t.done && activeTaskId === id){ setActive(null); }
+    save();
+    if(t.done) GardenBridge.onTaskCompleted(t);
+  }
+  function remove(id){
+    tasks = tasks.filter(function(t){ return t.id !== id; });
+    if(activeTaskId === id) setActive(null);
+    save();
+  }
+  function setActive(id){
+    activeTaskId = id;
+    Store.set('ff.activeTask', activeTaskId);
+  }
+  function getActive(){ return activeTaskId ? get(activeTaskId) : null; }
+  function clearCompleted(){
+    tasks = tasks.filter(function(t){ return !t.done; });
+    save();
+  }
+  function addFocusSeconds(id, sec){
+    var t = get(id);
+    if(!t) return;
+    t.focusSeconds = (t.focusSeconds||0) + sec;
+    save();
+    stats.taskTotals[id] = (stats.taskTotals[id]||0) + sec;
+    Store.set('ff.stats', stats);
+  }
+  /* Upsert Docket-sourced rows without clobbering local edits (done state,
+     accrued focusSeconds) if the same docketId is pulled again this session. */
+  function upsertDocket(items){
+    items.forEach(function(item){
+      var existing = tasks.filter(function(t){ return t.source === 'docket' && t.docketId === item.docketId; })[0];
+      if(existing){ existing.text = item.text; }
+      else { tasks.push(Object.assign({ id:'docket_'+item.docketId, done:false, focusSeconds:0, source:'docket' }, item)); }
+    });
+    save();
+  }
+  return { all:all, get:get, add:add, toggleDone:toggleDone, remove:remove, setActive:setActive,
+    getActive:getActive, clearCompleted:clearCompleted, addFocusSeconds:addFocusSeconds, upsertDocket:upsertDocket };
+})();
+
+/* ============================================================
+   Stats — today/week/all-time, streaks, garden growth, 12-week
+   heatmap, per-task totals, JSON export. A day "counts" toward
+   a streak the moment it has >=1 completed focus session.
+   ============================================================ */
+var Stats = (function(){
+  function dateKey(d){
+    d = d || new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function recordFocus(sec, taskId){
+    var k = dateKey();
+    if(!stats.days[k]) stats.days[k] = { focus:0, sessions:0 };
+    stats.days[k].focus += sec;
+    stats.days[k].sessions += 1;
+    stats.totalSeconds = (stats.totalSeconds||0) + sec;
+    stats.totalSessions = (stats.totalSessions||0) + 1;
+    var streak = computeStreak();
+    if(streak > (stats.longestStreak||0)) stats.longestStreak = streak;
+    Store.set('ff.stats', stats);
+    if(taskId) Tasks.addFocusSeconds(taskId, sec);
+  }
+  function computeStreak(){
+    var s = 0, d = new Date();
+    for(var i=0; i<730; i++){
+      var k = dateKey(d);
+      var hit = stats.days[k] && stats.days[k].sessions > 0;
+      if(hit){ s++; }
+      else if(i > 0){ break; }
+      d.setDate(d.getDate()-1);
+    }
+    return s;
+  }
+  function last7(){
+    var out = [];
+    for(var i=6; i>=0; i--){
+      var d = new Date(); d.setDate(d.getDate()-i);
+      var k = dateKey(d);
+      out.push({ key:k, label:d.toLocaleDateString(undefined,{weekday:'narrow'}), focus:(stats.days[k]?stats.days[k].focus:0) });
+    }
+    return out;
+  }
+  function last12Weeks(){
+    // 12 columns of 7 days each, oldest first, ending today. Intensity = focus minutes that week.
+    var weeks = [];
+    var end = new Date();
+    for(var w=11; w>=0; w--){
+      var sum = 0;
+      for(var d=6; d>=0; d--){
+        var dt = new Date(end); dt.setDate(dt.getDate() - (w*7 + d));
+        var k = dateKey(dt);
+        sum += stats.days[k] ? stats.days[k].focus : 0;
+      }
+      weeks.push(sum/60);
+    }
+    return weeks;
+  }
+  function weekTotalSeconds(){
+    var s = 0, d = new Date();
+    for(var i=0; i<7; i++){
+      var dd = new Date(); dd.setDate(d.getDate()-i);
+      var k = dateKey(dd);
+      if(stats.days[k]) s += stats.days[k].focus;
+    }
+    return s;
+  }
+  /* Garden growth — lifetime focus hours grow the garden through four stages. */
+  var STAGES = [
+    { id:'sprout', emoji:'🌱', label:'Sprout', hours:0 },
+    { id:'sapling', emoji:'🌿', label:'Sapling', hours:3 },
+    { id:'flowering', emoji:'🌸', label:'Flowering', hours:15 },
+    { id:'grove', emoji:'🌳', label:'Grove', hours:50 }
+  ];
+  function growthStage(){
+    var hrs = (stats.totalSeconds||0)/3600;
+    var stage = STAGES[0], next = STAGES[1];
+    for(var i=0; i<STAGES.length; i++){
+      if(hrs >= STAGES[i].hours){ stage = STAGES[i]; next = STAGES[i+1] || null; }
+    }
+    var pct = 100, remain = 0;
+    if(next){
+      var span = next.hours - stage.hours;
+      pct = Math.min(100, Math.round(((hrs - stage.hours)/span)*100));
+      remain = Math.max(0, next.hours - hrs);
+    }
+    return { stage:stage, next:next, pct:pct, hoursRemain:remain, hours:hrs };
+  }
+  function taskTotalsList(){
+    var out = [];
+    Object.keys(stats.taskTotals||{}).forEach(function(id){
+      var t = Tasks.get(id);
+      out.push({ id:id, text: t ? t.text : '(deleted task)', seconds: stats.taskTotals[id] });
+    });
+    out.sort(function(a,b){ return b.seconds - a.seconds; });
+    return out;
+  }
+  function exportJSON(){
+    var payload = { exportedAt:new Date().toISOString(), stats:stats, tasks:tasks, settings:settings };
+    var blob = new Blob([JSON.stringify(payload,null,2)], { type:'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'focusflow-stats-'+dateKey()+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+  return { dateKey:dateKey, recordFocus:recordFocus, computeStreak:computeStreak, last7:last7,
+    last12Weeks:last12Weeks, weekTotalSeconds:weekTotalSeconds, growthStage:growthStage, STAGES:STAGES,
+    taskTotalsList:taskTotalsList, exportJSON:exportJSON };
+})();
+
+/* ============================================================
+   Audio — Web Audio ambient engine. Every layer is generated,
+   never a file. Uses ScriptProcessorNode for noise: deprecated,
+   but universally supported and needs no separate worklet
+   module, which matters for a single self-contained file.
+   ============================================================ */
+var Audio_ = (function(){
+  var ctx = null, master = null, chimeGain = null;
+  var nodes = {}; // layer name -> {source, gains, stop()}
+  var cricketTimer = null, thunderTimer = null;
+  var started = false;
+
+  function ensureCtx(){
+    if(ctx) return ctx;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = settings.volume;
+    master.connect(ctx.destination);
+    chimeGain = ctx.createGain();
+    chimeGain.gain.value = 1;
+    chimeGain.connect(master);
+    return ctx;
+  }
+
+  function noiseNode(type){
+    var bufferSize = 4096;
+    var node = ctx.createScriptProcessor(bufferSize, 1, 1);
+    var b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0,lastOut=0;
+    node.onaudioprocess = function(e){
+      var out = e.outputBuffer.getChannelData(0);
+      for(var i=0;i<bufferSize;i++){
+        var white = Math.random()*2-1;
+        if(type === 'brown'){
+          lastOut = (lastOut + 0.02*white)/1.02;
+          out[i] = lastOut*3.2;
+        } else if(type === 'pink'){
+          b0=0.99886*b0+white*0.0555179; b1=0.99332*b1+white*0.0750759; b2=0.96900*b2+white*0.1538520;
+          b3=0.86650*b3+white*0.3104856; b4=0.55000*b4+white*0.5329522; b5=-0.7616*b5-white*0.0168980;
+          out[i]=(b0+b1+b2+b3+b4+b5+b6+white*0.5362)*0.11; b6=white*0.115926;
+        } else { out[i] = white; }
+      }
+    };
+    return node;
+  }
+
+  function makeRain(){
+    var src = noiseNode('pink');
+    var hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=900;
+    var bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=3200; bp.Q.value=0.5;
+    var g = ctx.createGain(); g.gain.value=0;
+    src.connect(hp); hp.connect(bp); bp.connect(g); g.connect(master);
+    return { gain:g, stop:function(){ src.disconnect(); hp.disconnect(); bp.disconnect(); g.disconnect(); } };
+  }
+  function makeWind(){
+    var src = noiseNode('brown');
+    var lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=500; lp.Q.value=0.7;
+    var lfo = ctx.createOscillator(); lfo.frequency.value=0.08;
+    var lfoGain = ctx.createGain(); lfoGain.gain.value=260;
+    lfo.connect(lfoGain); lfoGain.connect(lp.frequency); lfo.start();
+    var g = ctx.createGain(); g.gain.value=0;
+    src.connect(lp); lp.connect(g); g.connect(master);
+    return { gain:g, stop:function(){ lfo.stop(); src.disconnect(); lp.disconnect(); lfoGain.disconnect(); g.disconnect(); } };
+  }
+  function makeStream(){
+    var src = noiseNode('white');
+    var bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1400; bp.Q.value=0.6;
+    var lfo = ctx.createOscillator(); lfo.frequency.value=0.15;
+    var lfoGain = ctx.createGain(); lfoGain.gain.value=0.15;
+    var g = ctx.createGain(); g.gain.value=0;
+    lfo.connect(lfoGain); lfoGain.connect(g.gain); lfo.start();
+    src.connect(bp); bp.connect(g); g.connect(master);
+    return { gain:g, baseGain:g, stop:function(){ lfo.stop(); src.disconnect(); bp.disconnect(); lfoGain.disconnect(); g.disconnect(); } };
+  }
+  function makeBrown(){
+    var src = noiseNode('brown');
+    var lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=350;
+    var g = ctx.createGain(); g.gain.value=0;
+    src.connect(lp); lp.connect(g); g.connect(master);
+    return { gain:g, stop:function(){ src.disconnect(); lp.disconnect(); g.disconnect(); } };
+  }
+  function makeEventBus(){
+    // crickets + thunder don't run continuously — they're a silent gain bus
+    // whose value 0..1 the scheduler reads to decide loudness/likelihood.
+    var g = ctx.createGain(); g.gain.value = 0;
+    return { gain:g };
+  }
+
+  function scheduleCrickets(){
+    if(cricketTimer) clearTimeout(cricketTimer);
+    (function loop(){
+      var v = nodes.crickets ? nodes.crickets.gain.gain.value : 0;
+      if(v > 0.005 && started){
+        chirp(v);
+        cricketTimer = setTimeout(loop, 400 + Math.random()*2200);
+      } else {
+        cricketTimer = setTimeout(loop, 900);
+      }
+    })();
+  }
+  function chirp(vol){
+    var t = ctx.currentTime;
+    var pulses = 2 + Math.floor(Math.random()*3);
+    for(var p=0; p<pulses; p++){
+      var osc = ctx.createOscillator(); osc.type='sine';
+      osc.frequency.value = 3800 + Math.random()*700;
+      var g = ctx.createGain(); g.gain.value = 0;
+      osc.connect(g); g.connect(master);
+      var start = t + p*0.09;
+      g.gain.setValueAtTime(0, start);
+      g.gain.linearRampToValueAtTime(vol*0.18, start+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, start+0.09);
+      osc.start(start); osc.stop(start+0.11);
+    }
+  }
+  function scheduleThunder(){
+    if(thunderTimer) clearTimeout(thunderTimer);
+    (function loop(){
+      var v = nodes.thunder ? nodes.thunder.gain.gain.value : 0;
+      if(v > 0.005 && started && Math.random() < 0.5){
+        rumble(v);
+      }
+      thunderTimer = setTimeout(loop, 15000 + Math.random()*45000);
+    })();
+  }
+  function rumble(vol){
+    var t = ctx.currentTime;
+    var src = noiseNode('brown');
+    var lp = ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=140;
+    var g = ctx.createGain(); g.gain.value=0;
+    src.connect(lp); lp.connect(g); g.connect(master);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol*0.5, t+0.6);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+3.5+Math.random()*2);
+    setTimeout(function(){ try{ src.disconnect(); lp.disconnect(); g.disconnect(); }catch(e){} }, 6500);
+  }
+
+  function start(){
+    if(started) return;
+    ensureCtx();
+    if(ctx.state === 'suspended') ctx.resume();
+    nodes.rain = makeRain();
+    nodes.wind = makeWind();
+    nodes.stream = makeStream();
+    nodes.brown = makeBrown();
+    nodes.crickets = makeEventBus();
+    nodes.thunder = makeEventBus();
+    started = true;
+    applyMix();
+    scheduleCrickets();
+    scheduleThunder();
+  }
+  function applyMix(){
+    if(!started) return;
+    var mix = settings.ambient;
+    ['rain','wind','stream','brown','crickets','thunder'].forEach(function(k){
+      if(nodes[k]) nodes[k].gain.gain.setTargetAtTime(mix[k]||0, ctx.currentTime, 0.4);
+    });
+  }
+  function setLayer(name, v){
+    settings.ambient[name] = v;
+    Store.set('ff.settings', settings);
+    var anyOn = Object.keys(settings.ambient).some(function(k){ return settings.ambient[k] > 0; });
+    if(anyOn && !started) start(); else applyMix();
+  }
+  function setMaster(v){
+    settings.volume = v;
+    Store.set('ff.settings', settings);
+    if(master) master.gain.setTargetAtTime(v, ensureCtx().currentTime, 0.05);
+  }
+  function preset(name){
+    if(name === 'grove'){
+      setLayer('crickets',0.55); setLayer('wind',0.35); setLayer('stream',0.4);
+      setLayer('rain',0); setLayer('thunder',0); setLayer('brown',0);
+    } else if(name === 'off'){
+      ['rain','wind','crickets','stream','thunder','brown'].forEach(function(k){ setLayer(k,0); });
+    }
+  }
+  /* Soft plucked bell — two quickly-decaying partials, not a harsh alarm. */
+  function chime(){
+    ensureCtx();
+    if(ctx.state === 'suspended') ctx.resume();
+    var t = ctx.currentTime;
+    [{f:660,d:1.1,g:0.22},{f:990,d:0.8,g:0.10}].forEach(function(p){
+      var osc = ctx.createOscillator(); osc.type='sine'; osc.frequency.value=p.f;
+      var g = ctx.createGain(); g.gain.value=0;
+      osc.connect(g); g.connect(chimeGain);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(p.g, t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+p.d);
+      osc.start(t); osc.stop(t+p.d+0.05);
+    });
+  }
+  return { setLayer:setLayer, setMaster:setMaster, preset:preset, chime:chime, start:start,
+    get started(){ return started; } };
+})();
+
+/* ============================================================
+   Scene — background canvas: drifting fireflies + a faint moon
+   glow with gentle parallax. Pauses entirely when the tab is
+   hidden or prefers-reduced-motion is set, per spec.
+   ============================================================ */
+var Scene = (function(){
+  var canvas = document.getElementById('scene');
+  var ctx2d = canvas.getContext('2d');
+  var W=0, H=0, DPR=Math.min(2, window.devicePixelRatio||1);
+  var flies = [];
+  var raf = null;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var mouseX=0, mouseY=0;
+
+  function resize(){
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W*DPR; canvas.height = H*DPR;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx2d.setTransform(DPR,0,0,DPR,0,0);
+  }
+  function makeFly(){
+    return {
+      x: Math.random()*W, y: Math.random()*H,
+      r: 1.1+Math.random()*1.6,
+      vx: (Math.random()-0.5)*0.15, vy: (Math.random()-0.5)*0.12,
+      phase: Math.random()*Math.PI*2, speed: 0.5+Math.random()*0.7,
+      hue: Math.random()<0.5? '124,232,196' : '199,184,239'
+    };
+  }
+  function init(){
+    resize();
+    var count = Math.min(30, Math.max(14, Math.round((W*H)/60000)));
+    flies = []; for(var i=0;i<count;i++) flies.push(makeFly());
+  }
+  function drawMoon(){
+    var mx = W*0.82 + mouseX*6, my = H*0.14 + mouseY*4;
+    var grad = ctx2d.createRadialGradient(mx,my,0,mx,my,220);
+    grad.addColorStop(0,'rgba(230,222,255,0.16)');
+    grad.addColorStop(1,'rgba(230,222,255,0)');
+    ctx2d.fillStyle = grad;
+    ctx2d.beginPath(); ctx2d.arc(mx,my,220,0,Math.PI*2); ctx2d.fill();
+    ctx2d.beginPath(); ctx2d.fillStyle='rgba(240,236,255,0.55)'; ctx2d.arc(mx,my,17,0,Math.PI*2); ctx2d.fill();
+  }
+  function frame(t){
+    ctx2d.clearRect(0,0,W,H);
+    drawMoon();
+    flies.forEach(function(f){
+      f.x += f.vx; f.y += f.vy;
+      if(f.x<-10) f.x=W+10; if(f.x>W+10) f.x=-10;
+      if(f.y<-10) f.y=H+10; if(f.y>H+10) f.y=-10;
+      var flicker = 0.35 + 0.65*Math.abs(Math.sin(t*0.0006*f.speed + f.phase));
+      ctx2d.beginPath();
+      ctx2d.fillStyle = 'rgba('+f.hue+','+(flicker*0.9).toFixed(2)+')';
+      ctx2d.shadowColor = 'rgba('+f.hue+',0.9)';
+      ctx2d.shadowBlur = 6+flicker*6;
+      ctx2d.arc(f.x,f.y,f.r,0,Math.PI*2); ctx2d.fill();
+    });
+    ctx2d.shadowBlur = 0;
+    if(!document.hidden && !reduced) raf = requestAnimationFrame(frame);
+  }
+  function start(){
+    if(raf) return;
+    if(reduced){ ctx2d.clearRect(0,0,W,H); drawMoon(); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  function stop(){ if(raf){ cancelAnimationFrame(raf); raf=null; } }
+
+  window.addEventListener('resize', function(){ resize(); });
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) stop(); else start();
+  });
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', function(e){
+    reduced = e.matches;
+    if(reduced) stop(); else start();
+  });
+  window.addEventListener('pointermove', function(e){
+    mouseX = (e.clientX/W - 0.5); mouseY = (e.clientY/H - 0.5);
+  });
+
+  init();
+  start();
+  return { reinit:init };
+})();
+
+/* ============================================================
+   GardenBridge — integrations with Daily Docket, Grimoire and
+   NightOwl. See DATA-CONTRACT.md for why each is shaped the way
+   it is: none of the three share readable localStorage with a
+   double-clicked file:// page, so this is NOT a storage reader.
+
+     Docket    — only when running inside Cowork (hasCowork):
+                 calls the same Todoist/Calendar MCP tools Docket
+                 itself uses, directly. Writes back a logged-time
+                 comment and completes the Todoist task on check-off.
+     Grimoire  — genuinely unreachable from file:// (it runs on its
+                 own http://localhost origin). Always reports
+                 "unreachable"; never renders a broken panel.
+     NightOwl  — one-way, write-only nightowl://focus/complete/<min>
+                 (a real, already-used protocol verb). Night-mode
+                 palette is driven by a FocusFlow setting seeded
+                 from NightOwl's documented default, not a live read.
+
+   Every read-side integration fails silently: on error or absent
+   data the relevant panel simply stays hidden. No toasts, no
+   console spam, no "loading forever" state.
+   ============================================================ */
+var GardenBridge = (function(){
+  var hasCowork = typeof window !== 'undefined' && window.cowork && typeof window.cowork.callMcpTool === 'function';
+  var TOOL = {
+    cal:'mcp__f8f8675f-d173-480c-a4aa-70563862fbc4__list_events',
+    findTasks:'mcp__479a401b-6abf-414c-a640-637153ee1d92__find-tasks-by-date',
+    completeTasks:'mcp__479a401b-6abf-414c-a640-637153ee1d92__complete-tasks',
+    addComments:'mcp__479a401b-6abf-414c-a640-637153ee1d92__add-comments',
+    spotify:'mcp__255a1d9a-f031-401d-85f2-4bed88fff239__get_currently_playing'
+  };
+  var nextEvent = null; // {title, start:Date, end:Date} soonest upcoming event today, if any
+
+  function call(name, args){
+    return window.cowork.callMcpTool(name, args).then(function(r){
+      if(r && r.isError) throw new Error('tool error');
+      if(r && r.structuredContent) return r.structuredContent;
+      var txt = r && r.content && r.content[0] && r.content[0].text;
+      if(!txt) throw new Error('empty response');
+      try{ return JSON.parse(txt); }catch(e){ return {}; }
+    });
+  }
+  function todayBounds(){
+    var n = new Date(), y=n.getFullYear(), mo=n.getMonth(), da=n.getDate();
+    var p = function(x){ return String(x).padStart(2,'0'); };
+    var s = y+'-'+p(mo+1)+'-'+p(da)+'T00:00:00';
+    var e2 = new Date(y,mo,da+1);
+    var e = e2.getFullYear()+'-'+p(e2.getMonth()+1)+'-'+p(e2.getDate())+'T00:00:00';
+    return { start:s, end:e };
+  }
+
+  /* ---------- Docket (read: task pull + next event; write: comment + complete) ---------- */
+  function pullDocket(){
+    if(!hasCowork || !settings.integrations.docket) return;
+    var b = todayBounds();
+    call(TOOL.findTasks, { startDate:'today', daysCount:1, limit:20, overdueOption:'include-overdue' })
+      .then(function(d){
+        var items = (d.tasks||[]).filter(function(t){ return !t.checked; }).map(function(t){
+          return { docketId:t.id, text:t.content };
+        });
+        if(items.length){ Tasks.upsertDocket(items); UI.renderTasks(); }
+      })
+      .catch(function(){ /* silent — section just won't show new rows */ });
+
+    call(TOOL.cal, { startTime:b.start, endTime:b.end, orderBy:'startTime', pageSize:25,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })
+      .then(function(d){
+        var now = new Date();
+        var evs = (d.events||[]).filter(function(e){ return e.status !== 'cancelled' && e.start && e.start.dateTime; })
+          .map(function(e){ return { title:e.summary||'(untitled)', start:new Date(e.start.dateTime), end:new Date(e.end.dateTime) }; })
+          .filter(function(e){ return e.start > now; })
+          .sort(function(a,b){ return a.start-b.start; });
+        nextEvent = evs[0] || null;
+        UI.renderCalendarPanel(nextEvent);
+      })
+      .catch(function(){ nextEvent = null; UI.renderCalendarPanel(null); });
+  }
+  function writeBackFocus(task, minutes){
+    if(!hasCowork || !settings.integrations.docket || !task || task.source !== 'docket') return;
+    var id = task.docketId || (task.id||'').replace(/^docket_/,'');
+    call(TOOL.addComments, { comments:[{ taskId:id, content:'🌙 FocusFlow: +'+minutes+' min focused' }] }).catch(function(){});
+  }
+  function completeDocketTask(task){
+    if(!hasCowork || !settings.integrations.docket || !task || task.source !== 'docket') return;
+    var id = task.docketId || (task.id||'').replace(/^docket_/,'');
+    call(TOOL.completeTasks, { ids:[id] }).catch(function(){});
+  }
+  function onTaskCompleted(task){ completeDocketTask(task); }
+
+  /* Would starting a focus session now run past the next event? */
+  function checkOverrun(focusMinutes){
+    if(!nextEvent) return null;
+    var end = new Date(Date.now() + focusMinutes*60000);
+    if(end > nextEvent.start){
+      var shortened = Math.max(1, Math.round((nextEvent.start - Date.now())/60000) - 5);
+      return { event:nextEvent, shortenedMinutes:shortened };
+    }
+    return null;
+  }
+
+  /* ---------- Spotify (Cowork-only) ---------- */
+  function pullSpotify(){
+    if(!hasCowork){ return; }
+    call(TOOL.spotify, {}).then(function(d){
+      if(d && d.item){
+        UI.renderNowPlaying({ name:d.item.name, artist:(d.item.artists||[]).map(function(a){return a.name;}).join(', '), playing:!!d.is_playing });
+      } else { UI.renderNowPlaying(null); }
+    }).catch(function(){ UI.renderNowPlaying(null); });
+  }
+
+  /* ---------- NightOwl (write-only) ---------- */
+  function notifyNightOwlFocusComplete(minutes){
+    if(!settings.integrations.nightowl) return;
+    if(!minutes || minutes < 1) return;
+    try{
+      var frame = document.createElement('iframe');
+      frame.style.display='none';
+      frame.src = 'nightowl://focus/complete/'+Math.round(minutes);
+      document.body.appendChild(frame);
+      setTimeout(function(){ try{ document.body.removeChild(frame); }catch(e){} }, 1500);
+    }catch(e){ /* protocol not registered on this machine — nothing to do */ }
+  }
+  function isNightMode(){
+    var nm = settings.nightMode;
+    if(!nm.enabled) return false;
+    var parts = (nm.bedtime||'20:00').split(':');
+    var bedMinutes = (parseInt(parts[0],10)||20)*60 + (parseInt(parts[1],10)||0);
+    var windDownStart = bedMinutes - (nm.windDownMinutes||0);
+    if(windDownStart < 0) windDownStart += 24*60;
+    var now = new Date();
+    var nowMinutes = now.getHours()*60 + now.getMinutes();
+    // Spans overnight: from wind-down start through to 5am the next morning,
+    // since we only mirror a bedtime/wind-down length, not a wake time.
+    return nowMinutes >= windDownStart || nowMinutes < 5*60;
+  }
+
+  /* ---------- Grimoire — provably unreachable from file://, never pretend otherwise ---------- */
+  function grimoireStatus(){ return 'unreachable'; }
+
+  /* ---------- status for Settings panel ---------- */
+  function status(){
+    return {
+      docket: hasCowork ? 'connected' : 'not found',
+      grimoire: 'unreachable',
+      nightowl: 'write-only'
+    };
+  }
+
+  return {
+    hasCowork:hasCowork, pullDocket:pullDocket, pullSpotify:pullSpotify,
+    writeBackFocus:writeBackFocus, onTaskCompleted:onTaskCompleted, checkOverrun:checkOverrun,
+    notifyNightOwlFocusComplete:notifyNightOwlFocusComplete, isNightMode:isNightMode,
+    grimoireStatus:grimoireStatus, status:status, get nextEvent(){ return nextEvent; }
+  };
+})();
+
+/* ============================================================
+   UI — DOM wiring. Everything below reads/writes the shared
+   `settings`/`tasks`/`stats` and drives Timer/Tasks/Stats/Audio_/
+   Scene/GardenBridge; nothing here owns persistence directly.
+   ============================================================ */
+var UI = (function(){
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function announce(msg){ $('liveStatus').textContent = msg; }
+
+  var RING_R = 130, CIRC = 2*Math.PI*130;
+  var LEAF_COUNT = 8;
+  var pendingOverrun = null; // {event, shortenedMinutes} while calWarning banner is open
+
+  /* ---------- ring ---------- */
+  function buildLeaves(){
+    var g = $('ringLeaves') || document.getElementById('ringLeaves');
+    for(var i=0;i<LEAF_COUNT;i++){
+      var angle = (i/LEAF_COUNT)*2*Math.PI - Math.PI/2;
+      var x = 150 + RING_R*Math.cos(angle), y = 150 + RING_R*Math.sin(angle);
+      var t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', x); t.setAttribute('y', y+5);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','14');
+      t.setAttribute('class','ring-leaf'); t.setAttribute('data-i', i);
+      t.textContent = '🍃';
+      g.appendChild(t);
+    }
+  }
+  function renderRing(remaining, total){
+    var progress = total>0 ? Math.min(1, Math.max(0, 1-(remaining/total))) : 0;
+    var vine = $('ringVine');
+    vine.style.strokeDasharray = CIRC;
+    vine.style.strokeDashoffset = CIRC*(1-progress);
+    var onCount = Math.round(progress*LEAF_COUNT);
+    document.querySelectorAll('.ring-leaf').forEach(function(el){
+      var i = parseInt(el.getAttribute('data-i'),10);
+      el.classList.toggle('on', i < onCount);
+    });
+    $('ringBloom').classList.toggle('on', progress >= 0.995);
+  }
+  function renderClock(remaining){
+    var m = Math.floor(remaining/60), s = remaining%60;
+    var text = m+':'+String(s).padStart(2,'0');
+    $('clock').textContent = text;
+    document.title = (Timer.running? text+' · ':'') + 'FocusFlow';
+  }
+  function renderSessionDots(){
+    var n = settings.interval;
+    var done = Timer.focusCount % n;
+    var html = '';
+    for(var i=0;i<n;i++){
+      var glyph = i < done ? '🌸' : (i === done && Timer.mode==='focus' ? '🌱' : '·');
+      html += '<span class="'+(i<done?'on':'')+'">'+glyph+'</span>';
+    }
+    $('sessionDots').innerHTML = html;
+  }
+  function renderGardenBed(){
+    var k = Stats.dateKey();
+    var n = (stats.days[k] && stats.days[k].sessions) || 0;
+    var el = $('gardenBed');
+    if(n === 0){ el.innerHTML = '<span class="seed">plant your first flower today 🌙</span>'; return; }
+    var html = '';
+    for(var i=0;i<n;i++) html += '🌷';
+    el.innerHTML = html;
+  }
+  function renderModeChrome(){
+    document.body.setAttribute('data-mode', Timer.mode);
+    $('modePill').textContent = Timer.mode==='focus' ? 'Focus' : (Timer.mode==='short' ? 'Short break' : 'Long break');
+    $('modeLabel').textContent = Timer.mode==='focus' ? 'Focus session' : (Timer.mode==='short' ? 'Short break' : 'Long break');
+  }
+  function renderActiveTask(){
+    var t = Tasks.getActive();
+    $('activeTaskLabel').textContent = t ? ('✦ '+t.text) : '';
+  }
+
+  /* ---------- controls ---------- */
+  function updateStartButton(){
+    var b = $('btnStart');
+    b.textContent = Timer.running ? 'Pause' : (Timer.remaining < Timer.total ? 'Resume' : 'Start');
+    b.classList.toggle('running', Timer.running);
+  }
+  function attemptStart(){
+    if(Timer.mode === 'focus' && !Timer.running){
+      var overrun = GardenBridge.checkOverrun(Math.ceil(Timer.remaining/60));
+      if(overrun && Timer.remaining === Timer.total){
+        pendingOverrun = overrun;
+        $('calWarningText').textContent = 'This session runs past "'+overrun.event.title+'" at '+
+          overrun.event.start.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})+'.';
+        $('calWarning').hidden = false;
+        return;
+      }
+    }
+    doStart();
+  }
+  function doStart(){
+    $('calWarning').hidden = true; pendingOverrun = null;
+    Audio_.start();
+    Timer.start();
+    updateStartButton();
+    announce((Timer.mode==='focus'?'Focus':'Break')+' session started');
+  }
+  function doToggle(){ Timer.running ? doPause() : attemptStart(); }
+  function doPause(){ Timer.pause(); updateStartButton(); announce('Paused'); }
+  function doReset(){ Timer.reset(); updateStartButton(); renderClock(Timer.remaining); renderRing(Timer.remaining, Timer.total); announce('Reset'); }
+  function doSkip(){
+    hideAlarm();
+    nextMode(true);
+  }
+  function nextMode(skip){
+    var next;
+    if(Timer.mode === 'focus') next = (Timer.focusCount % settings.interval === settings.interval-1) ? 'long' : 'short';
+    else next = 'focus';
+    Timer.setMode(next);
+    renderModeChrome(); renderClock(Timer.remaining); renderRing(Timer.remaining, Timer.total); renderSessionDots();
+    updateStartButton();
+    var autoGo = (next==='focus' && settings.autoFocus) || (next!=='focus' && settings.autoBreak);
+    if(autoGo && !skip) doStart();
+  }
+
+  /* ---------- alarm banner ---------- */
+  var alarmRepeatTimer = null;
+  function showAlarm(completedMode){
+    var label = completedMode==='focus' ? 'Focus session complete. Time for a break.' : 'Break’s over. Ready to focus?';
+    $('alarmText').textContent = label;
+    $('alarmBanner').hidden = false;
+    if(settings.notify && window.Notification){
+      if(Notification.permission === 'granted') new Notification('FocusFlow', { body:label });
+    }
+    if(settings.repeatAlarm && !document.body.getAttribute('data-night')){
+      clearInterval(alarmRepeatTimer);
+      alarmRepeatTimer = setInterval(function(){ Audio_.chime(); }, 6000);
+    } else if(settings.repeatAlarm){
+      // night mode: visual pulse instead of a repeating chime
+      $('alarmBanner').classList.add('alarm');
+    }
+  }
+  function hideAlarm(){ $('alarmBanner').hidden = true; clearInterval(alarmRepeatTimer); alarmRepeatTimer=null; }
+
+  /* ---------- timer wiring ---------- */
+  Timer.on('tick', function(remaining){ renderClock(remaining); renderRing(remaining, Timer.total); });
+  Timer.on('modechange', function(){ renderModeChrome(); renderClock(Timer.remaining); renderRing(Timer.remaining, Timer.total); renderSessionDots(); updateStartButton(); });
+  Timer.on('complete', function(completedMode){
+    Audio_.chime();
+    if(completedMode === 'focus'){
+      var minutes = settings.focus;
+      var active = Tasks.getActive();
+      Stats.recordFocus(minutes*60, active ? active.id : null);
+      if(active) GardenBridge.writeBackFocus(active, minutes);
+      GardenBridge.notifyNightOwlFocusComplete(minutes);
+      renderGardenBed(); renderStatsIfOpen();
+    }
+    showAlarm(completedMode);
+    nextMode(false);
+  });
+
+  /* ---------- drawers ---------- */
+  var openDrawerEl = null, lastFocused = null;
+  function openDrawer(id){
+    closeDrawer();
+    var d = $(id);
+    d.hidden = false;
+    requestAnimationFrame(function(){ d.classList.add('open'); });
+    $('overlay').classList.add('open');
+    lastFocused = document.activeElement;
+    openDrawerEl = d;
+    var focusables = d.querySelectorAll('button, input, [tabindex]');
+    if(focusables[0]) focusables[0].focus();
+    document.addEventListener('keydown', trapFocus);
+  }
+  function closeDrawer(){
+    if(!openDrawerEl) return;
+    openDrawerEl.classList.remove('open');
+    var el = openDrawerEl;
+    setTimeout(function(){ el.hidden = true; }, 260);
+    $('overlay').classList.remove('open');
+    document.removeEventListener('keydown', trapFocus);
+    if(lastFocused) lastFocused.focus();
+    openDrawerEl = null;
+  }
+  function trapFocus(e){
+    if(!openDrawerEl) return;
+    if(e.key === 'Escape'){ closeDrawer(); return; }
+    if(e.key !== 'Tab') return;
+    var focusables = Array.prototype.slice.call(openDrawerEl.querySelectorAll('button, input, [tabindex]'))
+      .filter(function(el){ return !el.disabled && el.offsetParent !== null; });
+    if(!focusables.length) return;
+    var first = focusables[0], last = focusables[focusables.length-1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+  $('overlay').addEventListener('click', closeDrawer);
+  document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', closeDrawer); });
+
+  /* ---------- tasks drawer ---------- */
+  function renderTasks(){
+    var own = tasks.filter(function(t){ return t.source !== 'docket'; });
+    var docket = tasks.filter(function(t){ return t.source === 'docket'; });
+    $('taskList').innerHTML = own.map(taskRow).join('') || '<li class="empty" style="border:none">No tasks yet — plant one above.</li>';
+    if(docket.length){
+      $('docketSection').hidden = false;
+      $('docketList').innerHTML = docket.map(taskRow).join('');
+    } else { $('docketSection').hidden = true; }
+    wireTaskRows();
+    renderActiveTask();
+  }
+  function taskRow(t){
+    return '<li class="'+(t.done?'done ':'')+(t.id===activeTaskId?'active ':'')+'" data-id="'+esc(t.id)+'">'+
+      '<span class="t-check '+(t.done?'on':'')+'" data-act="toggle">'+(t.done?'✓':'')+'</span>'+
+      '<span class="t-text" data-act="activate">'+esc(t.text)+(t.source==='docket'?' <span class="t-src">Docket</span>':'')+'</span>'+
+      (t.focusSeconds ? '<span class="t-time">'+Math.round(t.focusSeconds/60)+'m</span>' : '')+
+      '<button class="t-del" data-act="del" aria-label="Delete task">🗑</button>'+
+    '</li>';
+  }
+  function wireTaskRows(){
+    document.querySelectorAll('.task-list li').forEach(function(li){
+      var id = li.getAttribute('data-id');
+      li.querySelectorAll('[data-act]').forEach(function(el){
+        el.onclick = function(ev){
+          ev.stopPropagation();
+          var act = el.getAttribute('data-act');
+          if(act==='toggle'){ Tasks.toggleDone(id); renderTasks(); renderGardenBed(); }
+          else if(act==='activate'){ Tasks.setActive(activeTaskId===id?null:id); renderTasks(); }
+          else if(act==='del'){ Tasks.remove(id); renderTasks(); }
+        };
+      });
+    });
+  }
+  $('taskAdd').addEventListener('click', function(){ Tasks.add($('taskInput').value); $('taskInput').value=''; renderTasks(); });
+  $('taskInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ Tasks.add(this.value); this.value=''; renderTasks(); } });
+  $('taskClearDone').addEventListener('click', function(){ Tasks.clearCompleted(); renderTasks(); });
+
+  /* ---------- sounds drawer ---------- */
+  function initSoundsUI(){
+    $('masterVol').value = settings.volume;
+    document.querySelectorAll('[data-layer]').forEach(function(el){
+      el.value = settings.ambient[el.getAttribute('data-layer')] || 0;
+      el.addEventListener('input', function(){ Audio_.setLayer(el.getAttribute('data-layer'), parseFloat(el.value)); });
+    });
+    $('masterVol').addEventListener('input', function(){ Audio_.setMaster(parseFloat(this.value)); });
+    $('presetGrove').addEventListener('click', function(){ Audio_.preset('grove'); initSoundsUI(); });
+    $('presetOff').addEventListener('click', function(){ Audio_.preset('off'); initSoundsUI(); });
+  }
+
+  /* ---------- stats drawer ---------- */
+  function fmtMin(sec){ return Math.round(sec/60)+'m'; }
+  function fmtHr(sec){ var h = sec/3600; return (h>=10? Math.round(h): Math.round(h*10)/10)+'h'; }
+  function renderStats(){
+    var k = Stats.dateKey();
+    var today = stats.days[k] || {focus:0, sessions:0};
+    $('stToday').textContent = fmtMin(today.focus);
+    $('stWeek').textContent = fmtMin(Stats.weekTotalSeconds());
+    $('stAll').textContent = fmtHr(stats.totalSeconds||0);
+    $('stSessions').textContent = today.sessions;
+    $('stAvg').textContent = stats.totalSessions ? fmtMin((stats.totalSeconds||0)/stats.totalSessions) : '0m';
+    $('stStreak').textContent = Stats.computeStreak();
+    $('stBest').textContent = stats.longestStreak||0;
+
+    var g = Stats.growthStage();
+    $('growthEmoji').textContent = g.stage.emoji;
+    $('growthLabel').textContent = g.stage.label;
+    $('growthFill').style.width = g.pct+'%';
+    $('growthNext').textContent = g.next ? (Math.round(g.hoursRemain*10)/10)+'h to '+g.next.label : 'Fully grown grove 🌳';
+
+    var seven = Stats.last7();
+    var max = Math.max(30, Math.max.apply(null, seven.map(function(d){return d.focus/60;})));
+    $('bars7').innerHTML = seven.map(function(d){
+      var h = Math.max(2, Math.round((d.focus/60/max)*70));
+      return '<div class="bar-col"><div class="bar" style="height:'+h+'px"></div><div class="lbl">'+d.label+'</div></div>';
+    }).join('');
+
+    var weeks = Stats.last12Weeks();
+    var wmax = Math.max(1, Math.max.apply(null, weeks));
+    $('heatmap12').innerHTML = weeks.map(function(m){
+      var alpha = Math.min(1, m/wmax);
+      var bg = alpha<=0 ? '' : 'background:rgba(124,232,196,'+(0.12+alpha*0.75).toFixed(2)+')';
+      return '<div class="cell" style="'+bg+'" title="'+Math.round(m)+' min"></div>';
+    }).join('');
+
+    var totals = Stats.taskTotalsList();
+    $('taskTotals').innerHTML = totals.length
+      ? totals.slice(0,10).map(function(t){ return '<li><span>'+esc(t.text)+'</span><span>'+fmtMin(t.seconds)+'</span></li>'; }).join('')
+      : '<li class="empty" style="border:none">No focused task time yet.</li>';
+  }
+  function renderStatsIfOpen(){ if(openDrawerEl && openDrawerEl.id==='drawerStats') renderStats(); }
+  $('statsExport').addEventListener('click', function(){ Stats.exportJSON(); });
+
+  /* ---------- settings drawer ---------- */
+  function loadSettingsUI(){
+    $('setName').value = userName;
+    $('setFocus').value = settings.focus; $('setShort').value = settings.short; $('setLong').value = settings.long;
+    $('setInterval').value = settings.interval;
+    $('setAutoBreak').checked = settings.autoBreak; $('setAutoFocus').checked = settings.autoFocus;
+    $('setNotify').checked = settings.notify; $('setRepeat').checked = settings.repeatAlarm;
+    $('setNightEnabled').checked = settings.nightMode.enabled;
+    $('setBedtime').value = settings.nightMode.bedtime;
+    $('setWindDown').value = settings.nightMode.windDownMinutes;
+    $('setIntDocket').checked = settings.integrations.docket;
+    $('setIntGrimoire').checked = false;
+    $('setIntNightowl').checked = settings.integrations.nightowl;
+    var st = GardenBridge.status();
+    setStatusChip('statDocket', st.docket);
+    setStatusChip('statGrimoire', st.grimoire);
+    setStatusChip('statNightowl', st.nightowl);
+  }
+  function setStatusChip(id, text){
+    var el = $(id); el.textContent = text;
+    el.classList.toggle('ok', text==='connected' || text==='write-only');
+  }
+  function saveSettings(){
+    settings.focus = clampInt($('setFocus').value, 1, 180, 25);
+    settings.short = clampInt($('setShort').value, 1, 60, 10);
+    settings.long = clampInt($('setLong').value, 1, 90, 30);
+    settings.interval = clampInt($('setInterval').value, 1, 12, 4);
+    settings.autoBreak = $('setAutoBreak').checked;
+    settings.autoFocus = $('setAutoFocus').checked;
+    settings.notify = $('setNotify').checked;
+    settings.repeatAlarm = $('setRepeat').checked;
+    settings.nightMode.enabled = $('setNightEnabled').checked;
+    settings.nightMode.bedtime = $('setBedtime').value || '20:00';
+    settings.nightMode.windDownMinutes = clampInt($('setWindDown').value, 0, 240, 60);
+    settings.integrations.docket = $('setIntDocket').checked;
+    settings.integrations.nightowl = $('setIntNightowl').checked;
+    Store.set('ff.settings', settings);
+    userName = $('setName').value.trim();
+    Store.set('ff.name', userName);
+    if(!Timer.running){ Timer.reset(); renderClock(Timer.remaining); renderRing(Timer.remaining, Timer.total); }
+    renderSessionDots();
+    if(settings.notify && window.Notification && Notification.permission === 'default') Notification.requestPermission();
+  }
+  function clampInt(v, lo, hi, dflt){ var n = parseInt(v,10); if(isNaN(n)) return dflt; return Math.min(hi, Math.max(lo, n)); }
+  ['setFocus','setShort','setLong','setInterval','setAutoBreak','setAutoFocus','setNotify','setRepeat',
+   'setNightEnabled','setBedtime','setWindDown','setIntDocket','setIntNightowl','setName'].forEach(function(id){
+    $(id).addEventListener('change', saveSettings);
+  });
+  $('resetData').addEventListener('click', function(){
+    if(!confirm('This clears all tasks, stats and settings on this device. Continue?')) return;
+    ['ff.tasks','ff.stats','ff.settings','ff.activeTask','ff.name'].forEach(Store.remove);
+    var fresh = Store.migrate();
+    settings = fresh.settings; stats = fresh.stats; tasks = fresh.tasks; userName=''; activeTaskId=null;
+    Timer.setMode('focus'); Timer.focusCount = 0;
+    loadSettingsUI(); renderTasks(); renderStats(); renderGardenBed(); renderSessionDots();
+    closeDrawer();
+  });
+
+  /* ---------- weather (Open-Meteo, no key; hides on any failure) ---------- */
+  var WCODE = {0:['☀️','Clear sky'],1:['🌤️','Mostly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],
+    45:['🌫️','Fog'],48:['🌫️','Fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],55:['🌦️','Dense drizzle'],
+    61:['🌧️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],71:['🌨️','Light snow'],73:['🌨️','Snow'],
+    75:['🌨️','Heavy snow'],80:['🌦️','Rain showers'],81:['🌦️','Rain showers'],82:['⛈️','Violent showers'],
+    95:['⛈️','Thunderstorm']};
+  function loadWeather(){
+    if(!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat = pos.coords.latitude, lon = pos.coords.longitude;
+      fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
+        '&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto')
+        .then(function(r){ if(!r.ok) throw new Error('bad response'); return r.json(); })
+        .then(function(d){
+          var cur = d.current;
+          if(!cur) throw new Error('no data');
+          var wc = WCODE[cur.weather_code] || ['⛅','—'];
+          $('wxIcon').textContent = wc[0];
+          $('wxTemp').textContent = Math.round(cur.temperature_2m)+'°';
+          $('wxMeta').textContent = wc[1];
+          $('wxPanel').hidden = false;
+        }).catch(function(){ /* panel stays hidden */ });
+    }, function(){ /* denied/unavailable — panel stays hidden */ }, { timeout:6000, maximumAge:600000 });
+  }
+
+  /* ---------- daily message + quote ---------- */
+  var QUOTES = [
+    'A garden grows one still afternoon at a time.',
+    'The vine doesn’t rush toward the light — it just keeps climbing.',
+    'Small, steady focus outgrows a single burst of effort.',
+    'Even the moon takes all night to cross the sky.',
+    'Roots before blooms.',
+    'Attention is the rarest form of generosity — spend it on one thing.',
+    'What you tend, grows.'
+  ];
+  function renderQuote(){
+    var dayOrdinal = Math.floor(Date.now()/86400000);
+    $('quoteText').textContent = QUOTES[dayOrdinal % QUOTES.length];
+  }
+  function renderMessage(){
+    var h = new Date().getHours();
+    var greet = h<5 ? 'Still up' : h<12 ? 'Good morning' : h<17 ? 'Good afternoon' : h<21 ? 'Good evening' : 'Late night';
+    var openCount = tasks.filter(function(t){ return !t.done; }).length;
+    var name = userName ? ', '+userName : '';
+    var text = greet+name+'. ';
+    text += openCount ? (openCount+' task'+(openCount===1?'':'s')+' waiting in the garden.') : 'The garden bed is clear today.';
+    $('msgText').textContent = text;
+    $('msgPanel').hidden = false;
+  }
+
+  /* ---------- now playing (Cowork-only) ---------- */
+  function renderNowPlaying(np){
+    if(!np){ $('npPanel').hidden = true; return; }
+    $('npPanel').hidden = false;
+    $('npName').textContent = np.name;
+    $('npArtist').textContent = np.artist;
+    $('npDot').style.opacity = np.playing ? '1' : '.35';
+  }
+
+  /* ---------- calendar panel + overrun banner ---------- */
+  function renderCalendarPanel(ev){
+    if(!ev){ $('calPanel').hidden = true; return; }
+    $('calPanel').hidden = false;
+    $('calNext').textContent = ev.title+' · '+ev.start.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    var mins = Math.round((ev.start-Date.now())/60000);
+    $('calCountdown').textContent = mins<=0 ? 'starting now' : ('in '+(mins<60? mins+'m' : Math.round(mins/60)+'h '+(mins%60)+'m'));
+  }
+  $('calStartAnyway').addEventListener('click', doStart);
+  $('calShorten').addEventListener('click', function(){
+    if(!pendingOverrun) return;
+    var secs = Math.max(60, pendingOverrun.shortenedMinutes*60);
+    Timer.setRemaining(secs);
+    renderRing(Timer.remaining, Timer.total);
+    doStart();
+  });
+
+  /* ---------- night mode watcher ---------- */
+  function watchNightMode(){
+    var apply = function(){
+      var on = GardenBridge.isNightMode();
+      document.body.setAttribute('data-night', on ? '1' : '0');
+    };
+    apply();
+    setInterval(apply, 30000);
+  }
+
+  /* ---------- keyboard shortcuts ---------- */
+  document.addEventListener('keydown', function(e){
+    if(openDrawerEl) return; // trapFocus owns Escape/Tab while a drawer is open
+    var typing = /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+    if(typing) return;
+    if(e.code === 'Space'){ e.preventDefault(); doToggle(); }
+    else if(e.key === 'r' || e.key === 'R'){ doReset(); }
+    else if(e.key === 's' || e.key === 'S'){ doSkip(); }
+    else if(e.key === 't' || e.key === 'T'){ openDrawer('drawerTasks'); }
+    else if(e.key === 'a' || e.key === 'A'){ openDrawer('drawerSounds'); }
+    else if(e.key === ','){ openDrawer('drawerSettings'); }
+  });
+
+  /* ---------- top nav wiring ---------- */
+  $('btnTasks').addEventListener('click', function(){ openDrawer('drawerTasks'); });
+  $('btnSounds').addEventListener('click', function(){ openDrawer('drawerSounds'); });
+  $('btnStats').addEventListener('click', function(){ openDrawer('drawerStats'); renderStats(); });
+  $('btnSettings').addEventListener('click', function(){ openDrawer('drawerSettings'); loadSettingsUI(); });
+  $('btnStart').addEventListener('click', doToggle);
+  $('btnReset').addEventListener('click', doReset);
+  $('btnSkip').addEventListener('click', doSkip);
+  $('alarmNext').addEventListener('click', function(){ hideAlarm(); doStart(); });
+  $('alarmStop').addEventListener('click', hideAlarm);
+
+  function init(){
+    buildLeaves();
+    Timer.setMode('focus');
+    // Reflect today's already-completed sessions in the dots/long-break cycle
+    // after a reload, instead of silently resetting the cycle to zero.
+    var todayStats = stats.days[Stats.dateKey()];
+    Timer.focusCount = todayStats ? (todayStats.sessions % settings.interval) : 0;
+    renderModeChrome(); renderClock(Timer.remaining); renderRing(Timer.remaining, Timer.total);
+    renderSessionDots(); renderGardenBed(); renderActiveTask(); updateStartButton();
+    renderTasks(); initSoundsUI(); renderQuote(); renderMessage();
+    watchNightMode();
+    loadWeather();
+    if(GardenBridge.hasCowork){ GardenBridge.pullDocket(); GardenBridge.pullSpotify(); setInterval(GardenBridge.pullSpotify, 30000); }
+  }
+
+  return { init:init, renderTasks:renderTasks, renderCalendarPanel:renderCalendarPanel, renderNowPlaying:renderNowPlaying };
+})();
+
+UI.init();
+
+})();
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,284 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © @Apeaverage & @SXDXST_FB6 (Impulse MACD)  •  Refined by Akash (SMA/RSI/MACD)
+// 1m SCALP — STRATEGY / BACKTEST version of "SWING1_PRO". Pine v6.
+//
+// PURPOSE: this is the strategy() twin of the indicator, so TradingView's Strategy Tester
+// reports the numbers that actually matter — net P&L, win rate, profit factor, max drawdown,
+// avg win/loss, number of trades. The SIGNAL LOGIC is identical to the indicator (trend +
+// slope + MACD + RSI + Impulse + filters, pullback continuation entries, and counter-trend
+// REVERSAL entries with the early momentum-turn timing). Position management is handed to the
+// strategy engine: auto-reverse on opposite signal, no pyramiding, and realistic ATR
+// stop/target brackets that fill INTRABAR (strategy.exit), not just on the close.
+//
+// ─────────────────────────────────────────────────────────────────────────────────────
+//  READ THIS BEFORE TRUSTING ANY RESULT
+//  • COSTS DOMINATE 1m SCALPING. Set Commission and Slippage in the Strategy Tester
+//    "Properties" tab to match your broker. A 1m strategy that looks great at 0 cost can be
+//    a net loser after 1–2 ticks of slippage + commission. Defaults below are a starting
+//    point, NOT your real costs.
+//  • Stops/targets fill intrabar at the bracket price; signal exits (MACD/trend/RSI) fill at
+//    the next bar's open (no look-ahead). This is realistic but optimistic stops can still
+//    flatter results — keep slippage on.
+//  • Past performance ≠ future results. One symbol + one period = curve-fit risk. Test across
+//    several windows. Not financial advice.
+// ─────────────────────────────────────────────────────────────────────────────────────
+//@version=6
+strategy("Swing 1m PRO — STRATEGY", shorttitle="SWING1_PRO_ST", overlay=true, max_labels_count=500,
+     pyramiding=0,
+     initial_capital=10000,
+     default_qty_type=strategy.percent_of_equity, default_qty_value=10,
+     commission_type=strategy.commission.percent, commission_value=0.0,
+     slippage=2,
+     process_orders_on_close=false)
+
+// ── Trend filter ────────────────────────────────────────────────────────────────────
+gT = "Trend filter"
+useTrend     = input.bool(true,  "Use trend filter", group=gT)
+useHTFTrend  = input.bool(true,  "Take trend from a higher timeframe", group=gT)
+useAutoHTF   = input.bool(true,  "Auto-scale HTF to the chart (recommended)", group=gT, tooltip="ON: trend timeframe = chart timeframe × the multiplier. 1m chart with ×15 = 15m regime.")
+autoHtfMult  = input.int(15, "Auto HTF multiplier (× chart TF)", minval=2, group=gT)
+htfTfManual  = input.timeframe("15", "Fixed higher-timeframe (when Auto is OFF)", group=gT)
+trendType    = input.string("EMA", "Trend MA type", options=["EMA", "SMA"], group=gT)
+trendLen     = input.int(50, "Trend length", minval=1, group=gT)
+useSlope     = input.bool(true,  "Require trend to be sloping (skip flat/chop)", group=gT)
+slopeLen     = input.int(3, "Trend slope lookback (trend-TF bars)", minval=1, group=gT)
+slopeMinATR  = input.float(0.20, "Min trend slope (ATRs over lookback)", minval=0.0, step=0.05, group=gT)
+useBuffer    = input.bool(false, "Require break beyond trend (ATR buffer)", group=gT)
+bufferATR    = input.float(0.5, "Trend buffer (ATR ×)", minval=0.0, step=0.1, group=gT)
+showTrend    = input.bool(true, "Show trend line", group=gT)
+
+// ── MACD ──────────────────────────────────────────────────────────────────────────────
+gM = "MACD"
+fastLength   = input.int(12, "MACD fast", minval=1, group=gM)
+slowLength   = input.int(26, "MACD slow", minval=1, group=gM)
+signalLength = input.int(9,  "MACD signal", minval=1, group=gM)
+
+// ── RSI (momentum confirmation, with neutral band) ────────────────────────────────────
+gR = "RSI"
+rsiLength     = input.int(14, "RSI length", minval=1, group=gR)
+rsiLongLevel  = input.int(52, "RSI long min (momentum up above this)", group=gR)
+rsiShortLevel = input.int(48, "RSI short max (momentum down below this)", group=gR)
+
+// ── Impulse MACD (optional confirmation) ──────────────────────────────────────────────
+gI = "Impulse MACD"
+useImpulse   = input.bool(true, "Require Impulse MACD confirmation", group=gI)
+lengthMA     = input.int(34, "Impulse channel/MA length", minval=1, group=gI)
+lengthSignal = input.int(9,  "Impulse signal length", minval=1, group=gI)
+
+// ── Evidence-based filters ────────────────────────────────────────────────────────────
+gF = "Filters (evidence-based)"
+useADX  = input.bool(true,  "ADX trend-strength filter", group=gF)
+adxLen  = input.int(14, "ADX length", minval=1, group=gF)
+adxMin  = input.int(20, "ADX minimum (20 intraday, 25 stricter)", minval=1, group=gF)
+useVol  = input.bool(true,  "Volume confirmation", group=gF)
+volLen  = input.int(20, "Volume average length", minval=1, group=gF)
+volMult = input.float(1.5, "Volume must exceed avg ×", minval=0.0, step=0.1, group=gF)
+useSess = input.bool(false, "Session / time-of-day filter", group=gF)
+sess    = input.session("0945-1530", "Trading session (exchange time)", group=gF)
+
+// ── Quality filters (1m scalping) ─────────────────────────────────────────────────────
+gQ = "Quality filters (added)"
+minBarsBetween = input.int(1, "Cooldown: min bars between signals", minval=0, group=gQ)
+useCandle      = input.bool(true, "Entry candle must agree (green=buy / red=sell)", group=gQ)
+useAvoidExt    = input.bool(true, "Don't chase: skip late entries at RSI extremes", group=gQ)
+obLevel        = input.int(72, "Overbought level (skip late longs)", group=gQ)
+osLevel        = input.int(28, "Oversold level (skip late shorts)", group=gQ)
+useVolRegime   = input.bool(false, "Minimum volatility regime (ATR % of price)", group=gQ)
+minAtrPct      = input.float(0.03, "Min ATR % of price", minval=0.0, step=0.01, group=gQ)
+
+// ── ATR stop / target (drives the strategy's bracket exits) ────────────────────────────
+gA = "ATR stop / target"
+atrLen      = input.int(14, "ATR length", minval=1, group=gA)
+atrStopMult = input.float(1.5, "Stop = ATR ×", minval=0.1, step=0.1, group=gA)
+rrRatio     = input.float(2.0, "Reward : risk", minval=0.1, step=0.1, group=gA)
+
+// ── Signal behaviour ──────────────────────────────────────────────────────────────────
+gS = "Signals"
+confirmClose = input.bool(true, "Act only on confirmed close (no repaint)", group=gS)
+
+// ── Entries & exits ───────────────────────────────────────────────────────────────────
+gE = "Entries & exits"
+allowReentry = input.bool(true,  "Allow re-entries in the same direction", group=gE)
+usePullback  = input.bool(true,  "Add pullback / continuation entries", group=gE)
+pullbackEMA  = input.int(9, "Pullback fast EMA", minval=1, group=gE)
+exitOnMACD   = input.bool(true,  "Exit when MACD flips against the trade", group=gE)
+exitOnTrend  = input.bool(true,  "Exit when price closes back across the trend MA", group=gE)
+exitOnRSI    = input.bool(false, "Exit when RSI crosses back through 50", group=gE)
+exitOnTarget = input.bool(true,  "Use ATR stop / target bracket exits", group=gE, tooltip="ON: each trade gets an ATR stop and a reward:risk target that fill intrabar (realistic). OFF: trades exit only on the signal/reversal conditions.")
+showSignals  = input.bool(true,  "Plot BUY/SELL markers", group=gE)
+
+// ── Reversals (catch counter-trend moves) ─────────────────────────────────────────────
+gV = "Reversals (catch counter-trend moves)"
+useReversals = input.bool(true, "Allow reversal entries against the trend", group=gV)
+revExitFast  = input.bool(true, "Exit reversals on fast-EMA cross (not the far trend line)", group=gV)
+revRsiFloor  = input.int(40, "Reversal: RSI must be RISING and above this", minval=1, maxval=60, group=gV, tooltip="Catches the bottom early. The momentum-turn timing fix (vs the old RSI>50 which fired late).")
+revVolMult   = input.float(1.0, "Reversal: volume must exceed avg ×", minval=0.0, step=0.1, group=gV)
+
+// ── Backtest behaviour ────────────────────────────────────────────────────────────────
+gBT = "Backtest"
+intradayOnly = input.bool(true, "Flatten at session close (intraday only)", group=gBT, tooltip="Recommended TRUE for a realistic 1m scalp test — closes any open position at the end of the session instead of holding overnight gaps. Set FALSE to match the indicator's hold-until-signal behaviour exactly.")
+eodSess      = input.session("1555-1600", "Flatten window (exchange time)", group=gBT)
+
+// ── Functions ───────────────────────────────────────────────────────────────────────
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    ema1 + (ema1 - ema2)
+
+atr = ta.atr(atrLen)
+
+// ── Resolve the higher timeframe (auto-scaled or fixed) ───────────────────────────────
+chartSec = timeframe.in_seconds(timeframe.period)
+autoSec  = chartSec * autoHtfMult
+htfAuto  = autoSec % 60 == 0 ? str.tostring(int(autoSec / 60)) : str.tostring(int(autoSec)) + "S"
+htfTf    = useAutoHTF ? htfAuto : htfTfManual
+
+// ── Trend value + ATR-NORMALIZED SLOPE (non-repainting) ───────────────────────────────
+localMA = trendType == "EMA" ? ta.ema(close, trendLen) : ta.sma(close, trendLen)
+[htfMA, htfMAprev, htfATR] = request.security(syminfo.tickerid, htfTf, [localMA[1], localMA[1 + slopeLen], ta.atr(atrLen)[1]], lookahead=barmerge.lookahead_off)
+
+trendMA = useHTFTrend ? htfMA : localMA
+slopeATRval = useHTFTrend ? (htfATR > 0 ? (htfMA - htfMAprev) / htfATR : 0.0) : (atr > 0 ? (localMA - localMA[slopeLen]) / atr : 0.0)
+slopeUp = slopeATRval >=  slopeMinATR
+slopeDn = slopeATRval <= -slopeMinATR
+slopeFlat = useSlope and not slopeUp and not slopeDn
+slopeLongOK  = not useSlope or slopeUp
+slopeShortOK = not useSlope or slopeDn
+
+buf  = useBuffer ? bufferATR * atr : 0.0
+bull = not useTrend or close > trendMA + buf
+bear = not useTrend or close < trendMA - buf
+
+// ── Impulse MACD ────────────────────────────────────────────────────────────────────
+src = hlc3
+hi  = calc_smma(high, lengthMA)
+lo  = calc_smma(low,  lengthMA)
+mi  = calc_zlema(src, lengthMA)
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)
+impBull = not useImpulse or md > sb
+impBear = not useImpulse or md < sb
+
+// ── MACD + RSI ──────────────────────────────────────────────────────────────────────
+[macdValue, signalValue, macdHist] = ta.macd(close, fastLength, slowLength, signalLength)
+macdBull = macdValue > signalValue
+macdBear = macdValue < signalValue
+rsiValue   = ta.rsi(close, rsiLength)
+rsiLongOK  = rsiValue > rsiLongLevel
+rsiShortOK = rsiValue < rsiShortLevel
+
+// ── Filters ───────────────────────────────────────────────────────────────────────────
+[diPlus, diMinus, adxValue] = ta.dmi(adxLen, adxLen)
+adxOK = not useADX or adxValue >= adxMin
+volAvg = ta.sma(volume, volLen)
+volOK  = not useVol or na(volume) or volume >= volMult * volAvg
+inSess = not useSess or not na(time(timeframe.period, sess))
+atrPctOK = not useVolRegime or (close > 0 and (atr / close * 100.0) >= minAtrPct)
+filtersOK = adxOK and volOK and inSess and atrPctOK
+
+// ── Quality guards ────────────────────────────────────────────────────────────────────
+candleBuyOK     = not useCandle or close > open
+candleSellOK    = not useCandle or close < open
+notExtremeLong  = not useAvoidExt or rsiValue < obLevel
+notExtremeShort = not useAvoidExt or rsiValue > osLevel
+
+// ── State-based confluence (trend-following) ──────────────────────────────────────────
+longState  = bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK
+shortState = bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK
+longTrig   = longState  and not longState[1]
+shortTrig  = shortState and not shortState[1]
+
+// ── Cooldown ──────────────────────────────────────────────────────────────────────────
+confirmed = not confirmClose or barstate.isconfirmed
+var int lastSigBar = na
+cooled = na(lastSigBar) or (bar_index - lastSigBar) >= minBarsBetween
+
+// ── Pullback / continuation triggers ──────────────────────────────────────────────────
+emaFast   = ta.ema(close, pullbackEMA)
+pullLong  = usePullback and bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK and ta.crossover(close, emaFast)
+pullShort = usePullback and bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK and ta.crossunder(close, emaFast)
+
+// ── Reversal / counter-trend triggers (early momentum-turn timing) ─────────────────────
+priceAbove   = close > trendMA + buf
+priceBelow   = close < trendMA - buf
+macdRevUp = macdHist > macdHist[1]
+macdRevDn = macdHist < macdHist[1]
+rsiTurnUp = rsiValue > rsiValue[1] and rsiValue > revRsiFloor
+rsiTurnDn = rsiValue < rsiValue[1] and rsiValue < (100 - revRsiFloor)
+revVolOK  = not useVol or na(volume) or volume >= revVolMult * volAvg
+revFiltersOK = revVolOK and inSess and atrPctOK
+revLong  = useReversals and priceBelow and ta.crossover(close, emaFast)  and macdRevUp and rsiTurnUp and rsiValue < obLevel and revFiltersOK
+revShort = useReversals and priceAbove and ta.crossunder(close, emaFast) and macdRevDn and rsiTurnDn and rsiValue > osLevel and revFiltersOK
+
+// ── Combined entry intents (quality guards applied) ───────────────────────────────────
+goLong  = ((longTrig  or pullLong)  or revLong)  and cooled and candleBuyOK  and notExtremeLong
+goShort = ((shortTrig or pullShort) or revShort) and cooled and candleSellOK and notExtremeShort
+
+// ── STRATEGY ENGINE ───────────────────────────────────────────────────────────────────
+// Position is managed by the engine: opposite entry auto-reverses, pyramiding=0 blocks
+// stacking. We keep lastDir (re-entry rule), posRev (exit reference) and the ATR levels.
+var int   lastDir = 0
+var bool  posRev  = false
+var float slLong  = na
+var float tpLong  = na
+var float slShort = na
+var float tpShort = na
+
+isLong  = strategy.position_size > 0
+isShort = strategy.position_size < 0
+
+// Re-entry rule + reverse-into logic: enter only when not already on that side.
+doEnterLong  = goLong  and (allowReentry or lastDir != 1)  and not isLong
+doEnterShort = goShort and (allowReentry or lastDir != -1) and not isShort
+
+// Exit reference: reversal trades use the FAST EMA (a counter-trend trade is on the far side
+// of the slow trend line, so "close back across the trend" would fire on the entry bar).
+exitRef = (revExitFast and posRev) ? emaFast : trendMA
+exitLongCond  = (exitOnMACD and macdBear) or (exitOnTrend and close < exitRef) or (exitOnRSI and ta.crossunder(rsiValue, 50))
+exitShortCond = (exitOnMACD and macdBull) or (exitOnTrend and close > exitRef) or (exitOnRSI and ta.crossover(rsiValue, 50))
+
+if confirmed
+    // Entries (auto-reverse if opposite position is open)
+    if doEnterLong
+        strategy.entry("Long", strategy.long)
+        lastDir := 1
+        posRev := revLong and not (longTrig or pullLong)
+        lastSigBar := bar_index
+        slLong := close - atrStopMult * atr
+        tpLong := close + atrStopMult * rrRatio * atr
+    if doEnterShort
+        strategy.entry("Short", strategy.short)
+        lastDir := -1
+        posRev := revShort and not (shortTrig or pullShort)
+        lastSigBar := bar_index
+        slShort := close + atrStopMult * atr
+        tpShort := close - atrStopMult * rrRatio * atr
+    // Signal-based exits (don't double up with a reversal entry on the same bar)
+    if isLong and exitLongCond and not doEnterShort
+        strategy.close("Long", comment="exit")
+    if isShort and exitShortCond and not doEnterLong
+        strategy.close("Short", comment="exit")
+
+// ATR stop/target brackets — maintained every bar while in a trade; fill intrabar at price.
+if exitOnTarget and isLong and not na(slLong)
+    strategy.exit("xL", from_entry="Long",  stop=slLong,  limit=tpLong)
+if exitOnTarget and isShort and not na(slShort)
+    strategy.exit("xS", from_entry="Short", stop=slShort, limit=tpShort)
+
+// Flatten at session close for a realistic intraday test.
+isEod = intradayOnly and not na(time(timeframe.period, eodSess))
+if isEod
+    strategy.close_all(comment="EOD")
+
+// ── Plots ─────────────────────────────────────────────────────────────────────────────
+trendCol = slopeFlat ? color.new(color.gray, 0) : (bull ? color.new(color.teal, 0) : color.new(color.red, 0))
+plot(showTrend and useTrend ? trendMA : na, "Trend MA", color=trendCol, linewidth=2)
+plot(usePullback ? emaFast : na, "Pullback EMA", color=color.new(color.blue, 40))
+
+plotshape(showSignals and doEnterLong,  "Buy",  shape.labelup,   location.belowbar, color.new(color.green, 0), text="BUY",  textcolor=color.white, size=size.small)
+plotshape(showSignals and doEnterShort, "Sell", shape.labeldown, location.abovebar, color.new(color.red, 0),   text="SELL", textcolor=color.white, size=size.small)

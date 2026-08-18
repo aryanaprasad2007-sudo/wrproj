@@ -1,0 +1,316 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © @Apeaverage & @SXDXST_FB6 (Impulse MACD)  •  Refined by Akash (SMA/RSI/MACD)
+// 1m SCALP rebuild — tuned for AAPL on the 1-minute chart. Pine v6.
+//
+// WHY THIS VERSION (problems seen running the 5m "SWING5_PLUS" on a 1m AAPL chart)
+//   1) TREND TIMEFRAME MISMATCH — the old default trend was a 100-EMA on the 60m TF
+//      (~100 trading hours of data). On a 1m chart that line sits FAR from price (it was
+//      ~294 while price was ~281) and pins the filter to ONE side, so it could basically
+//      only print SELLs even as price ripped +3%. Fix: an ADAPTIVE higher-timeframe trend
+//      that scales to the chart (1m chart -> 15m regime by default), so the filter tracks
+//      the *current-session* trend and allows both longs and shorts.
+//   2) FLAT-TREND WHIPSAW — the old slope check was sign-only (any tiny tick up = "up
+//      trend"), so near-flat chop still passed. Fix: an ATR-NORMALIZED slope threshold —
+//      the trend MA must move at least X ATRs to count as a real trend. Flat = stand aside.
+//   3) 1m OVER-TRADING — no spacing between signals. Fix: a SIGNAL COOLDOWN (min bars
+//      between signals).
+//   4) WEAK MOMENTUM GATE — RSI used 50/50 (every bar is either long- or short-OK). Fix:
+//      a NEUTRAL BAND (long needs RSI>52, short needs RSI<48) so momentum must actually
+//      be present.
+//   5) CHASING — old code could buy a red bar at the top of a run. Fix: optional
+//      ENTRY-CANDLE agreement (green for buy / red for sell) + ANTI-EXTREME guard (don't
+//      buy when already overbought / sell when already oversold).
+//
+// Kept from the original: state-based confluence entry (all conditions agree, no exact
+// simultaneous cross needed), non-repainting higher-timeframe trend, ADX/volume/session
+// filters, ATR stop/target labels, and the confirmed-close option.
+//
+// NEW — ENTRY/EXIT ENGINE (this revision): the script no longer just alternates Buy/Sell.
+// It tracks the position and prints EXPLICIT EXIT markers (MACD flip, price back across the
+// trend MA, optional RSI-50 cross, or ATR stop/target). That frees up RE-ENTRIES, and an
+// optional PULLBACK/continuation setup adds more entries — so you get more entry AND exit
+// points WITHOUT loosening the quality filters. Strict alternation is still available
+// (turn "Allow re-entries" off).
+//
+// FIX (this revision): BUYs weren't printing on up-moves because the long gate requires price
+// ABOVE a slow trend line; in a down/sideways session price stays below it, so only SELLs
+// fired. Added REVERSAL entries (momentum turns that ignore the slow trend) with a matching
+// fast-EMA exit, so significant counter-trend moves are now caught. Toggle in "Reversals".
+//
+//   HONEST NOTE: No indicator "predicts" price — this is a confluence FILTER. These changes
+//   target known failure modes (TF mismatch, flat-trend whipsaw, over-trading, chasing) to
+//   raise signal QUALITY and cut chop; they also cut trade count and carry curve-fit risk.
+//   Forward/backtest before trading. Not financial advice.
+//@version=6
+indicator("Swing Buy/Sell — 1m PRO (adaptive)", shorttitle="SWING1_PRO", overlay=true, max_labels_count=500)
+
+// ── Trend filter ────────────────────────────────────────────────────────────────────
+gT = "Trend filter"
+useTrend     = input.bool(true,  "Use trend filter", group=gT)
+useHTFTrend  = input.bool(true,  "Take trend from a higher timeframe", group=gT)
+useAutoHTF   = input.bool(true,  "Auto-scale HTF to the chart (recommended)", group=gT, tooltip="ON: the trend timeframe = chart timeframe × the multiplier below. On a 1m chart with ×15 that's a 15m trend regime — responsive enough to scalp, slow enough to filter chop. Turn OFF to set a fixed timeframe manually.")
+autoHtfMult  = input.int(15, "Auto HTF multiplier (× chart TF)", minval=2, group=gT, tooltip="1m × 15 = 15m. 5m × 15 = 75m. Bigger = slower/looser regime.")
+htfTfManual  = input.timeframe("15", "Fixed higher-timeframe (when Auto is OFF)", group=gT)
+trendType    = input.string("EMA", "Trend MA type", options=["EMA", "SMA"], group=gT)
+trendLen     = input.int(50, "Trend length", minval=1, group=gT, tooltip="50 on a 15m regime ≈ a couple of sessions — a sensible 'which way is the day leaning' filter for scalping.")
+useSlope     = input.bool(true,  "Require trend to be sloping (skip flat/chop)", group=gT)
+slopeLen     = input.int(3, "Trend slope lookback (trend-TF bars)", minval=1, group=gT)
+slopeMinATR  = input.float(0.20, "Min trend slope (ATRs over lookback)", minval=0.0, step=0.05, group=gT, tooltip="The trend MA must move at least this many ATRs across the slope lookback to count as trending. Higher = stricter, fewer signals. 0 = sign-only (old behaviour).")
+useBuffer    = input.bool(false, "Require break beyond trend (ATR buffer)", group=gT)
+bufferATR    = input.float(0.5, "Trend buffer (ATR ×)", minval=0.0, step=0.1, group=gT)
+showTrend    = input.bool(true, "Show trend line", group=gT)
+
+// ── MACD ──────────────────────────────────────────────────────────────────────────────
+gM = "MACD"
+fastLength   = input.int(12, "MACD fast", minval=1, group=gM)
+slowLength   = input.int(26, "MACD slow", minval=1, group=gM)
+signalLength = input.int(9,  "MACD signal", minval=1, group=gM)
+
+// ── RSI (momentum confirmation, with neutral band) ────────────────────────────────────
+gR = "RSI"
+rsiLength     = input.int(14, "RSI length", minval=1, group=gR)
+rsiLongLevel  = input.int(52, "RSI long min (momentum up above this)", group=gR)
+rsiShortLevel = input.int(48, "RSI short max (momentum down below this)", group=gR)
+
+// ── Impulse MACD (optional confirmation) ──────────────────────────────────────────────
+gI = "Impulse MACD"
+useImpulse   = input.bool(true, "Require Impulse MACD confirmation", group=gI)
+lengthMA     = input.int(34, "Impulse channel/MA length", minval=1, group=gI)
+lengthSignal = input.int(9,  "Impulse signal length", minval=1, group=gI)
+
+// ── Evidence-based filters ────────────────────────────────────────────────────────────
+gF = "Filters (evidence-based)"
+useADX  = input.bool(true,  "ADX trend-strength filter", group=gF)
+adxLen  = input.int(14, "ADX length", minval=1, group=gF)
+adxMin  = input.int(20, "ADX minimum (20 intraday, 25 stricter)", minval=1, group=gF)
+useVol  = input.bool(true,  "Volume confirmation", group=gF)
+volLen  = input.int(20, "Volume average length", minval=1, group=gF)
+volMult = input.float(1.5, "Volume must exceed avg ×", minval=0.0, step=0.1, group=gF)
+useSess = input.bool(false, "Session / time-of-day filter", group=gF)
+sess    = input.session("0945-1530", "Trading session (exchange time)", group=gF)
+
+// ── Quality filters (added for 1m scalping) ───────────────────────────────────────────
+gQ = "Quality filters (added)"
+minBarsBetween = input.int(1, "Cooldown: min bars between signals", minval=0, group=gQ, tooltip="Blocks a new signal until this many bars after the previous one. Lower = more entries (set 0 for max). Higher = less over-trading.")
+useCandle      = input.bool(true, "Entry candle must agree (green=buy / red=sell)", group=gQ)
+useAvoidExt    = input.bool(true, "Don't chase: skip late entries at RSI extremes", group=gQ)
+obLevel        = input.int(72, "Overbought level (skip late longs)", group=gQ)
+osLevel        = input.int(28, "Oversold level (skip late shorts)", group=gQ)
+useVolRegime   = input.bool(false, "Minimum volatility regime (ATR % of price)", group=gQ, tooltip="Optional. Skip dead, ultra-low-volatility periods where 1m just grinds sideways. Leave OFF unless you see signals firing in flat tape.")
+minAtrPct      = input.float(0.03, "Min ATR % of price", minval=0.0, step=0.01, group=gQ)
+
+// ── ATR stop / target ─────────────────────────────────────────────────────────────────
+gA = "ATR stop / target labels"
+useRisk     = input.bool(false, "Show ATR stop/target on signals", group=gA)
+atrLen      = input.int(14, "ATR length", minval=1, group=gA)
+atrStopMult = input.float(1.5, "Stop = ATR ×", minval=0.1, step=0.1, group=gA)
+rrRatio     = input.float(2.0, "Reward : risk", minval=0.1, step=0.1, group=gA)
+
+// ── Signal behaviour ──────────────────────────────────────────────────────────────────
+gS = "Signals"
+confirmClose = input.bool(true, "Signal only on confirmed close (no repaint)", group=gS)
+
+// ── Entries & exits (more entry/exit points) ──────────────────────────────────────────
+gE = "Entries & exits"
+allowReentry = input.bool(true,  "Allow re-entries in the same direction", group=gE, tooltip="ON: after an exit you can re-enter the same way on the next valid setup (more entries). OFF: strict alternation (a long must be followed by a short).")
+usePullback  = input.bool(true,  "Add pullback / continuation entries", group=gE, tooltip="Extra entries: in an established trend, buy when price pulls back and reclaims the fast EMA (sell the mirror). Adds entries WITHOUT loosening the core filters.")
+pullbackEMA  = input.int(9, "Pullback fast EMA", minval=1, group=gE)
+exitOnMACD   = input.bool(true,  "Exit when MACD flips against the trade", group=gE)
+exitOnTrend  = input.bool(true,  "Exit when price closes back across the trend MA", group=gE)
+exitOnRSI    = input.bool(false, "Exit when RSI crosses back through 50", group=gE)
+exitOnTarget = input.bool(true,  "Exit at ATR stop / target", group=gE, tooltip="Uses the ATR stop & reward:risk from the 'ATR stop / target' group.")
+showExits    = input.bool(true,  "Show exit markers", group=gE)
+
+// ── Reversals (catch counter-trend up/down moves) ─────────────────────────────────────
+gV = "Reversals (catch counter-trend moves)"
+useReversals = input.bool(true, "Allow reversal entries against the trend", group=gV, tooltip="THE FIX for 'no BUYs on up-moves'. The long gate only fires when price is ABOVE a slow trend line; in a down/sideways session price stays below it, so only SELLs print. This adds BUYs on bullish momentum turns (reclaim the fast EMA + MACD up + RSI>50, volume-confirmed) even below the trend line. Mirror for shorts above the trend during an up-move.")
+revExitFast  = input.bool(true, "Exit reversals on fast-EMA cross (not the far trend line)", group=gV, tooltip="A counter-trend long sits below the trend line, so a 'close back across the trend' exit would fire on the very next bar and kill the trade. Reversal trades instead exit when price closes back across the fast EMA.")
+revRsiFloor  = input.int(40, "Reversal: RSI must be RISING and above this", minval=1, maxval=60, group=gV, tooltip="The previous logic required RSI>50 for a reversal, which only became true near the TOP of a bounce — so the BUY printed late and missed the move. Now a reversal needs RSI to be turning UP and above this floor (40), catching the bottom far earlier. Lower = earlier but more false starts.")
+revVolMult   = input.float(1.0, "Reversal: volume must exceed avg ×", minval=0.0, step=0.1, group=gV, tooltip="Reversals use a gentler volume bar than trend entries (1.0× vs 1.5×) so the actual turn bar isn't filtered out.")
+
+// ── Functions ───────────────────────────────────────────────────────────────────────
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    ema1 + (ema1 - ema2)
+
+atr = ta.atr(atrLen)
+
+// ── Resolve the higher timeframe (auto-scaled or fixed) ───────────────────────────────
+chartSec = timeframe.in_seconds(timeframe.period)
+autoSec  = chartSec * autoHtfMult
+htfAuto  = autoSec % 60 == 0 ? str.tostring(int(autoSec / 60)) : str.tostring(int(autoSec)) + "S"
+htfTf    = useAutoHTF ? htfAuto : htfTfManual
+
+// ── Trend value + ATR-NORMALIZED SLOPE (local or higher-timeframe, non-repainting) ────
+localMA = trendType == "EMA" ? ta.ema(close, trendLen) : ta.sma(close, trendLen)
+// Pull current MA, MA `slopeLen` bars earlier, and HTF ATR — all from the PRIOR HTF bar ([1]) so nothing repaints.
+[htfMA, htfMAprev, htfATR] = request.security(syminfo.tickerid, htfTf, [localMA[1], localMA[1 + slopeLen], ta.atr(atrLen)[1]], lookahead=barmerge.lookahead_off)
+
+trendMA = useHTFTrend ? htfMA : localMA
+// Slope expressed in ATRs over the lookback (volatility-normalized). Guard against zero ATR.
+slopeATRval = useHTFTrend ? (htfATR > 0 ? (htfMA - htfMAprev) / htfATR : 0.0) : (atr > 0 ? (localMA - localMA[slopeLen]) / atr : 0.0)
+slopeUp = slopeATRval >=  slopeMinATR
+slopeDn = slopeATRval <= -slopeMinATR
+slopeFlat = useSlope and not slopeUp and not slopeDn
+slopeLongOK  = not useSlope or slopeUp
+slopeShortOK = not useSlope or slopeDn
+
+buf  = useBuffer ? bufferATR * atr : 0.0
+bull = not useTrend or close > trendMA + buf
+bear = not useTrend or close < trendMA - buf
+
+// ── Impulse MACD ────────────────────────────────────────────────────────────────────
+src = hlc3
+hi  = calc_smma(high, lengthMA)
+lo  = calc_smma(low,  lengthMA)
+mi  = calc_zlema(src, lengthMA)
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)
+impBull = not useImpulse or md > sb
+impBear = not useImpulse or md < sb
+
+// ── MACD + RSI ──────────────────────────────────────────────────────────────────────
+[macdValue, signalValue, macdHist] = ta.macd(close, fastLength, slowLength, signalLength)
+macdBull = macdValue > signalValue
+macdBear = macdValue < signalValue
+rsiValue   = ta.rsi(close, rsiLength)
+rsiLongOK  = rsiValue > rsiLongLevel
+rsiShortOK = rsiValue < rsiShortLevel
+
+// ── Filters ───────────────────────────────────────────────────────────────────────────
+[diPlus, diMinus, adxValue] = ta.dmi(adxLen, adxLen)
+adxOK = not useADX or adxValue >= adxMin
+volAvg = ta.sma(volume, volLen)
+volOK  = not useVol or na(volume) or volume >= volMult * volAvg
+inSess = not useSess or not na(time(timeframe.period, sess))
+atrPctOK = not useVolRegime or (close > 0 and (atr / close * 100.0) >= minAtrPct)
+filtersOK = adxOK and volOK and inSess and atrPctOK
+
+// ── Quality guards (1m): entry-candle agreement + anti-chase ──────────────────────────
+candleBuyOK     = not useCandle or close > open
+candleSellOK    = not useCandle or close < open
+notExtremeLong  = not useAvoidExt or rsiValue < obLevel
+notExtremeShort = not useAvoidExt or rsiValue > osLevel
+
+// ── STATE-BASED confluence + SLOPE: fire only in a sloping trend, when all agree ───────
+longState  = bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK
+shortState = bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK
+longTrig   = longState  and not longState[1]
+shortTrig  = shortState and not shortState[1]
+
+// ── ENTRY / EXIT ENGINE: more entry & exit points (filters kept intact) ────────────────
+// Entries keep ALL the quality filters. Extra entries come from (a) re-entries after an
+// exit and (b) pullback continuation setups — NOT from loosening thresholds. Exits are
+// marked explicitly so every trade shows where to get out.
+confirmed = not confirmClose or barstate.isconfirmed
+var int lastSigBar = na
+cooled = na(lastSigBar) or (bar_index - lastSigBar) >= minBarsBetween
+
+// Pullback / continuation triggers (same trend + momentum gates, different trigger)
+emaFast   = ta.ema(close, pullbackEMA)
+pullLong  = usePullback and bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK and ta.crossover(close, emaFast)
+pullShort = usePullback and bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK and ta.crossunder(close, emaFast)
+
+// Reversal / counter-trend triggers — THE FIX: catch a bullish turn even when price is
+// BELOW the (slow) trend line. Without this, a down-trend session blocks every long and only
+// SELLs print. Trend-agnostic, but still momentum- and volume-gated. ADX is intentionally
+// NOT required here (it lags at turning points and would block the very moves we want).
+priceAbove   = close > trendMA + buf
+priceBelow   = close < trendMA - buf
+// EARLY momentum turn (not full confirmation) so reversals land near the bottom/top, not late:
+//   • MACD HISTOGRAM rising/falling — turns BEFORE the MACD line actually crosses.
+//   • RSI turning UP off a floor — the old "RSI>50" only became true near the TOP of a
+//     bounce, so the BUY fired late and missed the move. "Rising and > floor(40)" fires
+//     right as the bottom reclaims the fast EMA.
+macdRevUp = macdHist > macdHist[1]
+macdRevDn = macdHist < macdHist[1]
+rsiTurnUp = rsiValue > rsiValue[1] and rsiValue > revRsiFloor
+rsiTurnDn = rsiValue < rsiValue[1] and rsiValue < (100 - revRsiFloor)
+revVolOK  = not useVol or na(volume) or volume >= revVolMult * volAvg
+revFiltersOK = revVolOK and inSess and atrPctOK
+revLong  = useReversals and priceBelow and ta.crossover(close, emaFast)  and macdRevUp and rsiTurnUp and rsiValue < obLevel and revFiltersOK
+revShort = useReversals and priceAbove and ta.crossunder(close, emaFast) and macdRevDn and rsiTurnDn and rsiValue > osLevel and revFiltersOK
+
+// Combined entry intents (quality guards still applied)
+goLong  = ((longTrig  or pullLong)  or revLong)  and cooled and candleBuyOK  and notExtremeLong
+goShort = ((shortTrig or pullShort) or revShort) and cooled and candleSellOK and notExtremeShort
+
+// Position + risk state
+var int   pos     = 0
+var int   lastDir = 0
+var bool  posRev  = false
+var float slLong  = na
+var float tpLong  = na
+var float slShort = na
+var float tpShort = na
+
+// Exit conditions for an OPEN position. Reversal trades use the FAST EMA as the trend-exit
+// reference (a counter-trend trade sits below/above the slow line, so "close back across the
+// trend" would fire on the entry bar itself and kill the trade).
+exitRef = (revExitFast and posRev) ? emaFast : trendMA
+exitLongCond  = pos ==  1 and ((exitOnMACD and macdBear) or (exitOnTrend and close < exitRef) or (exitOnRSI and ta.crossunder(rsiValue, 50)) or (exitOnTarget and (low  <= slLong  or high >= tpLong)))
+exitShortCond = pos == -1 and ((exitOnMACD and macdBull) or (exitOnTrend and close > exitRef) or (exitOnRSI and ta.crossover(rsiValue, 50))  or (exitOnTarget and (high >= slShort or low  <= tpShort)))
+
+buy       = false
+sell      = false
+exitLong  = false
+exitShort = false
+if confirmed
+    // 1) Close a long on an exit condition OR a fresh opposite entry (reversal)
+    if pos == 1 and (exitLongCond or goShort)
+        exitLong := true
+        pos := 0
+    // 2) Close a short on an exit condition OR a fresh opposite entry (reversal)
+    if pos == -1 and (exitShortCond or goLong)
+        exitShort := true
+        pos := 0
+    // 3) Enter long (flat only); honour the re-entry rule
+    if goLong and pos == 0 and (allowReentry or lastDir != 1)
+        buy := true
+        pos := 1
+        posRev := revLong and not (longTrig or pullLong)
+        lastDir := 1
+        lastSigBar := bar_index
+        slLong := close - atrStopMult * atr
+        tpLong := close + atrStopMult * rrRatio * atr
+    // 4) Enter short (flat only); honour the re-entry rule
+    if goShort and pos == 0 and (allowReentry or lastDir != -1)
+        sell := true
+        pos := -1
+        posRev := revShort and not (shortTrig or pullShort)
+        lastDir := -1
+        lastSigBar := bar_index
+        slShort := close + atrStopMult * atr
+        tpShort := close - atrStopMult * rrRatio * atr
+
+// ── ATR stop / target labels (on entries) ─────────────────────────────────────────────
+if useRisk and buy
+    label.new(bar_index, low,  "SL " + str.tostring(slLong,  format.mintick) + "  TP " + str.tostring(tpLong,  format.mintick), style=label.style_label_up,   color=color.new(color.green, 60), textcolor=color.white, size=size.small)
+if useRisk and sell
+    label.new(bar_index, high, "SL " + str.tostring(slShort, format.mintick) + "  TP " + str.tostring(tpShort, format.mintick), style=label.style_label_down, color=color.new(color.red, 60),   textcolor=color.white, size=size.small)
+
+// ── Plots: trend line + pullback EMA + entry/exit markers ──────────────────────────────
+// Trend line is grayed when it's flat (no-trade zone), colored when sloping the right way.
+trendCol = slopeFlat ? color.new(color.gray, 0) : (bull ? color.new(color.teal, 0) : color.new(color.red, 0))
+plot(showTrend and useTrend ? trendMA : na, "Trend MA", color=trendCol, linewidth=2)
+plot(usePullback ? emaFast : na, "Pullback EMA", color=color.new(color.blue, 40))
+
+plotshape(buy,  "Buy",  shape.labelup,   location.belowbar, color.new(color.green, 0),
+     text="BUY",  textcolor=color.white, size=size.small)
+plotshape(sell, "Sell", shape.labeldown, location.abovebar, color.new(color.red, 0),
+     text="SELL", textcolor=color.white, size=size.small)
+plotshape(showExits and exitLong,  "Exit Long",  shape.xcross, location.abovebar, color.new(color.orange, 0), text="exit", textcolor=color.orange, size=size.tiny)
+plotshape(showExits and exitShort, "Exit Short", shape.xcross, location.belowbar, color.new(color.orange, 0), text="exit", textcolor=color.orange, size=size.tiny)
+
+// ── Alerts ────────────────────────────────────────────────────────────────────────────
+alertcondition(buy,       "Swing Buy",   "SWING BUY (1m): entry")
+alertcondition(sell,      "Swing Sell",  "SWING SELL (1m): entry")
+alertcondition(exitLong,  "Exit Long",   "EXIT LONG (1m): close long")
+alertcondition(exitShort, "Exit Short",  "EXIT SHORT (1m): close short")
+alertcondition(buy or sell or exitLong or exitShort, "Any signal", "Swing 1m: entry/exit event")

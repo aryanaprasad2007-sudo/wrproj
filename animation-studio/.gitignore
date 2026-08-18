@@ -1,0 +1,8 @@
+config/project.yaml      # machine-specific paths; project.example.yaml is committed
+models/                  # downloaded ncnn binaries
+projects/                # generated media, if work_root is left at the default
+characters/*/lora/       # trained weights (100-200 MB each)
+characters/*/.cache/     # cached training latents and embeddings
+assets/                  # music, sfx, control images
+__pycache__/
+*.pyc

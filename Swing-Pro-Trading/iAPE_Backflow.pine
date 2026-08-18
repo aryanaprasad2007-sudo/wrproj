@@ -1,0 +1,133 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// Companion to iAPE v4 (engine v2.2; formerly OrderFlow_Proxy.pine) — ORDER-FLOW / DARK-POOL *PROXY* indicator. Pine v6.
+//
+// ─────────────────────────────────────────────────────────────────────────────────────
+//  WHAT THIS IS AND IS NOT: Pine cannot read the real order book or dark-pool prints.
+//  This approximates order-flow pressure from intrabar OHLCV: CVD, CVD/price
+//  divergences, relative-volume spikes (block proxy), absorption (iceberg proxy).
+//
+//  REV 2 (2026-07-02) — fixes "simply doesn't work":
+//   • ROOT CAUSE: auto mode requested SECONDS intrabars ("25S" on a 5m chart).
+//     Seconds timeframes are Premium/Expert-only — on other plans the indicator
+//     hard-errored and showed nothing. Auto now uses MINUTE intrabars (works on
+//     every plan); a toggle re-enables seconds if your plan supports them.
+//   • NEW status row (bottom-left): shows the intrabar TF in use and whether the
+//     current chart region actually has intrabar data (TradingView caps how far
+//     back it goes — ~2 months of 1m intrabars). Outside that range CVD falls
+//     back to whole-bar estimates: usable, but coarser. Now you can SEE which.
+//   • NEW hidden connector outputs (Buy/Sell pressure as 0/1 lines) so this pane
+//     wires directly into iAPE v4 group 7 "External confirmation".
+//  Not financial advice.
+// ─────────────────────────────────────────────────────────────────────────────────────
+//@version=6
+indicator("iAPE Backflow — OrderFlow / Dark-Pool PROXY", shorttitle="iAPE_BACKFLOW", overlay=false, max_labels_count=500)
+
+// ── Intrabar resolution ────────────────────────────────────────────────────────────────
+gL = "Intrabar resolution"
+useAutoLtf = input.bool(true, "Auto-pick intrabar timeframe (minutes — works on all plans)", group=gL, tooltip="5m chart -> 1-minute intrabars (5 per bar). Finer split = better buy/sell estimate. TradingView limits how far back intrabar data reaches; the status row shows live coverage.")
+useSeconds = input.bool(false, "I have Premium: use seconds intrabars", group=gL, tooltip="Premium/Expert plans only. Turns a 5m chart into ~10S intrabars (30 per bar) for a much finer CVD. If the pane errors after enabling this, your plan doesn't support seconds — turn it back off.")
+ltfManual  = input.timeframe("1", "Manual intrabar timeframe (when Auto OFF)", group=gL)
+resetDaily = input.bool(true, "Reset CVD each session", group=gL)
+
+// ── CVD divergence ─────────────────────────────────────────────────────────────────────
+gD = "CVD divergence (absorption tell)"
+useDiv  = input.bool(true, "Flag CVD / price divergences", group=gD)
+divLook = input.int(20, "Divergence pivot lookback (bars)", minval=3, group=gD)
+
+// ── Relative volume / block proxy ──────────────────────────────────────────────────────
+gR = "Relative volume (block proxy)"
+volLen    = input.int(20, "Volume average length", minval=1, group=gR)
+rvolSpike = input.float(2.0, "RVOL spike threshold (× avg)", minval=1.0, step=0.1, group=gR)
+
+// ── Absorption (iceberg proxy) ─────────────────────────────────────────────────────────
+gA = "Absorption (iceberg proxy)"
+useAbs      = input.bool(true, "Flag absorption bars", group=gA)
+atrLen      = input.int(14, "ATR length (range reference)", minval=1, group=gA)
+absRangeATR = input.float(0.6, "Absorption: bar range below ATR ×", minval=0.05, step=0.05, group=gA)
+
+// ── Resolve intrabar timeframe (PLAN-SAFE: minutes by default) ─────────────────────────
+chartSec = timeframe.in_seconds(timeframe.period)
+ltfAutoMin = math.max(1, int(chartSec / 60 / 5))            // aim ~5 intrabars, floor 1m
+ltfAutoSec = math.max(10, int(chartSec / 30))               // Premium: aim ~30 intrabars
+ltfAuto = useSeconds ? (ltfAutoSec < 60 ? str.tostring(ltfAutoSec) + "S" : str.tostring(int(ltfAutoSec / 60))) : str.tostring(ltfAutoMin)
+ltf = useAutoLtf ? ltfAuto : ltfManual
+
+// ── Intrabar buy/sell split (top-level request calls; graceful fallback) ───────────────
+upArr = request.security_lower_tf(syminfo.tickerid, ltf, close >= open ? volume : 0.0)
+dnArr = request.security_lower_tf(syminfo.tickerid, ltf, close <  open ? volume : 0.0)
+haveIntra = array.size(upArr) > 0
+buyVol  = haveIntra ? array.sum(upArr) : (close >= open ? volume : 0.0)
+sellVol = haveIntra ? array.sum(dnArr) : (close <  open ? volume : 0.0)
+barDelta = buyVol - sellVol
+
+// ── Cumulative Volume Delta ────────────────────────────────────────────────────────────
+newSession = timeframe.change("D")
+var float cvd = 0.0
+cvd := (resetDaily and newSession) ? barDelta : nz(cvd[1]) + barDelta
+
+// ── Relative volume + absorption ───────────────────────────────────────────────────────
+volAvg  = ta.sma(volume, volLen)
+rvol    = volAvg > 0 ? volume / volAvg : 0.0
+isSpike = rvol >= rvolSpike
+atr      = ta.atr(atrLen)
+isAbsorb = useAbs and isSpike and atr > 0 and (high - low) <= absRangeATR * atr
+
+// ── CVD / price divergence at confirmed pivots ─────────────────────────────────────────
+ph = ta.pivothigh(high, divLook, divLook)
+pl = ta.pivotlow(low,  divLook, divLook)
+var float lastPH = na
+var float lastPHcvd = na
+var float lastPL = na
+var float lastPLcvd = na
+bearDiv = false
+bullDiv = false
+if useDiv and not na(ph)
+    pivCvd = cvd[divLook]
+    if not na(lastPH) and not na(lastPHcvd) and not na(pivCvd)
+        bearDiv := ph > lastPH and pivCvd < lastPHcvd     // higher high, weaker CVD
+    lastPH := ph
+    lastPHcvd := pivCvd
+if useDiv and not na(pl)
+    pivCvd = cvd[divLook]
+    if not na(lastPL) and not na(lastPLcvd) and not na(pivCvd)
+        bullDiv := pl < lastPL and pivCvd > lastPLcvd     // lower low, stronger CVD
+    lastPL := pl
+    lastPLcvd := pivCvd
+
+// ── Plots ───────────────────────────────────────────────────────────────────────────────
+cvdRising = cvd >= nz(cvd[1])
+plot(cvd, "CVD", color=cvdRising ? color.new(color.teal, 0) : color.new(color.red, 0), linewidth=2)
+hline(0, "Zero", color=color.new(color.gray, 50), linestyle=hline.style_dotted)
+plot(barDelta, "Bar delta", color=color.new(barDelta >= 0 ? color.green : color.maroon, 40), style=plot.style_columns)
+// coverage shading: dim background where CVD is the coarse whole-bar fallback
+bgcolor(haveIntra ? na : color.new(color.gray, 90), title="No intrabar data (coarse estimate)")
+
+plotshape(isSpike,  "RVOL spike", shape.triangleup, location.bottom, color.new(color.blue, 0),   size=size.tiny)
+plotshape(isAbsorb, "Absorption", shape.square,     location.bottom, color.new(color.orange, 0), size=size.tiny)
+plotshape(useDiv and bearDiv, "Bear divergence", shape.labeldown, location.top,    color.new(color.red, 0),   text="div", textcolor=color.white, size=size.tiny, offset=-divLook)
+plotshape(useDiv and bullDiv, "Bull divergence", shape.labelup,   location.bottom, color.new(color.green, 0), text="div", textcolor=color.white, size=size.tiny, offset=-divLook)
+
+// ── Status row (why-it-works / why-it-doesn't, at a glance) ─────────────────────────────
+var table st = table.new(position.bottom_left, 1, 1)
+if barstate.islast
+    txt = "intrabar TF: " + ltf + (useSeconds ? " (seconds — Premium)" : "") +
+         "  ·  " + (haveIntra ? str.tostring(array.size(upArr) + array.size(dnArr)) + " intrabars/bar" : "NO intrabar data here — coarse per-bar CVD") +
+         "  ·  CVD " + (cvdRising ? "rising" : "falling")
+    table.cell(st, 0, 0, txt, text_color=color.new(color.white, 25), text_size=size.small, bgcolor=color.new(color.black, 30))
+
+// ── Confluence signals + alerts ──────────────────────────────────────────────────────────
+buyPressure  = cvdRising and (bullDiv or (isSpike and close >= open))
+sellPressure = (not cvdRising) and (bearDiv or (isSpike and close < open))
+
+alertcondition(bullDiv,      "CVD bullish divergence", "OFLOW: hidden buying — CVD bullish divergence")
+alertcondition(bearDiv,      "CVD bearish divergence", "OFLOW: hidden selling — CVD bearish divergence")
+alertcondition(isAbsorb,     "Absorption bar",         "OFLOW: absorption — big volume, small range")
+alertcondition(isSpike,      "RVOL spike",             "OFLOW: relative-volume spike (block proxy)")
+alertcondition(buyPressure,  "Buy pressure",           "OFLOW: net buy-side pressure")
+alertcondition(sellPressure, "Sell pressure",          "OFLOW: net sell-side pressure")
+
+// ── Hidden connector outputs — wire these into iAPE v4 group 7 ───────────────────
+// In v2.2: "Buys need the connected line active" -> pick "OFLOW_PROXY: → Buy pressure".
+plot(buyPressure  ? 1 : 0, "→ Buy pressure",  color=color.new(color.green, 100), display=display.none)
+plot(sellPressure ? 1 : 0, "→ Sell pressure", color=color.new(color.red, 100),   display=display.none)
+plot(cvdRising    ? 1 : 0, "→ CVD rising",    color=color.new(color.teal, 100),  display=display.none)

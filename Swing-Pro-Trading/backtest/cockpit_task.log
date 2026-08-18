@@ -1,0 +1,224 @@
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $100000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $100000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $100000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $99902.48 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $100028.74 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  QUEUED UNH   Daily Momentum  entry $431.65  stop $405.33  tgt $510.63  (buy at 2026-07-10 open)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  (flat — nothing open or queued)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  (flat — nothing open or queued)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  (flat — nothing open or queued)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   NVDA  5m Momentum     entry $210.87  stop $208.17  tgt $218.96  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   NVDA  5m Momentum     entry $208.97  stop $208.97  tgt $218.28  (holding)
+  QUEUED JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (buy at 2026-07-16 open)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+  OPEN   NVDA  5m Momentum     entry $208.97  stop $208.97  tgt $218.28  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  0  win=     —  pf=    —  net=        $0  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 468, in <module>
+    main()
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 452, in main
+    print(f"  {s['name']:<16} n={st['n']:>3}  win={f_pct(st['win']):>6}"
+  File "C:\Users\aware\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u221e' in position 45: character maps to <undefined>
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  2  win= 50.0%  pf= 0.39  net=     $-364  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   CVX   Daily Momentum  entry $191.06  stop $172.61  tgt $246.40  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  3  win= 33.3%  pf= 0.19  net=     $-968  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   CVX   Daily Momentum  entry $191.06  stop $172.61  tgt $246.40  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  3  win= 33.3%  pf= 0.19  net=     $-968  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $331.63  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $191.06  stop $172.61  tgt $246.40  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  3  win= 33.3%  pf= 0.19  net=     $-968  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $191.06  stop $172.61  tgt $246.40  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  3  win= 33.3%  pf= 0.19  net=     $-968  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $191.06  stop $172.61  tgt $246.40  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  3  win= 33.3%  pf= 0.19  net=     $-968  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $192.54  stop $184.56  tgt $216.49  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  3  win= 33.3%  pf= 0.19  net=     $-968  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $192.54  stop $184.56  tgt $216.49  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  4  win= 50.0%  pf= 0.21  net=     $-951  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $192.54  stop $184.56  tgt $216.49  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  4  win= 50.0%  pf= 0.21  net=     $-951  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $192.54  stop $184.56  tgt $216.49  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Cockpit -> C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\cockpit.html
+  account: $2000.00 · online: True
+  5m Momentum      n=  1  win=  0.0%  pf= 0.00  net=       $-6  [REAL]
+  Daily Momentum   n=  0  win=     —  pf=    —  net=        $0  [REAL]
+  Mean-Reversion   n=  4  win= 50.0%  pf= 0.21  net=     $-951  [SHADOW]
+  --- reference levels (place manually; dashboard trades nothing) ---
+  OPEN   AAPL  5m Momentum     entry $335.72  stop $335.72  tgt $347.99  (holding)
+  OPEN   CVX   Daily Momentum  entry $192.54  stop $184.56  tgt $216.49  (holding)
+  OPEN   JPM   Daily Momentum  entry $347.02  stop $323.26  tgt $418.32  (holding)
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 42, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 42, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 42, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 42, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 42, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "C:\Users\aware\OneDrive\Desktop\wrproj\Swing-Pro-Trading\backtest\cockpit.py", line 42, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'

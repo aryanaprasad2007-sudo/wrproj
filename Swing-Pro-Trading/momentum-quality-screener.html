@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Momentum + quality stock screener</title>
+<style>
+:root{
+  --bg:#faf9f5;--surface:#ffffff;--surface-1:#f1efe8;--text:#1a1a18;--text-2:#56554f;--text-3:#8a887f;
+  --border:rgba(20,20,18,.12);--accent:#185fa5;--accent-bg:#e6f1fb;--succ:#0f6e56;--succ-bg:#e1f5ee;
+  --warn:#854f0b;--warn-bg:#faeeda;--dang:#a32d2d;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#1e1d1a;--surface:#26251f;--surface-1:#2f2e27;--text:#f3f2ea;--text-2:#bdbcb2;--text-3:#8a887f;
+  --border:rgba(255,255,255,.14);--accent:#85b7eb;--accent-bg:#0c447c;--succ:#5dcaa5;--succ-bg:#085041;
+  --warn:#fac775;--warn-bg:#633806;--dang:#f09595;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.6}
+.page{max-width:860px;margin:0 auto;padding:32px 24px 60px}
+h1{font-size:24px;font-weight:600;margin:0 0 4px}
+.lede{color:var(--text-2);font-size:15px;margin:0 0 24px}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:22px 24px}
+.presets button{font:inherit;font-size:13px;padding:7px 13px;margin:0 7px 7px 0;background:transparent;color:var(--text);border:0.5px solid var(--border);border-radius:8px;cursor:pointer}
+.presets button:hover{background:var(--surface-1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px 24px;margin:18px 0}
+.ctrl label{display:block;font-size:13px;color:var(--text-2);margin-bottom:5px}
+.ctrl .v{font-weight:600;color:var(--text)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.chk{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--text-2);margin:6px 0 4px;cursor:pointer}
+.count{font-size:26px;font-weight:600}
+.count-sub{font-size:13px;color:var(--text-2)}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;margin-top:8px}
+th{text-align:right;font-weight:500;color:var(--text-3);padding:7px 5px;border-bottom:0.5px solid var(--border);cursor:pointer;font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+th:first-child{text-align:left}
+td{text-align:right;padding:9px 5px;border-bottom:0.5px solid var(--border)}
+td:first-child{text-align:left}
+.tick{font-weight:600}.sub{font-size:11px;color:var(--text-3)}
+.pos{color:var(--succ)}.neg{color:var(--dang)}
+.score{display:inline-block;min-width:36px;text-align:center;padding:3px 7px;border-radius:7px;font-weight:600;font-size:12px}
+.note{font-size:12px;color:var(--text-3);margin-top:16px}
+.recipe{margin-top:28px}
+.recipe h2{font-size:17px;font-weight:600;margin:0 0 8px}
+.recipe table{font-size:13px}
+.recipe td,.recipe th{text-align:left;padding:7px 8px}
+.recipe td:nth-child(2){text-align:center;font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Momentum + quality screener</h1>
+  <p class="lede">Filter a fixed sample universe by trend strength and business quality, ranked by a composite score. Drag any slider to re-rank live.</p>
+
+  <div class="card">
+    <div class="presets">
+      <button onclick="preset('qm')">Quality + momentum</button>
+      <button onclick="preset('mo')">Pure momentum</button>
+      <button onclick="preset('qc')">Quality compounders</button>
+      <button onclick="preset('reset')">Reset filters</button>
+    </div>
+
+    <div class="grid">
+      <div class="ctrl"><label>Min 12-month return <span class="v" id="v-r12">15%</span></label><input type="range" id="r12" min="-40" max="120" step="5" value="15"></div>
+      <div class="ctrl"><label>Min return on capital <span class="v" id="v-roic">12%</span></label><input type="range" id="roic" min="0" max="60" step="2" value="12"></div>
+      <div class="ctrl"><label>Min gross margin <span class="v" id="v-gm">35%</span></label><input type="range" id="gm" min="0" max="100" step="5" value="35"></div>
+      <div class="ctrl"><label>Min free-cash-flow margin <span class="v" id="v-fcf">5%</span></label><input type="range" id="fcf" min="-10" max="50" step="1" value="5"></div>
+      <div class="ctrl"><label>Max debt / equity <span class="v" id="v-de">150%</span></label><input type="range" id="de" min="0" max="300" step="10" value="150"></div>
+      <div class="ctrl"><label>Min market cap <span class="v" id="v-mc">$0B</span></label><input type="range" id="mc" min="0" max="500" step="10" value="0"></div>
+    </div>
+
+    <label class="chk"><input type="checkbox" id="ma" checked> Require price above its 200-day moving average (uptrend filter)</label>
+
+    <div style="display:flex;align-items:baseline;gap:10px;margin:18px 0 4px">
+      <span class="count" id="count">0</span>
+      <span class="count-sub">of <span id="total">0</span> stocks pass &middot; ranked by composite score</span>
+    </div>
+
+    <table>
+      <thead><tr>
+        <th style="width:26%" onclick="srt('score')">Stock</th>
+        <th style="width:11%" onclick="srt('r12')">12M</th>
+        <th style="width:10%" onclick="srt('r3')">3M</th>
+        <th style="width:11%" onclick="srt('roic')">ROIC</th>
+        <th style="width:9%" onclick="srt('gm')">GM</th>
+        <th style="width:10%" onclick="srt('fcfm')">FCF</th>
+        <th style="width:10%" onclick="srt('de')">D/E</th>
+        <th style="width:13%" onclick="srt('score')">Score</th>
+      </tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+
+    <p class="note">Illustrative snapshot data for a fixed sample universe &mdash; not live quotes and not investment advice. Use it to learn how the filters interact, then run the same thresholds on a real data source.</p>
+  </div>
+
+  <div class="recipe">
+    <h2>Suggested starting recipe</h2>
+    <table>
+      <tr><th>Filter</th><th>Value</th><th>Why</th></tr>
+      <tr><td>12-month return</td><td>&ge; +15%</td><td>In an uptrend, not just "not falling"</td></tr>
+      <tr><td>Above 200-day MA</td><td>on</td><td>Hard trend gate</td></tr>
+      <tr><td>Return on capital</td><td>&ge; 15%</td><td>Genuine quality floor</td></tr>
+      <tr><td>FCF margin</td><td>&ge; 10%</td><td>Earnings backed by cash</td></tr>
+      <tr><td>Debt / equity</td><td>&le; 150%</td><td>Won't blow up on a stumble</td></tr>
+      <tr><td>Market cap</td><td>&ge; $50B</td><td>Liquidity, fewer data traps</td></tr>
+    </table>
+    <p class="note">Things the screen can't decide for you: valuation (momentum+quality has no price check), rebalance cadence (momentum decays &mdash; re-run monthly/quarterly), and a per-sector cap (momentum clusters &mdash; right now into semis/software).</p>
+  </div>
+</div>
+
+<script>
+const DATA=[
+ {t:'NVDA',n:'Nvidia',sec:'Semis',mc:2900,r12:78,r3:14,ma:1,roic:55,gm:75,fcfm:46,de:22},
+ {t:'AVGO',n:'Broadcom',sec:'Semis',mc:780,r12:54,r3:11,ma:1,roic:24,gm:66,fcfm:39,de:160},
+ {t:'LLY',n:'Eli Lilly',sec:'Pharma',mc:760,r12:41,r3:8,ma:1,roic:32,gm:81,fcfm:18,de:210},
+ {t:'MSFT',n:'Microsoft',sec:'Software',mc:3100,r12:24,r3:6,ma:1,roic:34,gm:69,fcfm:30,de:35},
+ {t:'AAPL',n:'Apple',sec:'Hardware',mc:3000,r12:12,r3:3,ma:1,roic:50,gm:46,fcfm:27,de:150},
+ {t:'META',n:'Meta Platforms',sec:'Software',mc:1300,r12:46,r3:9,ma:1,roic:28,gm:81,fcfm:33,de:18},
+ {t:'GOOGL',n:'Alphabet',sec:'Software',mc:2100,r12:30,r3:7,ma:1,roic:27,gm:58,fcfm:25,de:9},
+ {t:'AMZN',n:'Amazon',sec:'Retail',mc:2000,r12:28,r3:5,ma:1,roic:13,gm:48,fcfm:9,de:55},
+ {t:'COST',n:'Costco',sec:'Retail',mc:380,r12:22,r3:4,ma:1,roic:24,gm:13,fcfm:6,de:38},
+ {t:'V',n:'Visa',sec:'Financials',mc:560,r12:16,r3:3,ma:1,roic:42,gm:80,fcfm:50,de:55},
+ {t:'MA',n:'Mastercard',sec:'Financials',mc:430,r12:18,r3:4,ma:1,roic:55,gm:76,fcfm:44,de:120},
+ {t:'NFLX',n:'Netflix',sec:'Media',mc:380,r12:52,r3:10,ma:1,roic:22,gm:46,fcfm:20,de:75},
+ {t:'AMD',n:'Adv Micro Devices',sec:'Semis',mc:240,r12:35,r3:9,ma:1,roic:8,gm:51,fcfm:14,de:6},
+ {t:'CRM',n:'Salesforce',sec:'Software',mc:280,r12:14,r3:2,ma:1,roic:11,gm:76,fcfm:30,de:20},
+ {t:'NOW',n:'ServiceNow',sec:'Software',mc:200,r12:33,r3:7,ma:1,roic:18,gm:79,fcfm:31,de:28},
+ {t:'ADBE',n:'Adobe',sec:'Software',mc:230,r12:-6,r3:-3,ma:0,roic:30,gm:88,fcfm:38,de:25},
+ {t:'INTU',n:'Intuit',sec:'Software',mc:180,r12:9,r3:2,ma:1,roic:16,gm:80,fcfm:28,de:22},
+ {t:'UNH',n:'UnitedHealth',sec:'Health',mc:480,r12:-12,r3:-5,ma:0,roic:17,gm:24,fcfm:7,de:75},
+ {t:'JPM',n:'JPMorgan',sec:'Financials',mc:620,r12:26,r3:5,ma:1,roic:16,gm:0,fcfm:0,de:0},
+ {t:'XOM',n:'Exxon Mobil',sec:'Energy',mc:480,r12:8,r3:-2,ma:0,roic:14,gm:33,fcfm:11,de:18},
+ {t:'CAT',n:'Caterpillar',sec:'Industrials',mc:170,r12:20,r3:6,ma:1,roic:23,gm:30,fcfm:12,de:200},
+ {t:'HD',n:'Home Depot',sec:'Retail',mc:360,r12:6,r3:1,ma:1,roic:31,gm:34,fcfm:11,de:900},
+ {t:'PG',n:'Procter & Gamble',sec:'Staples',mc:380,r12:7,r3:2,ma:1,roic:18,gm:51,fcfm:16,de:65},
+ {t:'KO',n:'Coca-Cola',sec:'Staples',mc:290,r12:11,r3:3,ma:1,roic:17,gm:60,fcfm:18,de:160},
+ {t:'PEP',n:'PepsiCo',sec:'Staples',mc:230,r12:-3,r3:-1,ma:0,roic:18,gm:55,fcfm:13,de:230},
+ {t:'NKE',n:'Nike',sec:'Consumer',mc:110,r12:-18,r3:-7,ma:0,roic:20,gm:44,fcfm:10,de:80},
+ {t:'DIS',n:'Disney',sec:'Media',mc:200,r12:15,r3:4,ma:1,roic:7,gm:35,fcfm:9,de:45},
+ {t:'TSLA',n:'Tesla',sec:'Auto',mc:850,r12:33,r3:-4,ma:0,roic:9,gm:18,fcfm:4,de:14},
+ {t:'ORCL',n:'Oracle',sec:'Software',mc:480,r12:44,r3:12,ma:1,roic:18,gm:71,fcfm:8,de:500},
+ {t:'ABBV',n:'AbbVie',sec:'Pharma',mc:330,r12:19,r3:5,ma:1,roic:15,gm:70,fcfm:30,de:600},
+ {t:'TMO',n:'Thermo Fisher',sec:'Health',mc:210,r12:4,r3:1,ma:1,roic:11,gm:42,fcfm:16,de:75},
+ {t:'LIN',n:'Linde',sec:'Materials',mc:230,r12:13,r3:3,ma:1,roic:13,gm:48,fcfm:17,de:60},
+ {t:'GE',n:'GE Aerospace',sec:'Industrials',mc:280,r12:48,r3:10,ma:1,roic:20,gm:36,fcfm:13,de:90},
+ {t:'PANW',n:'Palo Alto Nets',sec:'Software',mc:130,r12:29,r3:8,ma:1,roic:14,gm:74,fcfm:35,de:8},
+ {t:'UBER',n:'Uber',sec:'Software',mc:160,r12:24,r3:6,ma:1,roic:15,gm:39,fcfm:13,de:80},
+ {t:'BKNG',n:'Booking Holdings',sec:'Consumer',mc:160,r12:31,r3:7,ma:1,roic:48,gm:86,fcfm:32,de:400},
+ {t:'WM',n:'Waste Management',sec:'Industrials',mc:90,r12:14,r3:3,ma:1,roic:14,gm:39,fcfm:11,de:230},
+ {t:'CMG',n:'Chipotle',sec:'Consumer',mc:80,r12:-9,r3:-4,ma:0,roic:26,gm:27,fcfm:13,de:0},
+ {t:'PYPL',n:'PayPal',sec:'Financials',mc:75,r12:5,r3:-2,ma:0,roic:13,gm:46,fcfm:15,de:55},
+ {t:'F',n:'Ford',sec:'Auto',mc:48,r12:-14,r3:-6,ma:0,roic:4,gm:14,fcfm:2,de:280}
+];
+let sortKey='score',dir=-1;
+const $=id=>document.getElementById(id);
+const fpct=x=>(x>0?'+':'')+Math.round(x)+'%';
+function score(d){
+  const mom=Math.max(0,Math.min(1,(d.r12+40)/120))*0.45+Math.max(0,Math.min(1,(d.r3+15)/30))*0.15;
+  const qual=Math.max(0,Math.min(1,d.roic/55))*0.18+Math.max(0,Math.min(1,d.gm/90))*0.07+Math.max(0,Math.min(1,d.fcfm/50))*0.10+Math.max(0,Math.min(1,1-d.de/400))*0.05;
+  return Math.round((mom+qual)*100);
+}
+function scol(s){
+  if(s>=70)return['var(--succ-bg)','var(--succ)'];
+  if(s>=50)return['var(--accent-bg)','var(--accent)'];
+  if(s>=35)return['var(--warn-bg)','var(--warn)'];
+  return['var(--surface-1)','var(--text-2)'];
+}
+function read(){return{r12:+$('r12').value,roic:+$('roic').value,gm:+$('gm').value,fcf:+$('fcf').value,de:+$('de').value,mc:+$('mc').value,ma:$('ma').checked};}
+function render(){
+  const f=read();
+  $('v-r12').textContent=Math.round(f.r12)+'%';$('v-roic').textContent=f.roic+'%';$('v-gm').textContent=f.gm+'%';
+  $('v-fcf').textContent=f.fcf+'%';$('v-de').textContent=f.de+'%';$('v-mc').textContent='$'+f.mc+'B';
+  let rows=DATA.map(d=>({...d,score:score(d)})).filter(d=>d.r12>=f.r12&&d.roic>=f.roic&&d.gm>=f.gm&&d.fcfm>=f.fcf&&d.de<=f.de&&d.mc>=f.mc&&(!f.ma||d.ma===1));
+  rows.sort((a,b)=>(a[sortKey]-b[sortKey])*dir);
+  $('count').textContent=rows.length;$('total').textContent=DATA.length;
+  const body=$('body');
+  if(!rows.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text-3);padding:22px 0">No stocks pass these filters — try loosening one.</td></tr>';return;}
+  body.innerHTML=rows.map(d=>{const c=scol(d.score);return `<tr>
+    <td><span class="tick">${d.t}</span> <span class="sub">${d.n} · ${d.sec}</span></td>
+    <td class="${d.r12>=0?'pos':'neg'}">${fpct(d.r12)}</td>
+    <td class="${d.r3>=0?'pos':'neg'}">${fpct(d.r3)}</td>
+    <td>${d.roic}%</td><td>${d.gm}%</td><td>${d.fcfm}%</td><td>${d.de}%</td>
+    <td><span class="score" style="background:${c[0]};color:${c[1]}">${d.score}</span></td></tr>`;}).join('');
+}
+function srt(k){if(sortKey===k){dir*=-1;}else{sortKey=k;dir=-1;}render();}
+function set(o){for(const k in o){const el=$(k);if(el.type==='checkbox')el.checked=o[k];else el.value=o[k];}}
+function preset(p){
+  if(p==='qm')set({r12:15,roic:15,gm:45,fcf:10,de:150,mc:50,ma:true});
+  if(p==='mo')set({r12:30,roic:0,gm:0,fcf:-10,de:300,mc:0,ma:true});
+  if(p==='qc')set({r12:-40,roic:20,gm:55,fcf:20,de:120,mc:50,ma:false});
+  if(p==='reset')set({r12:0,roic:0,gm:0,fcf:-10,de:300,mc:0,ma:false});
+  render();
+}
+['r12','roic','gm','fcf','de','mc'].forEach(id=>$(id).addEventListener('input',render));
+$('ma').addEventListener('change',render);
+preset('qm');
+</script>
+</body>
+</html>

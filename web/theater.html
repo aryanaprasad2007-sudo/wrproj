@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSYCHOWL — Theater</title>
+<style>
+/* ============================================================
+   THEATER MODE.
+
+   Not a Quest app -- Virtual Desktop mirrors this exact Brave
+   window into a big virtual screen, so the headset never sees
+   anything this page doesn't already do in 2D. The whole job is
+   layout: legible from a virtual few feet away, safe on a curved
+   screen, calm enough to sit in for an hour while you work.
+
+   Three rules that shaped every choice below:
+
+   1. SAFE ZONE. A curved virtual screen distorts its own edges --
+      Virtual Desktop's cinema/environment screens noticeably soften
+      and bend content near the border. Nothing here goes past ~85%
+      of the viewport in any direction. Same instinct as the XR
+      garden project's SafetyPolicy module: protect what the eye
+      actually has to read.
+   2. ONE THING AT A TIME. Psychowl's hub is six cards because a
+      desk monitor rewards density -- you glance at whichever card
+      you need. A headset, mirrored, rewards the opposite: one hero
+      element, huge, and everything else quiet until asked for.
+   3. THE MIRROR IS THE ROOM. This is a page about watching yourself
+      work while you are, structurally, ALSO watching yourself work
+      -- the camera captures the exact desk you're sitting at, and
+      the headset shows it back inside a portal. That coincidence is
+      worth playing up, not hiding: foil ring, slow glow, the moon
+      phase in the corner. It should feel like a mirror, not a
+      dashboard.
+   ============================================================ */
+:root{
+  --void:#050309; --plum-900:#0d0719; --plum-800:#140c26;
+  --foil:#e79ad8; --foil-dim:rgba(231,154,216,.28); --foil-hair:rgba(231,154,216,.15);
+  --foil-text:#ffdcf4; --foil-glow:rgba(231,154,216,.55);
+  --violet:#a77bff; --rose:#ff9ad5; --rose-dim:rgba(255,154,213,.14);
+  --ink:#f5efff; --sub:#c3b2e6;
+  --ok:#7ee0a8; --warn:#ffc48a; --bad:#ff6b81;
+  --serif:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --sans:'Quicksand','Segoe UI',system-ui,sans-serif;
+  --mono:'Cascadia Code',ui-monospace,'Consolas',monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; overflow:hidden; font-family:var(--sans); color:var(--ink);
+  background:radial-gradient(140% 100% at 50% 38%, var(--plum-800), var(--void) 75%);
+  display:flex; align-items:center; justify-content:center;
+}
+body::before{ /* faint starfield, kept dim so it never competes for attention */
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(1.3px 1.3px at 10% 15%,#fff,transparent),
+    radial-gradient(1px 1px at 85% 20%,#dcd2ff,transparent),
+    radial-gradient(1.4px 1.4px at 92% 70%,#fff,transparent),
+    radial-gradient(1px 1px at 6% 78%,#c3aaff,transparent),
+    radial-gradient(1.2px 1.2px at 50% 8%,#ffe9f8,transparent),
+    radial-gradient(1px 1px at 30% 92%,#fff,transparent);
+  opacity:.4; animation:twinkle 9s ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.32}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important} }
+
+/* ---------- the safe zone ---------- */
+.stage{
+  position:relative; z-index:1; width:min(85vw,1400px); height:min(85vh,900px);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:clamp(18px,2.4vh,34px); text-align:center;
+}
+
+/* ---------- corner readouts (clock / moon / phase) -- inside the safe zone,
+   but visually pinned to the stage's own corners so they read as "frame",
+   not "content" ---------- */
+.frame-corner{position:absolute; font-family:var(--mono); color:var(--sub);
+  letter-spacing:.08em; font-size:clamp(13px,1.4vw,18px); opacity:.85}
+.fc-tl{top:0;left:0} .fc-tr{top:0;right:0;text-align:right}
+.fc-tr b{color:var(--foil-text); font-size:clamp(20px,2.6vw,32px); display:block;
+  text-shadow:0 0 20px var(--foil-glow)}
+
+/* ---------- the mirror ---------- */
+.mirror{
+  position:relative; width:min(72vw,1180px); aspect-ratio:16/9;
+  border-radius:26px; overflow:hidden; background:#000;
+  border:1px solid var(--foil-hair);
+  box-shadow:0 0 0 1px rgba(255,255,255,.02),
+             0 0 90px -10px var(--glowc,var(--foil-glow)),
+             0 40px 90px -30px rgba(0,0,0,.9);
+  transition:box-shadow 1.6s ease;
+}
+.mirror img{display:block;width:100%;height:100%;object-fit:cover}
+.mirror .ring{position:absolute; inset:0; border-radius:26px; pointer-events:none;
+  border:2px solid var(--foil-dim); box-shadow:inset 0 0 60px -20px var(--foil-dim);
+  animation:breathe 6s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+.mirror .veil{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(5,3,9,.9);color:var(--sub);font-size:clamp(16px,1.6vw,22px);padding:6%;text-align:center}
+.mirror.lost .veil{display:flex}
+.mirror .rec{position:absolute;right:20px;top:18px;font-family:var(--mono);
+  font-size:clamp(11px,1vw,14px);letter-spacing:.22em;color:var(--rose);
+  background:rgba(5,3,9,.6);border:1px solid var(--foil-hair);border-radius:999px;
+  padding:6px 14px}
+.mirror .rec::before{content:'●';margin-right:7px;animation:recblink 1.6s step-end infinite}
+@keyframes recblink{50%{opacity:.15}}
+.mirror .spotify{position:absolute;left:20px;top:18px;display:none;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:clamp(11px,1vw,14px);color:var(--foil-text);
+  background:rgba(5,3,9,.68);border:1px solid var(--foil-hair);border-radius:999px;
+  padding:6px 16px 6px 12px;max-width:60%}
+.mirror .spotify.on{display:flex}
+.mirror .spotify .note{animation:notebounce 1.8s ease-in-out infinite}
+@keyframes notebounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.mirror .spotify .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- the hero line: mode, huge ---------- */
+.hero{font-family:var(--serif);font-weight:400;letter-spacing:.01em;
+  font-size:clamp(34px,4.6vw,64px); color:var(--foil-text);
+  text-shadow:0 0 30px var(--foil-glow); line-height:1.1}
+.hero .dot{display:inline-block;width:.4em;height:.4em;border-radius:50%;
+  margin-right:.28em;background:currentColor;box-shadow:0 0 18px -1px currentColor;
+  vertical-align:.06em}
+.s-on_plan{color:var(--ok)} .s-drifting{color:var(--warn)}
+.s-off_plan{color:var(--bad)} .s-unknown{color:var(--sub)}
+.sub2{font-size:clamp(15px,1.5vw,20px);color:var(--sub);max-width:52ch;line-height:1.5}
+.nextup{font-size:clamp(13px,1.25vw,17px);color:var(--sub);max-width:52ch}
+.nextup b{color:var(--foil-text)}
+.sub2 b{color:var(--foil-text)}
+
+/* ---------- the owl line ---------- */
+.owlrow{display:flex;align-items:center;gap:14px;max-width:62ch}
+.owlface{font-size:clamp(26px,2.8vw,38px);animation:owlbob 5s ease-in-out infinite;flex-shrink:0}
+@keyframes owlbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.owlsay{font-size:clamp(14px,1.4vw,18px);color:var(--foil-text);line-height:1.5;text-align:left}
+
+/* ---------- ambient strip: fades away, returns on input ---------- */
+.ambient{display:flex;gap:clamp(20px,3vw,48px);align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:clamp(12px,1.15vw,15px);color:var(--sub);
+  opacity:1;transition:opacity 1.2s ease;flex-wrap:wrap}
+.ambient.dim{opacity:.16}
+.ambient .stat b{color:var(--foil-text);font-size:1.35em;display:block;font-weight:700}
+
+/* ---------- first-run hint ---------- */
+.hint{position:fixed;left:50%;bottom:5%;transform:translateX(-50%);z-index:2;
+  max-width:min(70vw,640px);background:rgba(13,7,25,.88);border:1px solid var(--foil-hair);
+  border-radius:16px;padding:16px 22px;font-size:clamp(13px,1.2vw,15px);color:var(--sub);
+  line-height:1.6;text-align:center;backdrop-filter:blur(8px);
+  box-shadow:0 20px 50px -20px rgba(0,0,0,.8)}
+.hint b{color:var(--foil-text)}
+.hint button{margin-top:10px;font-family:var(--mono);font-size:12px;font-weight:700;
+  letter-spacing:.06em;padding:8px 18px;border-radius:10px;border:1px solid var(--foil-hair);
+  background:var(--foil-dim);color:var(--foil-text);cursor:pointer}
+.hint .fs{margin-left:8px;background:transparent}
+
+.exitlink{position:fixed;top:16px;left:16px;z-index:2;font-family:var(--mono);
+  font-size:12px;color:var(--sub);opacity:.4;transition:opacity .2s}
+.exitlink:hover{opacity:1}
+</style>
+</head>
+<body>
+
+<a class="exitlink" href="/">&larr; hub</a>
+
+<div class="stage">
+  <div class="frame-corner fc-tl" id="dateLine"></div>
+  <div class="frame-corner fc-tr"><b id="clock">--:--</b><span id="moonLine"></span></div>
+
+  <div class="mirror" id="mirror">
+    <img id="feed" alt="live room feed">
+    <div class="ring"></div>
+    <div class="rec" id="rec">LIVE</div>
+    <div class="spotify" id="spotifyChip"><span class="note">&#9834;</span><span class="txt" id="spotifyText"></span></div>
+    <div class="veil" id="veil"></div>
+  </div>
+
+  <div class="hero" id="hero"><span class="dot s-unknown"></span>reaching the owl&hellip;</div>
+  <div class="sub2" id="sub2"></div>
+  <div class="nextup" id="nextUp"></div>
+
+  <div class="owlrow">
+    <div class="owlface" id="owlFace">&#129417;</div>
+    <div class="owlsay" id="owlText"></div>
+  </div>
+
+  <div class="ambient" id="ambient">
+    <div class="stat"><b id="aTracked">--</b>tracked today</div>
+    <div class="stat"><b id="aTop">--</b>most of today</div>
+    <div class="stat"><b id="aStreak">--</b>day streak</div>
+    <div class="stat"><b id="aNow">--</b>docket now</div>
+  </div>
+</div>
+
+<div class="hint" id="hint">
+  <div><b>Viewing on Quest 3 via Virtual Desktop?</b><br>
+  Fullscreen this window (F11) and pick a flat/cinema environment screen in
+  Virtual Desktop for the least edge distortion. This page never talks to the
+  headset directly -- it's the same Brave window either way.</div>
+  <button onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();dismissHint()">fullscreen</button>
+  <button class="fs" onclick="dismissHint()">got it</button>
+</div>
+
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"]/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $ = id => document.getElementById(id);
+
+if(localStorage.getItem("theaterHintSeen")) $("hint").style.display="none";
+function dismissHint(){ localStorage.setItem("theaterHintSeen","1"); $("hint").style.display="none"; }
+
+/* PLAN must exist before tick()'s own immediate call a few lines down (it
+   calls renderNextUp(), which reads PLAN) -- a `let` declared later in the
+   file would still be in the temporal dead zone at that first call and throw,
+   which halts every top-level statement after it in this script block. Same
+   bug, same fix, as psychowl.html -- caught there first by re-reading the
+   file rather than assuming order didn't matter. */
+let PLAN=[];
+
+/* ---------- clock + moon (same math as the hub) ---------- */
+function moonGlyph(){
+  const synodic=29.530588853;
+  const days=(Date.now()/864e5) - (new Date(Date.UTC(2000,0,6,18,14))/864e5);
+  const age=((days % synodic) + synodic) % synodic;
+  const g=["\u{1F311}","\u{1F312}","\u{1F313}","\u{1F314}","\u{1F315}","\u{1F316}","\u{1F317}","\u{1F318}"];
+  return g[Math.floor(age/synodic*8+.5)%8];
+}
+function tick(){
+  const now=new Date();
+  $("clock").textContent=now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",hour12:false});
+  $("dateLine").textContent=now.toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"});
+  $("moonLine").textContent=" "+moonGlyph();
+  renderNextUp();
+}
+function renderNextUp(){
+  const el=$("nextUp");
+  if(!PLAN.length){ el.textContent=""; return; }
+  const now=new Date(), hhmm=now.toTimeString().slice(0,5);
+  let next=PLAN.find(b=>b.start>hhmm);
+  if(!next) next=PLAN[0];
+  const [h,m]=next.start.split(":").map(Number);
+  let at=new Date(now); at.setHours(h,m,0,0);
+  if(at<=now) at.setDate(at.getDate()+1);
+  const mins=Math.round((at-now)/6e4);
+  const when = mins<1 ? "now" : mins<60 ? `in ${mins}m` : `in ${Math.floor(mins/60)}h ${mins%60}m`;
+  el.innerHTML=`next: ${esc(next.emoji||"")} <b>${esc(next.name)}</b> ${when}`;
+}
+setInterval(tick,1000); tick();
+
+/* ---------- the mirror: self-healing, not precisely-timed ----------
+   First attempt: waiting for the boot fetch(es) to settle before starting
+   the stream, on the theory that concurrent connections at parse time were
+   racing the multipart stream's setup. That was wrong, or at least not the
+   whole story -- this page fires only ONE fetch at boot and still hit the
+   exact same failure (naturalWidth stuck at 0 while `complete` reports true).
+   What actually and reliably fixes it, every time it was tested: reassigning
+   `src` again, however long after boot. So the timing isn't the lever --
+   SOME first attempts just don't decode, for reasons this project hasn't
+   pinned down (a Chromium multipart/x-mixed-replace quirk is the leading
+   guess). Retrying is the honest fix: a watchdog checks naturalWidth on an
+   interval and forces a fresh connection (cache-busted, so it's a genuinely
+   new request, not a no-op reassignment) until a frame actually decodes.
+   Once healthy it never touches src again -- this must not fight a working
+   stream or a user's manual pause. */
+let feedOn=false;
+function setFeed(on){
+  feedOn=on;
+  $("feed").src = on ? "/stream" : "";
+  $("rec").style.display = on ? "" : "none";
+}
+function armFeedWatchdog(){
+  setInterval(()=>{
+    if(!feedOn) return;                         // paused on purpose -- leave it
+    const f=$("feed");
+    if(f.naturalWidth > 0) return;               // healthy -- do nothing
+    f.src = "/stream?r=" + Date.now();           // force a genuinely new request
+  }, 3000);
+}
+armFeedWatchdog();
+
+/* ---------- owl line: recorded facts only, never invented ---------- */
+function owlLine(f, dev){
+  const m=f.observed_mode||"?", mins=Math.round(f.minutes_in_this_mode||0);
+  const app=f.screen_app&&f.screen_app!=="unknown"?f.screen_app:null;
+  const T={
+    deep_work:[`${mins} minutes locked in${app?" on "+app:""}. carry on.`],
+    work_paused:[`${mins} minutes at the desk, hands still. thinking or drifting.`],
+    leisure:[`${mins} minutes of leisure${app?" ("+app+")":""}.`],
+    watching:[`${mins} minutes watching${app?" "+app:""}.`],
+    recovery:[`recovery, ${mins} minutes. this is the plan working.`],
+    away:[`the room is empty, ${mins} minutes. the owl waits.`],
+    screen_abandoned:[`${app||"the screen"} left running with nobody here, ${mins}m.`],
+    camera_lost:[`the rig lost its eyes -- a claim about the camera, never about you.`],
+    present_unclear:[`you're there; posture unreadable. ${mins} minutes.`],
+  };
+  const line=(T[m]||[`${m}, ${mins} minutes.`])[0];
+  if(dev.status==="on_plan") return line+" on plan.";
+  if(dev.status==="off_plan") return line+` the plan called for ${esc((dev.expected||[]).join("/"))} right now.`;
+  return line;
+}
+const MODE_LABEL={deep_work:"deep work",work_paused:"paused at the desk",leisure:"leisure",
+  watching:"watching",recovery:"recovery",away:"away",screen_abandoned:"screen abandoned",
+  camera_lost:"camera lost",present_unclear:"unclear",on_phone:"on phone",phone_night:"on phone"};
+
+async function pollState(){
+  try{
+    const d=await (await fetch("/api/state",{cache:"no-store"})).json();
+    const mir=$("mirror");
+    if(!d.ready){ $("hero").innerHTML='<span class="dot s-unknown"></span>waking up'; return; }
+    const f=d.facts||{}, dev=f.deviation||{}, st=dev.status||"unknown";
+    $("hero").innerHTML=`<span class="dot s-${st}"></span>${esc(MODE_LABEL[f.observed_mode]||f.observed_mode||"?")}`;
+    $("sub2").innerHTML=`${esc(f.block_emoji||"")} <b>${esc(f.block_name||"no plan on record")}</b>`+
+      (f.why_the_tracker_says_so?` &middot; ${esc(f.why_the_tracker_says_so)}`:"");
+    mir.classList.toggle("lost", d.camera_ok===false);
+    $("veil").innerHTML = d.camera_ok===false
+      ? "the camera feed is down &mdash; a fact about the rig, not about you"
+      : "";
+    mir.style.setProperty("--glowc",
+      st==="on_plan"?"rgba(126,224,168,.45)":st==="off_plan"?"rgba(255,107,129,.45)":
+      st==="drifting"?"rgba(255,196,138,.4)":"var(--foil-glow)");
+    $("owlText").textContent=owlLine(f,dev);
+  }catch(e){
+    $("hero").innerHTML='<span class="dot s-off_plan"></span>tracker unreachable';
+  }
+}
+async function pollSummary(){
+  try{
+    const s=await (await fetch("/api/psychowl",{cache:"no-store"})).json();
+    const md=s.modes||{};
+    $("aTracked").textContent=md.trackedMinutes?md.trackedMinutes+"m":"--";
+    $("aTop").textContent=(md.totals&&md.totals[0])?
+      `${md.totals[0].mode} (${md.totals[0].minutes}m)`:"--";
+    $("aNow").textContent=(s.docket&&s.docket.nowTask)?
+      s.docket.nowTask.text.slice(0,46)+(s.docket.nowTask.text.length>46?"…":""):"clear";
+    $("aStreak").textContent=(s.streak&&s.streak.days>0)?`\u{1F525}${s.streak.days}`:"--";
+
+    PLAN=s.plan||[];
+    renderNextUp();
+
+    const sp=s.spotify, chip=$("spotifyChip");
+    if(sp && sp.track){
+      chip.classList.add("on");
+      $("spotifyText").textContent=`${sp.track}${sp.artist?" — "+sp.artist:""}`;
+    } else chip.classList.remove("on");
+  }catch(e){}
+}
+
+/* ---------- ambient strip fades after inactivity; the mirror + hero + owl
+   line stay lit always, since those are the only things a headset viewer at
+   a few virtual feet actually needs moment to moment ---------- */
+let dimTimer=null;
+function wake(){
+  $("ambient").classList.remove("dim");
+  clearTimeout(dimTimer);
+  dimTimer=setTimeout(()=>$("ambient").classList.add("dim"), 14000);
+}
+["mousemove","keydown","click"].forEach(ev=>document.addEventListener(ev,wake));
+wake();
+
+setFeed(true);
+pollState(); pollSummary();
+setInterval(pollState,10000);
+setInterval(pollSummary,60000);
+</script>
+</body>
+</html>

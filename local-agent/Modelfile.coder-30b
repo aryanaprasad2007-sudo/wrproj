@@ -1,0 +1,10 @@
+# wrproj coding brain (high quality). Derived ONLY to raise num_ctx.
+#
+# WHY THIS FILE EXISTS: Ollama's OpenAI-compatible endpoint
+# (/v1/chat/completions) accepts no num_ctx parameter, so it silently falls
+# back to the runtime default of 4096 -- measured, not assumed, via `ollama ps`
+# on 2026-08-18. CLAUDE.md alone is ~6.7k tokens, so a stock model drops the
+# project doc before the first tool result arrives and reports no error.
+# Baking num_ctx into the model means every client inherits it.
+FROM qwen3-coder:30b
+PARAMETER num_ctx 32768

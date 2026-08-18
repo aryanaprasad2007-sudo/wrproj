@@ -1,0 +1,170 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © @Apeaverage & @SXDXST_FB6 (Impulse MACD)  •  Refined by Akash (SMA/RSI/MACD)
+// Swing 5m — state trigger + TREND-SLOPE filter (anti-chop). Pine v6.
+//
+// REFINEMENT IN THIS VERSION (from the chart: whipsaw where the trend line was FLAT)
+//   • TREND-SLOPE FILTER (default ON): only go long when the trend is actually RISING, short when
+//     it's FALLING. A flat trend = stand aside. This removes the sideways round-trips in the middle
+//     of the range where the line was flat and price just chopped across it.
+//     Slope is measured in the trend's OWN timeframe and is non-repainting.
+//   • OPTIONAL ATR BUFFER (default OFF): require price to break BEYOND the trend by an ATR margin,
+//     so signals don't fire while price hugs/straddles the line.
+//
+// Kept: state-based entry (fires when all agree, no simultaneous cross needed), higher-timeframe
+// trend (non-repainting), ADX/volume/session filters, ATR stop/target labels, confirmed-close,
+// and STRICT NO-REPEAT (Buy/Sell strictly alternate).
+//   HONEST NOTE: filters cut chop but also cut trades and add curve-fit risk. Not financial advice.
+
+//@version=6
+indicator("Swing Buy/Sell — 5m PLUS (slope)", shorttitle="SWING5_PLUS", overlay=true, max_labels_count=500)
+
+// ── Trend filter ────────────────────────────────────────────────────────────────────
+gT = "Trend filter"
+useTrend    = input.bool(true,  "Use trend filter", group=gT)
+useHTFTrend = input.bool(true,  "Take trend from a higher timeframe", group=gT)
+htfTf       = input.timeframe("60", "Higher-timeframe trend", group=gT, tooltip="Use a TF higher than your chart, e.g. 60 (1H) or 240 (4H) when trading the 5m.")
+trendType   = input.string("EMA", "Trend MA type", options=["EMA", "SMA"], group=gT)
+trendLen    = input.int(100, "Trend length", minval=1, group=gT)
+useSlope    = input.bool(true,  "Require trend to be sloping (skip flat/chop)", group=gT)
+slopeLen    = input.int(3, "Trend slope lookback (trend-TF bars)", minval=1, group=gT, tooltip="How many trend-timeframe bars back to measure slope. Higher = stricter about a real trend.")
+useBuffer   = input.bool(false, "Require break beyond trend (ATR buffer)", group=gT)
+bufferATR   = input.float(0.5, "Trend buffer (ATR ×)", minval=0.0, step=0.1, group=gT)
+showTrend   = input.bool(true, "Show trend line", group=gT)
+
+// ── MACD ──────────────────────────────────────────────────────────────────────────────
+gM = "MACD"
+fastLength   = input.int(12, "MACD fast", minval=1, group=gM)
+slowLength   = input.int(26, "MACD slow", minval=1, group=gM)
+signalLength = input.int(9,  "MACD signal", minval=1, group=gM)
+
+// ── RSI (momentum confirmation) ───────────────────────────────────────────────────────
+gR = "RSI"
+rsiLength     = input.int(14, "RSI length", minval=1, group=gR)
+rsiLongLevel  = input.int(50, "RSI long min (momentum up above this)", group=gR)
+rsiShortLevel = input.int(50, "RSI short max (momentum down below this)", group=gR)
+
+// ── Impulse MACD (optional confirmation) ──────────────────────────────────────────────
+gI = "Impulse MACD"
+useImpulse   = input.bool(true, "Require Impulse MACD confirmation", group=gI)
+lengthMA     = input.int(34, "Impulse channel/MA length", minval=1, group=gI)
+lengthSignal = input.int(9,  "Impulse signal length", minval=1, group=gI)
+
+// ── Evidence-based filters ────────────────────────────────────────────────────────────
+gF = "Filters (evidence-based)"
+useADX  = input.bool(true,  "ADX trend-strength filter", group=gF)
+adxLen  = input.int(14, "ADX length", minval=1, group=gF)
+adxMin  = input.int(20, "ADX minimum (20 intraday, 25 stricter)", minval=1, group=gF)
+useVol  = input.bool(true,  "Volume confirmation", group=gF)
+volLen  = input.int(20, "Volume average length", minval=1, group=gF)
+volMult = input.float(1.5, "Volume must exceed avg ×", minval=0.0, step=0.1, group=gF)
+useSess = input.bool(false, "Session / time-of-day filter", group=gF)
+sess    = input.session("0945-1530", "Trading session (exchange time)", group=gF)
+
+// ── ATR stop / target ─────────────────────────────────────────────────────────────────
+gA = "ATR stop / target labels"
+useRisk     = input.bool(false, "Show ATR stop/target on signals", group=gA)
+atrLen      = input.int(14, "ATR length", minval=1, group=gA)
+atrStopMult = input.float(1.5, "Stop = ATR ×", minval=0.1, step=0.1, group=gA)
+rrRatio     = input.float(2.0, "Reward : risk", minval=0.1, step=0.1, group=gA)
+
+// ── Signal behaviour ──────────────────────────────────────────────────────────────────
+gS = "Signals"
+confirmClose = input.bool(true, "Signal only on confirmed close (no repaint)", group=gS)
+
+// ── Functions ───────────────────────────────────────────────────────────────────────
+calc_smma(src, len) =>
+    var float smma = na
+    smma := na(smma[1]) ? ta.sma(src, len) : (smma[1] * (len - 1) + src) / len
+    smma
+
+calc_zlema(src, length) =>
+    ema1 = ta.ema(src, length)
+    ema2 = ta.ema(ema1, length)
+    ema1 + (ema1 - ema2)
+
+atr = ta.atr(atrLen)
+
+// ── Trend value + SLOPE (local or higher-timeframe, non-repainting) ───────────────────
+localMA   = trendType == "EMA" ? ta.ema(close, trendLen) : ta.sma(close, trendLen)
+htfMA     = request.security(syminfo.tickerid, htfTf, localMA[1],            lookahead=barmerge.lookahead_off)
+htfMAprev = request.security(syminfo.tickerid, htfTf, localMA[1 + slopeLen], lookahead=barmerge.lookahead_off)
+trendMA   = useHTFTrend ? htfMA : localMA
+
+slopeUp = useHTFTrend ? (htfMA > htfMAprev) : (localMA > localMA[slopeLen])
+slopeDn = useHTFTrend ? (htfMA < htfMAprev) : (localMA < localMA[slopeLen])
+slopeLongOK  = not useSlope or slopeUp
+slopeShortOK = not useSlope or slopeDn
+
+buf  = useBuffer ? bufferATR * atr : 0.0
+bull = not useTrend or close > trendMA + buf
+bear = not useTrend or close < trendMA - buf
+
+// ── Impulse MACD ────────────────────────────────────────────────────────────────────
+src = hlc3
+hi  = calc_smma(high, lengthMA)
+lo  = calc_smma(low,  lengthMA)
+mi  = calc_zlema(src, lengthMA)
+md  = mi > hi ? mi - hi : mi < lo ? mi - lo : 0.0
+sb  = ta.sma(md, lengthSignal)
+impBull = not useImpulse or md > sb
+impBear = not useImpulse or md < sb
+
+// ── MACD + RSI ──────────────────────────────────────────────────────────────────────
+[macdValue, signalValue, _] = ta.macd(close, fastLength, slowLength, signalLength)
+macdBull = macdValue > signalValue
+macdBear = macdValue < signalValue
+
+rsiValue   = ta.rsi(close, rsiLength)
+rsiLongOK  = rsiValue > rsiLongLevel
+rsiShortOK = rsiValue < rsiShortLevel
+
+// ── Filters ───────────────────────────────────────────────────────────────────────────
+[_, __, adxValue] = ta.dmi(adxLen, adxLen)
+adxOK = not useADX or adxValue >= adxMin
+
+volAvg = ta.sma(volume, volLen)
+volOK  = not useVol or na(volume) or volume >= volMult * volAvg
+
+inSess = not useSess or not na(time(timeframe.period, sess))
+
+filtersOK = adxOK and volOK and inSess
+
+// ── STATE-BASED confluence + SLOPE: fire only in a sloping trend, when all agree ───────
+longState  = bull and slopeLongOK  and macdBull and impBull and rsiLongOK  and filtersOK
+shortState = bear and slopeShortOK and macdBear and impBear and rsiShortOK and filtersOK
+longTrig   = longState  and not longState[1]
+shortTrig  = shortState and not shortState[1]
+
+// ── NO-REPEAT: strict alternation, always enforced ────────────────────────────────────
+confirmed = not confirmClose or barstate.isconfirmed
+var int bias = 0
+buy  = longTrig  and confirmed and bias <= 0
+sell = shortTrig and confirmed and bias >= 0
+if buy
+    bias := 1
+if sell
+    bias := -1
+
+// ── ATR stop / target labels ──────────────────────────────────────────────────────────
+if useRisk and buy
+    sl = close - atrStopMult * atr
+    tp = close + atrStopMult * rrRatio * atr
+    label.new(bar_index, low, "SL " + str.tostring(sl, format.mintick) + "  TP " + str.tostring(tp, format.mintick), style=label.style_label_up, color=color.new(color.green, 60), textcolor=color.white, size=size.small)
+if useRisk and sell
+    sl = close + atrStopMult * atr
+    tp = close - atrStopMult * rrRatio * atr
+    label.new(bar_index, high, "SL " + str.tostring(sl, format.mintick) + "  TP " + str.tostring(tp, format.mintick), style=label.style_label_down, color=color.new(color.red, 60), textcolor=color.white, size=size.small)
+
+// ── Plots: trend line + Buy/Sell labels ───────────────────────────────────────────────
+// Trend line is grayed when it's flat (no-trade zone), colored when sloping the right way.
+trendCol = useSlope and not slopeUp and not slopeDn ? color.new(color.gray, 0) : (bull ? color.new(color.teal, 0) : color.new(color.red, 0))
+plot(showTrend and useTrend ? trendMA : na, "Trend MA", color=trendCol, linewidth=2)
+
+plotshape(buy,  "Buy",  shape.labelup,   location.belowbar, color.new(color.green, 0),
+     text="BUY",  textcolor=color.white, size=size.small)
+plotshape(sell, "Sell", shape.labeldown, location.abovebar, color.new(color.red, 0),
+     text="SELL", textcolor=color.white, size=size.small)
+
+// ── Alerts ────────────────────────────────────────────────────────────────────────────
+alertcondition(buy,  "Swing Buy",  "SWING BUY signal (5m, slope-filtered)")
+alertcondition(sell, "Swing Sell", "SWING SELL signal (5m, slope-filtered)")

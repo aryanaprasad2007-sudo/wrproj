@@ -1,0 +1,185 @@
+{
+  "schema": 1,
+  "purpose": "Prose -> Danbooru-tag mappings for anime SDXL checkpoints. Kept as data, not just prose in SKILL.md, so it can be extended programmatically without re-reading the whole skill.",
+  "provenance": {
+    "created": "2026-08-17",
+    "rig": "RTX 4060 8GB, ComfyUI 0.33.2, torch 2.12.1+cu130",
+    "how_entries_are_earned": "An entry belongs here only after the prose form was observed to silently DROP the trait on a real generation. Guessed synonyms are noise -- they make the table look authoritative without being tested."
+  },
+
+  "tag_order": [
+    "count",
+    "character_or_series",
+    "hair",
+    "eyes",
+    "clothing",
+    "expression",
+    "pose",
+    "framing",
+    "background",
+    "quality"
+  ],
+  "tag_order_note": "Earlier tags carry more weight. Always lead with the count tag; these models are heavily conditioned on it. Include 'solo' or extra characters drift in.",
+
+  "mappings": [
+    {
+      "prose": ["violet eyes", "lilac eyes", "amethyst eyes"],
+      "tags": ["purple eyes"],
+      "verified": true,
+      "note": "No 'violet eyes' tag exists. Base SDXL rendered grey-blue when given the prose form."
+    },
+    {
+      "prose": ["star pupils", "star shaped pupils", "stars in her eyes"],
+      "tags": ["star-shaped pupils", "symbol-shaped pupils"],
+      "verified": true,
+      "note": "Parent tag reinforces the child. Base SDXL rendered nothing at all for this."
+    },
+    {
+      "prose": ["heart pupils", "heart shaped pupils"],
+      "tags": ["heart-shaped pupils", "symbol-shaped pupils"],
+      "verified": false
+    },
+    {
+      "prose": ["head and shoulders", "head and shoulders only", "bust shot"],
+      "tags": ["portrait"],
+      "verified": true
+    },
+    {
+      "prose": ["waist up", "from the waist up"],
+      "tags": ["upper body"],
+      "verified": false
+    },
+    {
+      "prose": ["knees up", "mid-thigh up"],
+      "tags": ["cowboy shot"],
+      "verified": false
+    },
+    {
+      "prose": ["looking at the camera", "looking straight at the camera", "facing the viewer"],
+      "tags": ["looking at viewer"],
+      "verified": true
+    },
+    {
+      "prose": ["huge open grin", "big open smile", "wide grin"],
+      "tags": ["open mouth", ":d"],
+      "verified": true,
+      "note": "Danbooru encodes expressions as emoticon tags. ':d' beats any adjective."
+    },
+    {
+      "prose": ["soft closed-eye smile", "happy closed eyes"],
+      "tags": ["^_^"],
+      "alt": ["closed eyes", "smile"],
+      "verified": false
+    },
+    {
+      "prose": ["smug", "smirk"],
+      "tags": ["smug"],
+      "alt": [":3"],
+      "verified": false
+    },
+    {
+      "prose": ["eyebrows raised high", "raised eyebrows", "surprised brows"],
+      "tags": ["raised eyebrows"],
+      "verified": true
+    },
+    {
+      "prose": ["high-neck top", "high neck top", "mock neck"],
+      "tags": ["turtleneck"],
+      "verified": true
+    },
+    {
+      "prose": ["lab coat", "labcoat", "white coat"],
+      "tags": ["labcoat"],
+      "verified": true,
+      "note": "One word on Danbooru. 'open labcoat' if it should hang open."
+    },
+    {
+      "prose": ["pigtails", "twin tails"],
+      "tags": ["twintails"],
+      "verified": false
+    },
+    {
+      "prose": ["plain white background", "flat white background", "blank background"],
+      "tags": ["simple background", "white background"],
+      "verified": true,
+      "note": "Both. 'simple background' alone can still produce a gradient."
+    },
+    {
+      "prose": ["side view", "side profile"],
+      "tags": ["profile"],
+      "verified": false
+    },
+    {
+      "prose": ["head and shoulders, no hands in frame"],
+      "tags": ["portrait", "head and shoulders"],
+      "negative_add": ["hands", "arms"],
+      "verified": true,
+      "note": "Close-up framing invents a hand near the face unprompted. Adding 'hands, arms' to the negative removed it cleanly. Observed 2026-08-17 on animagine-xl-4.0, seed 20260817."
+    }
+  ],
+
+  "resolved_failures": [
+    {
+      "id": "print-does-not-bind-to-garment",
+      "status": "WITHDRAWN 2026-08-17 -- the diagnosis was wrong.",
+      "original_claim": "'white labcoat with purple stars' failed because SDXL cannot bind an attribute to one noun when two garments compete.",
+      "why_it_was_wrong": "The reference art (aria-assistant/assistant/web/aria.jpg) was not consulted before diagnosing. Aria's purple stars are FLOATING DECORATION around her, not a print on the coat. The model was refusing to render a garment pattern that does not exist in the design. Attribute binding was never tested, because the request itself was malformed.",
+      "lesson": "Look at the reference before explaining why the model 'failed'. A confident architectural explanation for a prompt that described the wrong thing is worse than no explanation -- it closes the question and sends the next attempt toward regional prompting or LoRA training for no reason.",
+      "correct_tags": ["purple star", "star (symbol)", "floating stars"],
+      "verified": true
+    }
+  ],
+
+  "known_failures": [
+    {
+      "id": "floating-decor-fights-flat-background",
+      "symptom": "Floating decorative elements and a flat white background are mutually exclusive in one prompt.",
+      "observed": "animagine-xl-4.0, seed 4242, 2026-08-17. With 'purple star, star (symbol), floating stars, sparkle' the stars render correctly but the background becomes a dramatic blue/purple starfield, overriding 'white background, simple background'. Negating the atmosphere ('starry background, night sky, sparkle, glowing') restores the flat white background but removes the floating stars along with it.",
+      "cause": "Booru training couples floating-decoration tags to the dramatic compositions they appear in. The decoration and the background treatment are one learned concept, not two independent ones.",
+      "untested_options": [
+        "Character LoRA trained on a set that deliberately VARIES the background, so the model learns 'Aria has floating stars' separately from any one background",
+        "Generate on the starfield, then composite/inpaint the background to white"
+      ],
+      "status": "NO TESTED FIX. The LoRA option is the reason a training set must vary its backgrounds rather than standardising on white."
+    }
+  ],
+
+  "model_settings": {
+    "animagine-xl-4.0.safetensors": {
+      "quality_suffix": "masterpiece, high score, great score, absurdres",
+      "cfg": 5.0,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "style": "booru tags"
+    },
+    "illustrious": {
+      "quality_suffix": "masterpiece, best quality, highres",
+      "cfg": 5.5,
+      "steps": 28,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "style": "booru tags"
+    },
+    "sd_xl_base_1.0_0.9vae.safetensors": {
+      "quality_suffix": null,
+      "cfg": 7.5,
+      "steps": 28,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "style": "prose",
+      "note": "Base SDXL is a photorealistic generalist. Do NOT feed it booru tags, and do not carry the anime cfg of 5.0 over -- base wants 7.5."
+    }
+  },
+
+  "sdxl_resolution_buckets": [
+    [1024, 1024],
+    [832, 1216],
+    [1216, 832],
+    [896, 1152],
+    [1152, 896],
+    [768, 1344],
+    [1344, 768]
+  ],
+  "resolution_note": "SDXL was trained on ~1MP buckets. Below ~768 it duplicates limbs -- this is a training-distribution failure, not a quality setting."
+}

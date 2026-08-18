@@ -1,0 +1,484 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>The Docket</title><style>html,body{margin:0;padding:0}
+/* ============================================================
+   Y2K CUTE — 2026-08-11, per Ari: bright cotton-candy bubble UI,
+   NOT the old plum-foil dark theme. This is now the standing
+   aesthetic direction for The Docket — keep it whenever this file
+   is touched, don't drift back to dark/plain purple.
+   Light is the primary world (Ari: dark UIs hurt his focus); dark
+   mode gets its own neon-rave pass rather than being generic.
+   ============================================================ */
+.dk-scope{
+  /* ---- tokens: light (default) ---- */
+  --ink:#3b2159; --ink-dim:#6b4f8e; --ink-faint:#9c86bd;
+  --panel:rgba(255,255,255,.86); --panel-border:#ffcdec;
+  --panel-fade:rgba(255,255,255,.7); --panel-soft:rgba(255,255,255,.55);
+  --hairline:rgba(139,92,246,.16);
+  --pink:#ff5eb8; --pink-deep:#db2777; --lilac:#8b5cf6; --sky:#0ea5e9;
+  --ok:#059669; --warn:#f59e0b; --bad:#e11d48;
+  --brand-a:#ff6ec7; --brand-b:#8b5cf6; --brand-c:#22c3ff;
+  --idle-edge:#ecd9ff; --chip-fallback:#7c6f9c;
+  --check-glyph:#fff;
+  --f-display:'Segoe Print','Comic Sans MS','Chalkboard SE',cursive;
+  --f-body:'Trebuchet MS','Segoe UI',Verdana,sans-serif;
+  --f-mono:'Cascadia Code',ui-monospace,Consolas,'SFMono-Regular',monospace;
+  font-family:var(--f-body);color:var(--ink);
+  background:
+    radial-gradient(3px 3px at 9% 14%,#ffd6f0,transparent 60%),
+    radial-gradient(2.5px 2.5px at 23% 6%,#c9e8ff,transparent 60%),
+    radial-gradient(3px 3px at 88% 10%,#ffe2b8,transparent 60%),
+    radial-gradient(2px 2px at 68% 22%,#d9c6ff,transparent 60%),
+    radial-gradient(2.5px 2.5px at 4% 62%,#ffd6f0,transparent 60%),
+    radial-gradient(2px 2px at 95% 58%,#c9e8ff,transparent 60%),
+    radial-gradient(3px 3px at 78% 88%,#ffe2b8,transparent 60%),
+    radial-gradient(2px 2px at 12% 92%,#d9c6ff,transparent 60%),
+    radial-gradient(1000px 560px at 6% -10%,#fff1fb 0%,transparent 60%),
+    radial-gradient(900px 520px at 104% -4%,#eaf6ff 0%,transparent 58%),
+    radial-gradient(760px 520px at 50% 118%,#fff4e3 0%,transparent 60%),
+    linear-gradient(165deg,#fffafd 0%,#f6f1ff 45%,#eef8ff 100%);
+  padding:26px 18px 40px;-webkit-font-smoothing:antialiased;
+}
+/* ---- tokens: dark (Y2K neon-rave variant, not generic dark UI) ---- */
+@media(prefers-color-scheme:dark){ .dk-scope{
+  --ink:#ffe9fa; --ink-dim:#e3bdfb; --ink-faint:#b28fd9;
+  --panel:rgba(38,16,58,.74); --panel-border:rgba(255,110,199,.4);
+  --panel-fade:rgba(38,16,58,.5); --panel-soft:rgba(60,28,90,.4);
+  --hairline:rgba(255,110,199,.22);
+  --pink:#ff6ec7; --pink-deep:#ff8fd6; --lilac:#b18cff; --sky:#5ad1ff;
+  --ok:#4fe3b0; --warn:#ffcf6b; --bad:#ff7a90;
+  --brand-a:#ff9ee0; --brand-b:#c7a8ff; --brand-c:#7fe3ff;
+  --idle-edge:#4a2f70; --chip-fallback:#c6a8ee;
+  --check-glyph:#1a0a2e;
+  background:
+    radial-gradient(2px 2px at 10% 12%,#ffb3e6,transparent 60%),
+    radial-gradient(2px 2px at 85% 8%,#9fe8ff,transparent 60%),
+    radial-gradient(2px 2px at 70% 30%,#d6b8ff,transparent 60%),
+    radial-gradient(2px 2px at 6% 60%,#ffb3e6,transparent 60%),
+    radial-gradient(2px 2px at 92% 70%,#9fe8ff,transparent 60%),
+    radial-gradient(900px 520px at 85% -8%,rgba(255,110,199,.20),transparent 70%),
+    radial-gradient(760px 480px at 0% 105%,rgba(120,220,255,.14),transparent 70%),
+    linear-gradient(175deg,#1c0d33 0%,#150a28 55%,#0d0619 100%);
+}}
+:root[data-theme="dark"] .dk-scope{
+  --ink:#ffe9fa; --ink-dim:#e3bdfb; --ink-faint:#b28fd9;
+  --panel:rgba(38,16,58,.74); --panel-border:rgba(255,110,199,.4);
+  --panel-fade:rgba(38,16,58,.5); --panel-soft:rgba(60,28,90,.4);
+  --hairline:rgba(255,110,199,.22);
+  --pink:#ff6ec7; --pink-deep:#ff8fd6; --lilac:#b18cff; --sky:#5ad1ff;
+  --ok:#4fe3b0; --warn:#ffcf6b; --bad:#ff7a90;
+  --brand-a:#ff9ee0; --brand-b:#c7a8ff; --brand-c:#7fe3ff;
+  --idle-edge:#4a2f70; --chip-fallback:#c6a8ee;
+  --check-glyph:#1a0a2e;
+  background:
+    radial-gradient(2px 2px at 10% 12%,#ffb3e6,transparent 60%),
+    radial-gradient(2px 2px at 85% 8%,#9fe8ff,transparent 60%),
+    radial-gradient(2px 2px at 70% 30%,#d6b8ff,transparent 60%),
+    radial-gradient(2px 2px at 6% 60%,#ffb3e6,transparent 60%),
+    radial-gradient(2px 2px at 92% 70%,#9fe8ff,transparent 60%),
+    radial-gradient(900px 520px at 85% -8%,rgba(255,110,199,.20),transparent 70%),
+    radial-gradient(760px 480px at 0% 105%,rgba(120,220,255,.14),transparent 70%),
+    linear-gradient(175deg,#1c0d33 0%,#150a28 55%,#0d0619 100%);
+}
+:root[data-theme="light"] .dk-scope{
+  --ink:#3b2159; --ink-dim:#6b4f8e; --ink-faint:#9c86bd;
+  --panel:rgba(255,255,255,.86); --panel-border:#ffcdec;
+  --panel-fade:rgba(255,255,255,.7); --panel-soft:rgba(255,255,255,.55);
+  --hairline:rgba(139,92,246,.16);
+  --pink:#ff5eb8; --pink-deep:#db2777; --lilac:#8b5cf6; --sky:#0ea5e9;
+  --ok:#059669; --warn:#f59e0b; --bad:#e11d48;
+  --brand-a:#ff6ec7; --brand-b:#8b5cf6; --brand-c:#22c3ff;
+  --idle-edge:#ecd9ff; --chip-fallback:#7c6f9c; --check-glyph:#fff;
+  background:
+    radial-gradient(1000px 560px at 6% -10%,#fff1fb 0%,transparent 60%),
+    radial-gradient(900px 520px at 104% -4%,#eaf6ff 0%,transparent 58%),
+    radial-gradient(760px 520px at 50% 118%,#fff4e3 0%,transparent 60%),
+    linear-gradient(165deg,#fffafd 0%,#f6f1ff 45%,#eef8ff 100%);
+}
+.dk-scope *{box-sizing:border-box}
+.dk-scope .wrap{max-width:1080px;margin:0 auto}
+.dk-scope .top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+.dk-scope .brand{font-family:var(--f-display);font-size:15px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  background:linear-gradient(90deg,var(--brand-a),var(--brand-b) 55%,var(--brand-c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.dk-scope h1.date{font-family:var(--f-display);margin:2px 0 0;font-size:32px;font-weight:700;letter-spacing:0;color:var(--pink-deep);text-wrap:balance;
+  text-shadow:1px 1px 0 rgba(255,255,255,.7),0 0 22px rgba(255,94,184,.28)}
+.dk-scope .status{color:var(--ink-dim);font-size:14px;margin-top:5px;max-width:660px;line-height:1.5}
+.dk-scope .trading{color:var(--ok);font-size:12.5px;margin-top:8px;font-weight:700;letter-spacing:.01em}
+.dk-scope .gen{font-family:var(--f-mono);font-size:11px;color:var(--ink-faint);text-align:right}
+.dk-scope .ver{color:var(--ok);letter-spacing:.02em;font-weight:600}
+.dk-scope .verwarn{color:var(--warn);letter-spacing:.02em;font-weight:600}
+.dk-scope .counts{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 8px}
+.dk-scope .count{background:var(--panel);border:2px solid var(--panel-border);border-radius:16px;padding:9px 14px;min-width:92px;box-shadow:0 4px 10px -6px rgba(139,92,246,.35)}
+.dk-scope .count b{display:block;font-family:var(--f-mono);font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.dk-scope .count span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.dk-scope .lane{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel-fade));border:2px solid var(--panel-border);border-radius:24px;padding:16px 18px;margin-bottom:16px;backdrop-filter:blur(6px);
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 10px 22px -14px rgba(139,92,246,.35)}
+.dk-scope .lane::before,.dk-scope .lane::after{content:"\2726";position:absolute;pointer-events:none;color:var(--pink);opacity:.8;text-shadow:0 0 8px rgba(255,94,184,.45)}
+.dk-scope .lane::before{top:-10px;left:16px;font-size:15px}
+.dk-scope .lane::after{bottom:-10px;right:16px;font-size:11px;color:var(--sky);text-shadow:0 0 8px rgba(14,165,233,.4)}
+.dk-scope .lanehead{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.dk-scope .lanehead h2{margin:0;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--pink-deep);font-weight:800}
+.dk-scope .ldot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.dk-scope .lanesub{font-size:11px;color:var(--ink-faint);letter-spacing:.02em}
+.dk-scope .lanefold > summary{cursor:pointer;list-style:none}
+.dk-scope .lanefold > summary::-webkit-details-marker{display:none}
+.dk-scope .lanefold > summary::after{content:"\25be";color:var(--ink-faint);font-size:10px;flex:none;margin-left:2px}
+.dk-scope .lanefold:not([open]) > summary::after{content:"\25b8"}
+.dk-scope .lanefold:not([open]) > summary{margin-bottom:0}
+.dk-scope .lanefold > summary:hover .lanesub{color:var(--ink-dim)}
+.dk-scope .lline{flex:1;height:1px;background:linear-gradient(90deg,var(--hairline),transparent)}
+.dk-scope .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+@media(max-width:760px){.dk-scope .grid{grid-template-columns:1fr}}
+.dk-scope .row{display:flex;gap:11px;align-items:flex-start;padding:9px 6px;border-left:3px solid var(--idle-edge);padding-left:11px;border-bottom:1px solid var(--hairline);cursor:pointer;transition:opacity .15s,background .15s,transform .1s;border-radius:0 12px 12px 0}
+.dk-scope .row:last-child{border-bottom:none}
+.dk-scope .row:hover{background:rgba(255,94,184,.08)}
+.dk-scope .row:active{transform:scale(.995)}
+.dk-scope .box{width:17px;height:17px;border:2px solid var(--idle-edge);border-radius:50%;margin-top:2px;flex:none;position:relative;transition:.15s;background:linear-gradient(180deg,#fff,#fff0f9);box-shadow:0 1px 0 rgba(255,255,255,.9) inset}
+.dk-scope .row.done .box{background:linear-gradient(160deg,#ff9bd8,var(--pink));border-color:var(--pink)}
+.dk-scope .row.done .box::after{content:"\2665";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--check-glyph);line-height:1}
+.dk-scope .row.done .rowtext{text-decoration:line-through;color:var(--ink-faint)}
+.dk-scope .row.done{opacity:.62}
+.dk-scope .rowmain{flex:1;min-width:0}
+.dk-scope .rowtext{font-size:14px;line-height:1.4;font-weight:500}
+.dk-scope .meta{font-size:11.5px;color:var(--ink-dim);margin-top:2px}
+.dk-scope .chips{margin-top:5px;display:flex;gap:6px;flex-wrap:wrap}
+.dk-scope .chip{font-size:10px;letter-spacing:.05em;text-transform:uppercase;border:1.5px solid;border-radius:20px;padding:2px 9px;font-weight:700}
+.dk-scope .empty{color:var(--ink-faint);font-size:13px;padding:6px 2px}
+.dk-scope .foot{margin-top:22px;color:var(--ink-faint);font-size:11px;text-align:center;line-height:1.6}
+.dk-scope .hero .lane{border-color:rgba(225,29,72,.35)}
+.dk-scope .top5{border-color:rgba(255,94,184,.55);
+  background:linear-gradient(180deg,rgba(255,94,184,.14),rgba(139,92,246,.08)),linear-gradient(180deg,var(--panel),var(--panel-fade));
+  margin-bottom:16px}
+.dk-scope .topnum{width:24px;height:24px;border-radius:50%;background:linear-gradient(140deg,var(--pink),var(--lilac));color:#fff;font-family:var(--f-display);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 3px 8px -3px rgba(219,39,119,.55)}
+.dk-scope .top5 .rowtext{font-size:15.5px;font-weight:700;color:var(--ink)}
+.dk-scope .top5 .row.done .topnum{opacity:.5}
+.dk-scope .planrow{border-left-color:var(--idle-edge)}
+.dk-scope .planrow.fixedblock{border-left-color:var(--lilac);background:rgba(139,92,246,.09)}
+.dk-scope .plantime{font-family:var(--f-mono);font-size:11px;color:var(--ink-faint);min-width:88px;flex:none;padding-top:3px;line-height:1.3;font-variant-numeric:tabular-nums}
+.dk-scope .planrow.fixedblock .plantime{color:var(--lilac);font-weight:700}
+@media(max-width:560px){.dk-scope .plantime{min-width:68px;font-size:10px}}
+.dk-scope .mcpbanner{display:none;background:#fff4de;border:1.5px solid #ffcf8a;color:#92400e;font-size:12px;line-height:1.45;padding:9px 13px;border-radius:14px;margin:10px 0 4px}
+/* A hard commitment the calendar doesn't know about: dashed, never solid. */
+.dk-scope .planrow.unscheduled .plantime{color:var(--lilac);font-weight:700;opacity:.75}
+.dk-scope .row[data-cal]{border-left-style:dashed}
+.dk-scope .calbtn{font:inherit;font-family:var(--f-body);font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#0284c7;background:linear-gradient(180deg,#ecfbff,#d3f2ff);border:1.5px solid rgba(2,132,199,.4);border-radius:999px;padding:3px 10px;cursor:pointer;line-height:1.5;box-shadow:0 1px 0 rgba(255,255,255,.8) inset}
+.dk-scope .calbtn:hover{background:linear-gradient(180deg,#e0f8ff,#bdeeff)}
+.dk-scope .calbtn[disabled]{cursor:default;opacity:.75}
+.dk-scope .calbtn.ok{color:var(--ok);border-color:rgba(5,150,105,.4);background:linear-gradient(180deg,#eafff6,#d3f7e8)}
+.dk-scope .calbtn.err{color:var(--bad);border-color:rgba(225,29,72,.4);background:linear-gradient(180deg,#fff0f3,#ffdbe4)}
+.dk-scope .row[data-nid] .box{border-color:rgba(5,150,105,.55)}
+.dk-scope .row[data-nid] .box::before{content:"";position:absolute;inset:-7px;border-radius:50%}
+.dk-scope .row.pending{opacity:.7;pointer-events:none}
+.dk-scope .synced{font-size:11px;margin-top:4px;letter-spacing:.02em;display:flex;align-items:center;gap:5px;font-weight:600}
+.dk-scope .synced[data-kind="ok"]{color:var(--ok)}
+.dk-scope .synced[data-kind="pending"]{color:var(--ink-dim)}
+.dk-scope .synced[data-kind="err"]{color:var(--bad)}
+.dk-scope .synced::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.dk-scope .flag{display:flex;gap:10px;align-items:flex-start;padding:9px 8px 9px 11px;border-left:3px solid var(--idle-edge);border-bottom:1px solid var(--hairline);border-radius:0 12px 12px 0}
+.dk-scope .flag:last-child{border-bottom:none}
+.dk-scope .fdot{width:8px;height:8px;border-radius:50%;flex:none;margin-top:5px}
+.dk-scope .flag .chip{flex:none;margin-top:2px}
+.dk-scope .hublane{border-color:rgba(139,92,246,.4)}
+.dk-scope .hub{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+@media(max-width:560px){.dk-scope .hub{grid-template-columns:1fr}}
+.dk-scope .hubgroup{background:var(--panel-soft);border:1.5px solid rgba(139,92,246,.22);border-radius:16px;padding:10px 12px}
+.dk-scope .hubhead{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);margin-bottom:7px;font-weight:800}
+.dk-scope .hubitem{display:block;padding:4px 7px;margin:0 -4px;border-radius:10px;color:var(--ink);text-decoration:none;font-size:12.5px;line-height:1.35;transition:background .15s}
+.dk-scope .hubitem:hover{background:rgba(139,92,246,.14)}
+.dk-scope .hubnote{display:block;font-size:10.5px;color:var(--ink-faint);margin-top:1px}
+.dk-scope .nowlane{position:relative;border-color:rgba(255,94,184,.6);
+  background:linear-gradient(135deg,rgba(255,94,184,.20),rgba(255,187,110,.12) 60%,rgba(139,92,246,.12)),linear-gradient(180deg,var(--panel),var(--panel-fade));
+  box-shadow:0 0 0 3px rgba(255,255,255,.4) inset,0 14px 28px -16px rgba(219,39,119,.4);margin-bottom:16px}
+.dk-scope .nowlane .lanehead{margin-bottom:10px}
+.dk-scope .nowlane .lanehead h2::after{content:" \2728";font-size:11px}
+.dk-scope .ldot.pulse{animation:dkpulse 1.8s ease-in-out infinite}
+@keyframes dkpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.4)}}
+.dk-scope .nowbody{padding:2px 2px 0}
+.dk-scope .nowtext{font-family:var(--f-display);font-size:22px;font-weight:700;color:var(--pink-deep);line-height:1.3;text-wrap:balance}
+.dk-scope .nowlane.nowidle .nowtext.nowempty{font-family:var(--f-body);font-size:14px;font-weight:500;color:var(--ink-faint)}
+.dk-scope .nowwhy{font-size:12.5px;color:var(--ink-dim);margin-top:6px;line-height:1.45}
+.dk-scope .nowchips{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap}
+.dk-scope .nowsince{font-size:10.5px;color:var(--ink-faint);margin-top:8px;letter-spacing:.02em}
+.dk-scope .nowlane.nowidle{background:var(--panel-soft);box-shadow:none}
+</style></head><body class="dk-scope" data-day="Monday, August 18, 2026"><div class="wrap"><section class="lane nowlane"><div class="lanehead" style="--accent:#ff5eb8"><span class="ldot pulse"></span><h2>RIGHT NOW</h2><span class="lanesub">tell Claude when you&#x27;re done \u2014 this stays until you do</span><span class="lline"></span></div><div class="nowbody"><div class="nowtext">Account separation — email is CLOSED, bank account is Wednesday&#x27;s link</div><div class="nowwhy">The email lockdown is done, and two more of the cluster came with it: every account&#x27;s 2FA is now on an authenticator app rather than SMS (texts were never private on a family plan), and MyUCSC plus financial aid are reset with parent recovery removed. Drive and Notion are safe for your written record again. Remaining chain: sole-name checking account at a NEW bank Wednesday (joint accounts can&#x27;t have a holder removed), then income redirected to it Thursday. Two links left, and Wednesday just got lighter.</div><div class="nowchips"><span class="chip" style="color:#6b5b95;border-color:#6b5b9533;background:#6b5b9514">Admin</span></div><div class="nowsince">In focus since Mon Aug 17</div></div></section><div class="top"><div><div class="brand">The Docket</div><h1 class="date">Monday, August 18, 2026</h1><div class="status">Ari is back from the cruise today (expected Tue Aug 18). Three committed items lock the day: Visiting Angels interview at 1:45 PM (income independence), CHEM Mole checkpoint due 1 hour at noon (module checkpoint, retakeable), and MCD Biology frosh items due today (mostly done Aug 15, just closure needed). The interview is the priority — it unlocks work toward Wednesday&#x27;s account setup, where the whole independence chain accelerates (new sole-name account opens Wed, income redirect Thu). MCD items fit into the afternoon (2:30–3:00 PM). Start the Units 1–4 reading backlog this afternoon (4:00–5:00 PM); Test 2 is Friday and the backlog is ~110 pages, so every page counts. RIGHT NOW block carries through from yesterday — bank account opens Wednesday, income redirect Thursday.</div></div><div class="gen">updated<br>2026-08-18 09:57:30<br><span class="ver">✓ Notion</span> · <span class="ver">✓ Calendar</span> · <span class="ver">✓ Gmail</span></div></div><div class="counts"><div class="count"><b>3</b><span>Due today</span></div><div class="count"><b>2</b><span>Inbox actions</span></div><div class="count"><b>11</b><span>This week</span></div><div class="count" style="border-color:#fb718566"><b style="color:#fb7185">2</b><span>Flags</span></div><div class="count"><b>3</b><span>Exploration</span></div><div class="count" style="border-color:#05966966"><b id="progVal" style="color:#059669">0 / 0</b><span>Checked off</span></div></div><div class="mcpbanner" id="mcpbanner"></div><div class="top5wrap"><section class="lane top5"><div class="lanehead" style="--accent:#ff5eb8"><span class="ldot"></span><h2>TOP 5 TODAY</h2><span class="lanesub">what matters most, judged across everything</span><span class="lline"></span></div><div class="lanebody"><div class="row toprow" data-k="d3bfe9869a" data-slot="0" data-nid="3bf7cd99fe8581ba9fc7f651577b5808" style="border-left-color:#ff5eb8"><div class="topnum">1</div><div class="box"></div><div class="rowmain"><div class="rowtext">Conduct the Visiting Angels interview — 15 minutes on camera at 1:45 PM</div><div class="meta">Due today. Income independence is the live project this week (new sole-name account Wed, income redirect Thu). Paid work that is his own is a direct input to that. Already prepared: strongest cards are current IHSS provider experience, pre-med student, DOJ background cleared Aug 10, and one concrete story ready.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row toprow" data-k="7dee63251e" data-slot="1" data-nid="3b47cd99fe8581ce9378d25722be6f50" style="border-left-color:#ff5eb8"><div class="topnum">2</div><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A — The Mole Module Checkpoint (1 hour, noon to 1 PM)</div><div class="meta">Due today. Module checkpoints allow retakes — zero-risk attempt. Covers material on Test 2 (Friday), so it serves dual duty as Friday prep while scoring today.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row toprow" data-k="58817dbe76" data-slot="2" data-nid="3aa7cd99fe8581239d3afe882e80e559" style="border-left-color:#ff5eb8"><div class="topnum">3</div><div class="box"></div><div class="rowmain"><div class="rowtext">Finish MCD Biology frosh course — optional Fall 2026 planning items</div><div class="meta">Due today. Mostly done Aug 15 (made major progress before cruise), just needs closure. Low stakes (0 points, optional), so this is finish-line push. Scheduled 2:30–3:00 PM right after interview.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row toprow" data-k="22eeff55d0" data-slot="3" data-nid="3bd7cd99fe858147b376de44635d496e" style="border-left-color:#ff5eb8"><div class="topnum">4</div><div class="box"></div><div class="rowmain"><div class="rowtext">Start CHEM Units 1–4 reading backlog — read first 15+ pages</div><div class="meta">Test 2 is Friday and covers exactly these units. ~110 pages unread, due Friday but test Friday = now. Starts at 4:00 PM today. Every page is review of material already mastered in module checkpoints.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row toprow" data-k="ab9cd677d0" data-slot="4" style="border-left-color:#ff5eb8"><div class="topnum">5</div><div class="box"></div><div class="rowmain"><div class="rowtext">Pre-Med Longgame Tracker — open for 5 minutes</div><div class="meta">Area dark 2+ weeks, self-development is a standing lens per your standing instruction (2026-08-11). Pulse check only, no commitment, takes 5 minutes. Can happen in the 6:00–7:30 PM free block or tomorrow.</div><div class="chips"><span class="chip" style="color:#8b5cf6;border-color:#8b5cf633;background:#8b5cf614">Pre-Med</span></div></div></div></div></section><script type="application/json" id="topBacklogData">[{"text": "Continue CHEM Units 1–4 reading (pages 15–50, ~60+ pages left after today)", "why": "Test 2 Friday. Continue the backlog across Tue–Fri.", "area": "School", "notionId": "3bd7cd99fe858147b376de44635d496e", "cal": null, "areaColor": "#0ea5e9"}, {"text": "Check Test 1 score in Gradescope", "why": "Posted Aug 16. Two minutes and it tells you how much Test 2 actually has to carry — Test 2 can replace Test 1.", "area": "School", "notionId": null, "cal": null, "areaColor": "#0ea5e9"}, {"text": "Lewis Structures Module Checkpoint — retake (Attempt 2 of 3, no score risk)", "why": "Due Wed Aug 19. Scores 1/4 = 25%, lowest in course. Best-of-3 means retry cannot lower that 1 point — only cost is ~25 min + late flag. 3 points recoverable at zero risk. Highest-value single retake available.", "area": "School", "notionId": "3c07cd99fe8581d99938e63dae82f34e", "cal": null, "areaColor": "#0ea5e9"}]</script></div><section class="lane"><div class="lanehead" style="--accent:#8b5cf6"><span class="ldot"></span><h2>TODAY&#x27;S PLAN</h2><span class="lanesub">the shape of your day — highlighted blocks are real commitments</span><span class="lline"></span></div><div class="lanebody"><div class="row planrow" data-k="fd3ebd3230"><div class="plantime">7:00 – 9:15 AM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Morning routine — wake, daylight in eyes, coffee, breakfast, prayer closet</div><div class="meta">Non-negotiables: wake 7:00 AM regardless of sleep time. Daylight in eyes within 15 min sets tonight&#x27;s melatonin.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow fixedblock" data-k="b305add30c"><div class="plantime">9:15 – 11:00 AM</div><div class="box"></div><div class="rowmain"><div class="rowtext">💪 Gym + Walk Home</div><div class="meta">The morning body slot, already on the calendar.</div><div class="chips"><span class="chip" style="color:#db2777;border-color:#db277733;background:#db277714">Health</span></div></div></div><div class="row planrow" data-k="45d2c00898"><div class="plantime">11:00 AM – 12:00 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Lunch + MCD Biology frosh review (what&#x27;s left, what&#x27;s closest to done)</div><div class="meta">Items due today. Review what remains, prioritize what to finish in the 2:30 slot.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row planrow fixedblock" data-k="a135358e5b"><div class="plantime">12:00 – 1:00 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">🧪 CHEM 3A — The Mole Module Checkpoint (1 hour, self-paced)</div><div class="meta">Due today, closes Top 5 #2.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row planrow" data-k="6c2b6d321e"><div class="plantime">1:00 – 1:45 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Interview prep (test camera, review notes, 5 min breathing exercise, water)</div><div class="meta">Transition time before the 1:45 call. Keep it calm, don&#x27;t over-prep.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow fixedblock" data-k="ce31c73858"><div class="plantime">1:45 – 2:15 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">💼 Interview — Experienced Caregiver, Visiting Angels (on camera, 15 min)</div><div class="meta">Income independence play. Already prepared. Load the strongest cards: IHSS provider, pre-med, DOJ cleared, one concrete story. Closes Top 5 #1.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow" data-k="a7d5bed5c0"><div class="plantime">2:15 – 2:30 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Debrief + transition</div><div class="meta">Reset after the call. Hydrate, breathe.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow fixedblock" data-k="6ace5356fe"><div class="plantime">2:30 – 3:00 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Finish MCD Biology frosh course — optional items (30 min, STEP-BY-STEP)</div><div class="meta">Closes Top 5 #3. Final review, any last submissions, verify completion percentage.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row planrow" data-k="251044d89e"><div class="plantime">3:00 – 4:00 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Free block — rest, movement, admin, or schoolwork</div><div class="meta">Open for whatever the day needs. Debrief from the interview, shift gears, or prep for reading block.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow fixedblock" data-k="08066e8f3d"><div class="plantime">4:00 – 5:00 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">📖 Start CHEM Units 1–4 reading (read ~15 pages, Test 2 review, STEP-BY-STEP)</div><div class="meta">Test 2 Friday covers exactly these units. ~110 pages unread. Backlog due Friday = now. Closes Top 5 #4.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row planrow" data-k="49ea10559a"><div class="plantime">5:00 – 6:00 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">🍽 Dinner</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow" data-k="998c5855f5"><div class="plantime">6:00 – 7:30 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Free block — continue reading, Pre-Med pulse check (5 min), or evening tasks</div><div class="meta">Open space. Use for Top 5 #5 (Pre-Med check, 5 min only) or continue reading if focus is good, or both.</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row planrow" data-k="eaf285cc58"><div class="plantime">7:30 – 9:45 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">Free block — reading, admin, movement, journaling, or rest</div><div class="meta">Open evening. Use as needed.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow fixedblock" data-k="0aa89bf0df"><div class="plantime">9:45 PM – 12:45 AM</div><div class="box"></div><div class="rowmain"><div class="rowtext">🌙 Night ritual → lights out (6 steps, wake 7:00 AM regardless)</div><div class="meta">Close the loops, creative anchor, dim + shower, analog only, prayer, bed.</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row planrow fixedblock" data-k="30da9be319"><div class="plantime">11:00 – 11:15 PM</div><div class="box"></div><div class="rowmain"><div class="rowtext">🧴 Skincare — nightly routine (inside night ritual window)</div><div class="meta">Standing 15-min slot so it doesn&#x27;t get buried.</div><div class="chips"><span class="chip" style="color:#db2777;border-color:#db277733;background:#db277714">Health</span></div></div></div></div></section><div class="hero"><section class="lane"><div class="lanehead" style="--accent:#e11d48"><span class="ldot"></span><h2>DUE TODAY / OVERDUE</h2><span class="lanesub">hit these first</span><span class="lline"></span></div><div class="lanebody"><div class="row" data-k="3d5462e820" data-nid="3bf7cd99fe8581ba9fc7f651577b5808" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">Interview — Experienced Caregiver, Visiting Angels (video, 1:45–2:15 PM)</div><div class="meta">Due today · 15 min on camera</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="bbc20e9002" data-nid="3aa7cd99fe8581239d3afe882e80e559" style="border-left-color:#f59e0b"><div class="box"></div><div class="rowmain"><div class="rowtext">MCD Biology frosh course — optional Fall 2026 planning items</div><div class="meta">Due today · mostly done Aug 15, needs closure</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="d69b5ba1f4" data-nid="3b47cd99fe8581ce9378d25722be6f50" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A — The Mole Module Checkpoint (5 pts)</div><div class="meta">Due today · noon–1 PM · module checkpoint (retakeable)</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div></div></section></div><section class="lane"><div class="lanehead" style="--accent:#fb7185"><span class="ldot"></span><h2>CROSS-CHECK</h2><span class="lanesub">where your connectors disagree — resolved daily</span><span class="lline"></span></div><div class="lanebody"><div class="flag" style="border-left-color:#0ea5e9"><span class="fdot" style="background:#0ea5e9;box-shadow:0 0 8px #0ea5e9"></span><div class="rowmain"><div class="rowtext">Ari returns from cruise today. Email address is independent (2FA off SMS, parent recovery removed as of yesterday 5:45 PM). No new flags. Account separation nowTask carries: bank Wed, income redirect Thu.</div><div class="meta">Expected vs Calendar</div></div><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">fyi</span></div><div class="flag" style="border-left-color:#f59e0b"><span class="fdot" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b"></span><div class="rowmain"><div class="rowtext">Canvas unswept since Aug 12 — five days, inside the 7-day window, so no flag yet. Goes stale Wednesday. Run /canvas-sweep in Brave before then rather than after, since Test 2 is Friday.</div><div class="meta">canvas_state.json</div></div><span class="chip" style="color:#f59e0b;border-color:#f59e0b33;background:#f59e0b14">watch</span></div></div></section><div class="grid"><section class="lane"><div class="lanehead" style="--accent:#0ea5e9"><span class="ldot"></span><h2>TODAY&#x27;S SCHEDULE</h2><span class="lanesub">from your calendar</span><span class="lline"></span></div><div class="lanebody"><div class="row" data-k="9c260ea9cc" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Gym + Walk Home</div><div class="meta">9:15 – 11:00 AM</div><div class="chips"><span class="chip" style="color:#db2777;border-color:#db277733;background:#db277714">Health</span></div></div></div><div class="row" data-k="548927d217" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">MCD Biology frosh items review</div><div class="meta">11:00 AM – 12:00 PM</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row" data-k="aacd2118b1" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A — The Mole Module Checkpoint</div><div class="meta">12:00 – 1:00 PM</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row" data-k="8684900565" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Visiting Angels interview</div><div class="meta">1:45 – 2:15 PM</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span></div></div></div><div class="row" data-k="610e031e6d" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Finish MCD Biology frosh items</div><div class="meta">2:30 – 3:00 PM</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div><div class="row" data-k="79d73a212d" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Start CHEM Units 1–4 reading</div><div class="meta">4:00 – 5:00 PM</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span></div></div></div></div></section><section class="lane"><div class="lanehead" style="--accent:#eab308"><span class="ldot"></span><h2>NEEDS A REPLY / ACTION</h2><span class="lanesub">from your inbox</span><span class="lline"></span></div><div class="lanebody"><div class="row" data-k="6a90855daf" style="border-left-color:#8b7ba8"><div class="box"></div><div class="rowmain"><div class="rowtext">The Stuff Nobody Tells You About Starting at UCSC: Join us for a live Zoom session!</div><div class="meta">Orientation Course (Canvas/instructure) · Zoom event Tue evening 5 PM Pacific — College Anxieties and Self Care session. Not actionable today, but noted for awareness.</div><div class="chips"><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">email</span></div></div></div><div class="row" data-k="fc3935f36c" style="border-left-color:#8b7ba8"><div class="box"></div><div class="rowmain"><div class="rowtext">Ingrid Moody (Orientation Course (f26)) just sent you a message in Canvas</div><div class="meta">Canvas · Instructor message about Porter 1A. Assignment 5 due Aug 23, not urgent today.</div><div class="chips"><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">email</span></div></div></div></div></section><section class="lane"><div class="lanehead" style="--accent:#8b5cf6"><span class="ldot"></span><h2>THIS WEEK</h2><span class="lanesub">coming up</span><span class="lline"></span></div><div class="lanebody"><div class="row" data-k="0c0a8ee919" data-nid="3bf7cd99fe858110a2c5f2923533d499" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">Ask UCSC Financial Aid what a dependency override requires</div><div class="meta">Wed Aug 19</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="24b7ffb2f8" data-nid="3bf7cd99fe8581fdbe86de8b55de2d33" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">Open new checking account at a different bank, sole name</div><div class="meta">Wed Aug 19</div><div class="chips"><span class="chip" style="color:#6b5b95;border-color:#6b5b9533;background:#6b5b9514">Admin</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="4d3a99cb49" data-nid="3b97cd99fe85813da4a3d4f63f3a8fd8" style="border-left-color:#f59e0b"><div class="box"></div><div class="rowmain"><div class="rowtext">Sign &amp; mail California State Application (LIC 441-9) to RLC</div><div class="meta">Wed Aug 19</div><div class="chips"><span class="chip" style="color:#6b5b95;border-color:#6b5b9533;background:#6b5b9514">Admin</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="9f00c9d565" data-nid="3c07cd99fe8581d99938e63dae82f34e" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A — Retake Lewis Structures Module Checkpoint (1/4 now, 2 attempts live)</div><div class="meta">Wed Aug 19</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="218d0b71ff" data-nid="3c07cd99fe858152a0c2f28608c85deb" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A Test 2 logistics — sign Academic Integrity Contract + submit &quot;How do you want to take Test 2?&quot; (3 pts)</div><div class="meta">Wed Aug 19</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="d81ef48c81" data-nid="3bf7cd99fe8581318127e8a132294046" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">Redirect Instratix commissions and all income to new account</div><div class="meta">Thu Aug 20</div><div class="chips"><span class="chip" style="color:#6b5b95;border-color:#6b5b9533;background:#6b5b9514">Admin</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="b8e7d472dd" data-nid="3bf7cd99fe8581aeb779d50511e73cfa" style="border-left-color:#f59e0b"><div class="box"></div><div class="rowmain"><div class="rowtext">Ask one friend about a backup place to stay if needed</div><div class="meta">Thu Aug 20</div><div class="chips"><span class="chip" style="color:#ea580c;border-color:#ea580c33;background:#ea580c14">Personal</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="843e5b5ebe" data-nid="3aa7cd99fe85815bae20e290fa4c88fa" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A Test 2 (20% — can replace Test 1)</div><div class="meta">Fri Aug 21</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="c5e0604d0a" data-nid="3bd7cd99fe858147b376de44635d496e" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A — Units 1–4 reading backlog (~110 pages) = Test 2 review</div><div class="meta">Fri Aug 21</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="7a798a6d23" data-nid="3b47cd99fe8581788298fd61e433b82b" style="border-left-color:#e11d48"><div class="box"></div><div class="rowmain"><div class="rowtext">CHEM 3A — Advanced Theories of Covalent Bonding Module Checkpoint (5 pts)</div><div class="meta">Fri Aug 21</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div><div class="row" data-k="da5926ca95" data-nid="3a87cd99fe85810bb784d7d3afec6be3" style="border-left-color:#f59e0b"><div class="box"></div><div class="rowmain"><div class="rowtext">Porter 1A — Assignment 5 (What does your reading say about you?)</div><div class="meta">Sun Aug 23</div><div class="chips"><span class="chip" style="color:#0ea5e9;border-color:#0ea5e933;background:#0ea5e914">School</span><span class="chip" style="color:#7c6f9c;border-color:#7c6f9c33;background:#7c6f9c14">Command Center</span></div></div></div></div></section><section class="lane"><div class="lanehead" style="--accent:#059669"><span class="ldot"></span><h2>EXPLORATION</h2><span class="lanesub">your interests, alive</span><span class="lline"></span></div><div class="lanebody"><div class="row" data-k="c4f3eb5f99" data-nid="3977cd99fe8581438a17c037bbe065ee" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Scent: next Sephora/Ulta run, sniff-test 2–3 picks from the Summer section of your new fragrance page (Profondo, Luna Rossa Ocean, Cheirosa &#x27;62)</div><div class="meta">Fragrance interest logged 2026-07-08 — guide lives in Notion: Fragrance Guide — by Season &amp; Person.</div><div class="chips"><span class="chip" style="color:#b45309;border-color:#b4530933;background:#b4530914">Interest</span></div></div></div><div class="row" data-k="96edc9fbe7" data-nid="3aa7cd99fe8581b890f4f4382e2e45f5" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Modeling: drop your first 3–5 Pinterest pins into model-dev/inspo — recreation guides get generated from there</div><div class="meta">New interest logged 2026-07-13 — photo recreation system lives at Desktop/wrproj/model-dev (inspo → guides → attempts).</div><div class="chips"><span class="chip" style="color:#b45309;border-color:#b4530933;background:#b4530914">Interest</span></div></div></div><div class="row" data-k="73c3ac40f0" data-nid="3a87cd99fe858163b566c4a06f1f69c7" style="border-left-color:#d9c6f2"><div class="box"></div><div class="rowmain"><div class="rowtext">Vlogging: edit ONE reference vlog in your ideal style — the style bible and the automated pipeline get reverse-engineered from it</div><div class="meta">Adopted 2026-07-26 from an orphan Command Center task (In Progress, waiting on that reference vlog).</div><div class="chips"><span class="chip" style="color:#b45309;border-color:#b4530933;background:#b4530914">Interest</span></div></div></div></div></section></div><section class="lane hublane"><details class="lanefold" data-foldnarrow open><summary class="lanehead" style="--accent:#8b5cf6"><span class="ldot"></span><h2>NOTION HUB</h2><span class="lanesub">5 links across your whole workspace</span><span class="lline"></span></summary><div class="hub"><div class="hubgroup"><div class="hubhead">Databases</div><a class="hubitem" href="https://app.notion.com/p/21a05fe057f0405a85786b40bfa7acac" target="_blank" rel="noopener"><span class="hubtitle">✅ Command Center</span><span class="hubnote">42 open — School 20 · Admin 11 · Personal 8 · Interest 3</span></a><a class="hubitem" href="https://app.notion.com/p/8523b07eb34849e48fee1688953623a1" target="_blank" rel="noopener"><span class="hubtitle">💰 Financial Tracker</span><span class="hubnote">37 entries · latest Aug 9</span></a></div><div class="hubgroup"><div class="hubhead">School</div><a class="hubitem" href="https://app.notion.com/p/36d7cd99fe8581a1bbbcf429327b5405" target="_blank" rel="noopener"><span class="hubtitle">🧪 Chem 3A + 3B Speedrun Plan</span><span class="hubnote">Test 2 Friday Aug 21</span></a></div><div class="hubgroup"><div class="hubhead">Pre-Med &amp; Health</div><a class="hubitem" href="https://app.notion.com/p/36d7cd99fe8581728a4af59c7fbfbac5" target="_blank" rel="noopener"><span class="hubtitle">🩺 Pre-Med Longgame Tracker</span><span class="hubnote">quiet 2+ weeks — first thing off backlog</span></a></div><div class="hubgroup"><div class="hubhead">Money &amp; Work</div><a class="hubitem" href="https://app.notion.com/p/3b17cd99fe8581bfb018f4af60be2c2b" target="_blank" rel="noopener"><span class="hubtitle">💼 Primerica Licensing — Plan</span><span class="hubnote">7 of 12 hours; Visiting Angels interview today is income focus</span></a></div></div></details></section><div class="foot">Your daily hub — rebuilt every morning from Google Calendar · Gmail · your whole Notion workspace (Command Center, Financial Tracker, Instratix, IHSS, every dashboard &amp; plan) · interests.json, cross-checked for conflicts. Click any row to check it off — green-boxed rows sync straight to Notion.</div></div>
+<script>
+(function(){
+  var KEY="docketChecks_v1";
+  var SERVER="Notion";           // claude.ai connector display name
+  var TOOL="notion-update-page"; // upstream tool name
+  // The Docket never writes to Calendar on its own — every event is one
+  // deliberate tap. CAL_SERVER is the expected display name; the real one is
+  // resolved from listTools() at load, so a rename doesn't silently kill the
+  // button. CAL_TOOL's argument names were observed live before shipping.
+  var CAL_SERVER="Google Calendar";
+  var CAL_TOOL="create_event";
+  var calServer=null;            // resolved at load; null until then
+  var scope=document.querySelector("[data-day]");
+  var day=scope?scope.getAttribute("data-day"):"";
+  var store={};
+  try{store=JSON.parse(localStorage.getItem(KEY)||"{}");}catch(e){store={};}
+  if(store.day!==day){store={day:day,done:{},cal:{}};}
+  if(!store.done)store.done={};
+  if(!store.cal)store.cal={};   // rows whose event this browser already created
+  if(typeof store.topNext!=="number")store.topNext=0;  // cursor into topBacklog, shared across slots
+  if(!store.topSlot)store.topSlot={};                  // slot index -> backlog index, once promoted
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+
+  // window.claude.mcp is present only in a published claude.ai artifact. In the
+  // bookmarked local file it's absent — rows then toggle visually only.
+  var mcp=(window.claude&&window.claude.mcp)?window.claude.mcp:null;
+  var rows=Array.prototype.slice.call(document.querySelectorAll(".row[data-k]"));
+
+  // Reference lanes (Notion Hub, Week in Review) ship expanded and get folded
+  // only on a phone, where the hub alone runs ~21% of the page and buries the
+  // morning-critical top of the board. Folding is the opt-in direction on
+  // purpose: if this never runs, the board shows too much, never too little.
+  if(window.matchMedia&&window.matchMedia("(max-width: 760px)").matches){
+    Array.prototype.forEach.call(
+      document.querySelectorAll("details.lanefold[data-foldnarrow]"),
+      function(el){ el.open=false; });
+  }
+
+  function progress(){
+    var done=rows.filter(function(r){return r.classList.contains("done");}).length;
+    var el=document.getElementById("progVal");
+    if(el)el.textContent=done+" / "+rows.length;
+  }
+  function note(r,msg,kind){
+    var n=r.querySelector(".synced");
+    if(!n){n=document.createElement("div");n.className="synced";r.querySelector(".rowmain").appendChild(n);}
+    n.textContent=msg; n.setAttribute("data-kind",kind||"");
+  }
+  function clearNote(r){var n=r.querySelector(".synced"); if(n)n.parentNode.removeChild(n);}
+  function banner(msg){
+    var b=document.getElementById("mcpbanner");
+    if(b){b.textContent=msg; b.style.display="block";}
+  }
+  // Each error code has a distinct fix — never collapse them into one message.
+  function errMsg(code){
+    switch(code){
+      case "needs_reauth":         return "Reconnect Notion in claude.ai \u2192 Settings \u2192 Connectors, then tap again";
+      case "server_not_connected": return "Add Notion in claude.ai \u2192 Settings \u2192 Connectors, then tap again";
+      case "selection_required":   return "Pick your Notion connector when claude.ai asks, then tap again";
+      case "not_in_manifest":
+      case "blocked_by_policy":     return "This Docket isn't allowed to update Notion";
+      case "server_unavailable":   return "Notion's unreachable right now \u2014 tap to retry";
+      case "tool_error":           return "Notion refused the update \u2014 tap to retry";
+      default:                     return "Couldn't reach Notion \u2014 tap to retry";
+    }
+  }
+
+  // One Command Center task can surface in two lanes at once (a Top 5 entry
+  // mirroring its Carried Over row). There's only one write, so every copy has
+  // to move together or the board contradicts itself.
+  function twins(r){
+    var nid=r.getAttribute("data-nid");
+    if(!nid)return [];
+    return rows.filter(function(o){return o!==r&&o.getAttribute("data-nid")===nid;});
+  }
+  function pending(r,on){
+    r.classList.toggle("pending",on);
+    twins(r).forEach(function(o){o.classList.toggle("pending",on);});
+  }
+
+  function setState(r,k,on){
+    r.classList.toggle("done",on);
+    if(on)store.done[k]=1; else delete store.done[k];
+    twins(r).forEach(function(o){
+      var tk=o.getAttribute("data-k");
+      o.classList.toggle("done",on);
+      if(on)store.done[tk]=1; else delete store.done[tk];
+    });
+    save(); progress();
+  }
+
+  // ---- "+ Cal": put a timed commitment on Google Calendar, one tap ----
+  // A calendar write is never automatic here. The morning run only ever
+  // ATTACHES the payload (data-cal); creating the event is Ari's gesture, so
+  // an unattended run can't invent events out of parsed email.
+  function calErr(code){
+    switch(code){
+      case "needs_reauth":         return "Reconnect Google Calendar in claude.ai \u2192 Settings \u2192 Connectors";
+      case "server_not_connected": return "Add Google Calendar in claude.ai \u2192 Settings \u2192 Connectors";
+      case "selection_required":   return "Pick your Google Calendar connector when claude.ai asks";
+      case "not_in_manifest":
+      case "blocked_by_policy":     return "This Docket isn't allowed to add calendar events";
+      case "approval_required":    return "Your org requires approval to add events";
+      case "tool_error":           return "Calendar refused the event \u2014 tap to retry";
+      // server_unavailable / upstream_error / cancelled are AMBIGUOUS for a
+      // write: the rejection is not proof the event wasn't created. Never
+      // auto-retry these; make Ari look first.
+      case "server_unavailable":
+      case "cancelled":
+      default:                     return "Couldn't confirm \u2014 check your calendar before tapping again";
+    }
+  }
+  function calDone(b){
+    b.textContent="\u2713 On calendar"; b.className="calbtn ok"; b.disabled=true;
+  }
+  // Wires (or re-wires) a row's "+ Cal" button. Reusable — called once per
+  // row at load, and again by paintSlot() when auto-refill hands a Top 5 slot
+  // a fresh item that carries its own `cal` payload.
+  function wireCalBtn(r){
+    var b=r.querySelector(".calbtn");
+    if(!b)return;
+    b.className="calbtn"; b.disabled=false; b.textContent="+ Cal";
+    if(store.cal[r.getAttribute("data-k")]){ calDone(b); return; }
+    b.addEventListener("click",function(ev){
+      ev.stopPropagation();                 // don't toggle the row's check-off
+      if(b.disabled)return;
+      if(!mcp||!calServer){
+        b.textContent=mcp?"Calendar not connected":"Not available here";
+        b.className="calbtn err"; b.disabled=true; return;
+      }
+      var payload;
+      try{
+        payload=JSON.parse(new TextDecoder().decode(
+          Uint8Array.from(atob(r.getAttribute("data-cal")),function(c){return c.charCodeAt(0);})));
+      }catch(e){ b.textContent="Bad event data"; b.className="calbtn err"; b.disabled=true; return; }
+      b.disabled=true; b.textContent="Adding\u2026"; b.className="calbtn";
+      mcp.callTool(calServer,CAL_TOOL,payload).then(function(){
+        store.cal[r.getAttribute("data-k")]=1; save(); calDone(b);
+      }).catch(function(e){
+        b.disabled=false; b.className="calbtn err";
+        b.textContent=calErr(e&&e.code);
+      });
+    });
+  }
+
+  // ---- Top 5 auto-refill: when a slot clears, the next-ranked candidate
+  // takes its place — same numbered slot, new item — instead of just sitting
+  // there checked off until tomorrow's rebuild. topBacklog is the ranked
+  // runner-up pool the morning run computed but didn't render; store.topNext
+  // is a shared cursor into it (first slot to clear claims the next
+  // candidate), and store.topSlot remembers which slots have already been
+  // promoted so a page reload replays the same state instead of losing it.
+  var backlog=[];
+  try{
+    var bEl=document.getElementById("topBacklogData");
+    if(bEl)backlog=JSON.parse(bEl.textContent||"[]");
+  }catch(e){backlog=[];}
+
+  function paintSlot(r,item,idx){
+    clearNote(r);
+    r.classList.remove("done","pending");
+    var k="topb-"+r.getAttribute("data-slot")+"-"+idx;
+    r.setAttribute("data-k",k);
+    if(item.notionId)r.setAttribute("data-nid",item.notionId); else r.removeAttribute("data-nid");
+    r.querySelector(".rowtext").textContent=item.text||"";
+    var main=r.querySelector(".rowmain");
+    var chips=r.querySelector(".chips");
+    var meta=r.querySelector(".meta");
+    if(item.why){
+      if(!meta){meta=document.createElement("div");meta.className="meta";main.insertBefore(meta,chips);}
+      meta.textContent=item.why;
+    }else if(meta){meta.parentNode.removeChild(meta);}
+    chips.innerHTML="";
+    if(item.area){
+      var c=document.createElement("span");
+      c.className="chip"; c.textContent=item.area;
+      var col=item.areaColor||"#7c6f9c";
+      c.style.color=col; c.style.borderColor=col+"33"; c.style.background=col+"14";
+      chips.appendChild(c);
+    }
+    if(item.cal){
+      try{
+        r.setAttribute("data-cal",btoa(unescape(encodeURIComponent(JSON.stringify(item.cal)))));
+        var btn=document.createElement("button");
+        btn.className="calbtn"; btn.type="button"; btn.textContent="+ Cal";
+        chips.appendChild(btn);
+        wireCalBtn(r);
+      }catch(e){ r.removeAttribute("data-cal"); }
+    }else{
+      r.removeAttribute("data-cal");
+    }
+    if(store.done[k])r.classList.add("done");
+    progress();
+  }
+
+  function maybeRefill(r){
+    if(!r.classList.contains("toprow"))return;    // only the Top 5 lane refills
+    var slot=r.getAttribute("data-slot");
+    if(slot===null||store.topNext>=backlog.length)return;  // pool's dry — slot just stays cleared
+    var idx=store.topNext++;
+    store.topSlot[slot]=idx;
+    save();
+    var item=backlog[idx];
+    // A beat of delay so the strike-through registers before the item changes
+    // underneath it — an instant swap reads as the checkbox not having worked.
+    setTimeout(function(){ paintSlot(r,item,idx); },1400);
+  }
+
+  // Replay any slots already promoted earlier today, before wiring clicks —
+  // so the "done" state below is read against each slot's CURRENT occupant.
+  Object.keys(store.topSlot).forEach(function(slot){
+    var r=rows.filter(function(x){return x.classList.contains("toprow")&&x.getAttribute("data-slot")===slot;})[0];
+    var item=backlog[store.topSlot[slot]];
+    if(r&&item)paintSlot(r,item,store.topSlot[slot]);
+  });
+
+  rows.forEach(function(r){
+    if(store.done[r.getAttribute("data-k")])r.classList.add("done");
+    r.addEventListener("click",function(){
+      if(r.classList.contains("pending"))return;
+      var k=r.getAttribute("data-k");        // read live — refill can change this
+      var nid=r.getAttribute("data-nid");
+      var on=!r.classList.contains("done");     // intended new state
+      setState(r,k,on);                          // optimistic
+      if(!mcp||!nid){
+        if(nid)note(r,"Visual only in this view","");
+        if(on)maybeRefill(r);
+        return;
+      }
+      // Write it through to the Command Center.
+      pending(r,true);
+      note(r,on?"Saving to Command Center\u2026":"Reopening in Command Center\u2026","pending");
+      mcp.callTool(SERVER,TOOL,{
+        page_id:nid, command:"update_properties",
+        properties:{ "Status": on?"Done":"To Do" }
+      }).then(function(){
+        pending(r,false);
+        note(r,on?"Done in Command Center":"Set back to To Do","ok");
+        setTimeout(function(){ if(!r.classList.contains("pending"))clearNote(r); },3200);
+        if(on)maybeRefill(r);
+      }).catch(function(e){
+        pending(r,false);
+        setState(r,k,!on);                        // revert — the write didn't stick
+        note(r,errMsg(e&&e.code),"err");
+      });
+    });
+  });
+  progress();
+
+  Array.prototype.forEach.call(document.querySelectorAll(".row[data-cal]"),wireCalBtn);
+
+  // Confirm the connector wiring on load, so a mismatch is visible immediately.
+  if(!mcp){
+    if(document.querySelector(".row[data-nid]"))
+      banner("Live Notion sync isn't available in this view \u2014 check-offs are visual only. Open the published Docket on claude.ai to sync to your Command Center.");
+    return;
+  }
+  mcp.listTools().then(function(res){
+    var servers=(res&&res.servers)||[];
+    var names=servers.map(function(s){return s.server;});
+    var srv=servers.filter(function(s){return s.server===SERVER;})[0];
+    if(!srv){
+      banner("Notion isn't connected as \""+SERVER+"\". Connected: "+(names.join(", ")||"none")+". Check-offs won't sync until this matches.");
+    }else{
+      var tools=(srv.tools||[]).map(function(t){return t.name;});
+      if(tools.indexOf(TOOL)<0)
+        banner("Notion is connected but exposes no \""+TOOL+"\" tool. Available: "+(tools.join(", ")||"none")+".");
+    }
+    // Resolve the calendar connector by CAPABILITY, not by name: whichever
+    // connected server actually exposes create_event wins. Falls back to the
+    // expected display name so a listTools() hiccup doesn't disable the button.
+    var cal=servers.filter(function(s){
+      return (s.tools||[]).some(function(t){return t.name===CAL_TOOL;});
+    })[0];
+    calServer=cal?cal.server:null;
+    if(!calServer&&document.querySelector(".row[data-cal]"))
+      banner("Google Calendar isn't connected \u2014 the \"+ Cal\" buttons can't add events. Connected: "+(names.join(", ")||"none")+".");
+  }).catch(function(){
+    calServer=CAL_SERVER;  // listTools failed; try the expected name anyway
+  });
+})();
+</script>
+</body></html>
