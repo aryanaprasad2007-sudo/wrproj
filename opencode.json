@@ -4,7 +4,7 @@
   "model": "ollama/wrproj-coder-30b",
   "small_model": "ollama/wrproj-coder-7b",
 
-  "instructions": ["CLAUDE.md"],
+  "instructions": ["CLAUDE.md", "WHOAMI.md"],
 
   "provider": {
     "ollama": {
