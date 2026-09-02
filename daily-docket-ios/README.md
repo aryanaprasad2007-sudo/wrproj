@@ -95,17 +95,29 @@ maybe a regex escaping edge case in `Filters.swift`/`Importance.swift`
 (ported from JS regex — ICU and JS regex are close but not identical).
 Likely trouble spots, ranked by how much I'd bet on them:
 
-1. **`EventExpander.swift`'s weekly BYDAY expansion** — the trickiest piece
-   here, walking week-by-week to place recurring MWF/TTh classes. Test it
-   against your actual Canvas/School feed first.
-2. **Notification scheduling races** — `BackgroundRefresh` and the
-   foreground `.task`/`.onChange(of: scenePhase)` refresh can both fire
-   near-simultaneously; `NotificationScheduler` clears-then-reschedules so
-   it should be idempotent, but verify no duplicate notifications.
-3. **Time zone edge cases** around DST transitions in `ICSParser`'s
-   DATE-TIME parsing — it trusts `TimeZone(identifier:)` for the TZID param,
-   which is the right call, but wasn't tested against a feed spanning a DST
-   change.
+1. **Time zone edge cases** around DST transitions in `ICSParser`'s
+   DATE-TIME parsing — it trusts `TimeZone(identifier:)`/`Calendar` to
+   resolve wall-clock times within a zone, which is the right call, but
+   wasn't exercised against a real feed spanning a DST change. This is the
+   one item on this list I couldn't verify by reading — it depends on
+   `Calendar`'s actual runtime behavior.
+2. **`EventExpander.swift`'s weekly BYDAY expansion** — the trickiest piece
+   here, walking week-by-week to place recurring MWF/TTh classes. I traced
+   the COUNT/n-increment logic by hand against RFC 5545 and it's correct
+   (Nth occurrence included, N+1th excluded, chronological ordering within
+   each week), but "correct on paper" isn't "tested against your actual
+   Canvas/School feed" — do that first.
+3. ~~Notification scheduling races~~ — re-checked: `NotificationScheduler`
+   always removes-then-adds against fixed identifiers, so a foreground and
+   background refresh overlapping is idempotent by construction, not a race.
+   Not actually a concern; struck through rather than deleted so it's clear
+   this was checked, not just optimistic.
+
+None of the above were run through an actual compiler — "traced by hand" is
+the ceiling of what's verifiable without Xcode. Still budget for the usual
+first-build churn: import fixes, an API signature that drifted between SDK
+versions, maybe a regex escaping edge case in `Filters.swift`/`Importance.swift`
+(ported from JS regex — ICU and JS regex are close but not identical).
 
 ## File structure
 
