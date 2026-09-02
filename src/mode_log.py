@@ -406,7 +406,11 @@ def main():
 
     cfg = load_config()
     print("[*] Loading detector ...")
-    detector = PoseDetector()
+    # phone_model=None halves inference: the second YOLO pass only exists to
+    # detect phone-in-hand, and trust_phone_detection is false below because
+    # his phone IS the camera (Iriun) -- any firing would be a false positive
+    # by construction, so there's nothing for that pass to usefully report.
+    detector = PoseDetector(phone_model=None)
     cam = Camera(0)
     cam_state = CameraState(cam, detector)
     screen_clf = WindowClassifier()
