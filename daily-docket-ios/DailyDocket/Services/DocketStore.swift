@@ -63,6 +63,36 @@ final class DocketStore: ObservableObject {
 
         await NotificationScheduler.scheduleSpotlightReminders(items: items, cfg: cfg)
         await NotificationScheduler.scheduleMorningDigest(cfg: cfg)
+
+        writeWidgetSnapshot(cfg: cfg, now: now)
+    }
+
+    /// Hands the Home Screen widget exactly what it needs to render, nothing
+    /// more — see WidgetBridge.swift for why the widget doesn't fetch its
+    /// own data.
+    private func writeWidgetSnapshot(cfg: AppConfig, now: Date) {
+        let todaySnap = today(now: now)
+        let tomorrowSnap = tomorrow(now: now)
+
+        var snapshot = WidgetSnapshot(updatedAt: now, ownerName: cfg.ownerName)
+
+        if let spotlight = todaySnap.spotlight {
+            snapshot.todayTitle = spotlight.item.title
+            snapshot.todayIcon = Importance.iconFor(spotlight.item)
+            snapshot.todayVerb = spotlight.targetVerb
+            snapshot.todayTargetDate = spotlight.targetDate
+            snapshot.todayIsHardDeadline = spotlight.isHardDeadline
+        }
+        if let focus = tomorrowSnap.focus {
+            snapshot.tomorrowTitle = focus.item.title
+            snapshot.tomorrowIcon = Importance.iconFor(focus.item)
+            snapshot.tomorrowTargetDate = focus.isHardDeadline ? focus.targetDate : nil
+            snapshot.tomorrowIsHardDeadline = focus.isHardDeadline
+        }
+        snapshot.error = lastError
+
+        WidgetBridge.write(snapshot)
+        WidgetBridge.reloadWidgets()
     }
 
     // Named *Snapshot, not *View, so this doesn't collide with the SwiftUI

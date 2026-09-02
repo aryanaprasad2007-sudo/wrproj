@@ -16,6 +16,11 @@ targets:
       - path: DailyDocket
     info:
       path: DailyDocket/Info.plist
+    entitlements:
+      path: DailyDocket/DailyDocket.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.aryanprasad.dailydocket
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.aryanprasad.dailydocket
@@ -25,3 +30,36 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - target: DailyDocketWidgetExtension
+        embed: true
+
+  # A Home Screen widget showing today's spotlight with a live countdown.
+  # Deliberately shares almost no code with the app target — see the doc
+  # comment on WidgetBridge.swift for why the widget only ever reads a
+  # precomputed snapshot instead of fetching/parsing calendars itself.
+  DailyDocketWidgetExtension:
+    type: app-extension
+    platform: iOS
+    # containerBackground(for:) (the non-deprecated widget background API)
+    # needs iOS 17+. The widget can require a newer OS than the app that
+    # ships it — it just won't be offered to devices below its own minimum.
+    deploymentTarget: "17.0"
+    sources:
+      - path: DailyDocketWidget
+      - path: DailyDocket/Models/WidgetSnapshot.swift
+      - path: DailyDocket/Services/WidgetBridge.swift
+    info:
+      path: DailyDocketWidget/Info.plist
+    entitlements:
+      path: DailyDocketWidget/DailyDocketWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.aryanprasad.dailydocket
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aryanprasad.dailydocket.DailyDocketWidget
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1"
