@@ -43,7 +43,8 @@ daily-docket-pwa/
 │   ├── countdown.js            one timer driving every live clock
 │   ├── render.js               event objects → DOM
 │   ├── store.js                localStorage cache, one entry per calendar
-│   └── util.js                 dates, formatting, escaping, the nice words
+│   ├── util.js                 dates, formatting, escaping, the nice words
+│   └── push.js                 Web Push subscribe/unsubscribe/test
 │
 ├── vendor/ical.js              ical.js 2.2.1, vendored (no CDN, works offline)
 ├── icons/                      generated PNGs + SVG favicon
@@ -53,6 +54,8 @@ daily-docket-pwa/
 │   └── make_icons.ps1          regenerates the icon set
 │
 ├── netlify.toml + netlify/functions/ics.mjs     Netlify deploy
+├── netlify/functions/_push.mjs, push-subscribe.mjs,
+│   push-test.mjs, push-digest.mjs               push notifications (Netlify only)
 ├── vercel.json  + api/ics.js                    Vercel deploy
 └── .nojekyll                                    GitHub Pages deploy
 ```
@@ -196,6 +199,59 @@ If it's a project page (`you.github.io/daily-docket-pwa/`) everything still
 works — all paths in the manifest and service worker are relative.
 
 ---
+
+## Push notifications
+
+Optional, Netlify-only for now: the docket can send real push notifications
+to your iPhone — a lock-screen notification, not just something waiting in
+the app.
+
+**iOS catch:** Safari only supports Web Push for a site added to the Home
+Screen (Share → **Add to Home Screen**), and only on iOS 16.4+. Opening it as
+a normal Safari tab, notifications will always look "unsupported" — that's
+expected. Open the installed icon instead.
+
+### Set it up
+
+1. Generate a VAPID key pair (a public/private key the push service uses to
+   authenticate you — nothing to do with your Apple ID):
+   ```bash
+   npx web-push generate-vapid-keys
+   ```
+2. Put the **public** key in `config.js` → `vapidPublicKey`. It's safe to
+   commit — it's not a secret, just how a subscriber recognizes pushes from
+   you.
+3. On Netlify: **Site configuration → Environment variables**, add:
+   - `VAPID_PUBLIC_KEY` — same value as `config.js`
+   - `VAPID_PRIVATE_KEY` — the private key. Keep this one out of the repo.
+   - `VAPID_SUBJECT` — `mailto:you@example.com` (any contact the push
+     service can use if it needs to reach you)
+4. Deploy. Open the installed app on your iPhone, ⚙ Settings → **Enable
+   notifications** → allow when prompted → **Send test** to confirm the
+   whole chain works.
+
+### How it works
+
+- `js/push.js` subscribes the device and POSTs the subscription to
+  `netlify/functions/push-subscribe.mjs`, which stores it in Netlify Blobs
+  (one subscription — this is built for one person's one phone; see the
+  comment in `netlify/functions/_push.mjs` if you want more).
+- `netlify/functions/push-test.mjs` sends one notification on demand (the
+  Settings panel's "Send test" button).
+- `netlify/functions/push-digest.mjs` is a **scheduled function** — a daily
+  "your docket is ready" ping. Its cron is UTC; the default fires at 7am
+  Pacific — edit the `schedule` in that file for your own timezone, or
+  delete it if you only want on-demand pushes.
+- `sw.js` shows the notification and, on tap, focuses (or opens) the app.
+
+Wiring up real deadline-based pushes ("your spotlight event is in 15
+minutes") means teaching `push-digest.mjs` to fetch and score the same feeds
+`js/importance.js` does — that logic currently only runs in the browser, so
+it isn't there yet. The comment at the top of `push-digest.mjs` says where
+that would go.
+
+Only wired for **Netlify** right now — Vercel's `api/` functions don't have
+the subscribe/send endpoints yet.
 
 ## Add it to your home screen
 

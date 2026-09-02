@@ -75,6 +75,13 @@ export const CONFIG = {
      Set to null to disable and always fetch each `url` directly.             */
   icsProxyPath: '/ics',
 
+  /* ---- push notifications -------------------------------------------------
+     The *public* half of a VAPID key pair — safe to commit, unlike the
+     private half (which lives in the VAPID_PRIVATE_KEY env var on Netlify).
+     Generate a pair with `npx web-push generate-vapid-keys` and see the
+     "Push notifications" section of README.md.                              */
+  vapidPublicKey: '',
+
   /* Last-ditch fallback for static hosts with no proxy (GitHub Pages).
      OFF by default and for good reason: a third-party server would see your
      entire calendar. Flip to true only if you accept that.                    */

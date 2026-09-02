@@ -6,6 +6,8 @@
    the whole array, so copy every calendar you want, in the same order. */
 
 export const CONFIG = {
+  // vapidPublicKey is NOT secret and doesn't need overriding here — it lives
+  // in config.js since it's safe to commit. See README.md → "Push notifications".
   calendars: [
     { id: 'school',  label: 'School',        area: null,     enabled: true,
       url: 'https://calendar.google.com/calendar/ical/you%40gmail.com/private-PASTE_KEY/basic.ics' },

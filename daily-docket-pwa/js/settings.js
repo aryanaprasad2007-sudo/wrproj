@@ -11,6 +11,7 @@ const DEFAULTS = {
   calendars: [],
   icsUrl: '',
   icsProxyPath: '/ics',
+  vapidPublicKey: '',
   showAreaChips: true,
   showCalendarLabels: true,
   useCorsRelay: false,

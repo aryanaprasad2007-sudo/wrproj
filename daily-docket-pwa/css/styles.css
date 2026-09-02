@@ -793,6 +793,8 @@ main {
 
 .sheet-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 
+.push-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
 .btn {
   padding: 10px 16px;
   font: inherit;

@@ -2,7 +2,7 @@
    Bump CACHE_VERSION whenever you change files in PRECACHE — that's what makes
    an installed copy pick up your edits. */
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE = `docket-${CACHE_VERSION}`;
 
 const PRECACHE = [
@@ -27,6 +27,7 @@ const PRECACHE = [
   './js/render.js',
   './js/store.js',
   './js/util.js',
+  './js/push.js',
   './icons/favicon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -136,4 +137,42 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', (event) => {
   if (event.data === 'skip-waiting') self.skipWaiting();
+});
+
+/* ---------- push notifications --------------------------------------------
+   The payload comes from netlify/functions/_push.mjs as JSON:
+   { title, body, url }. Fall back gracefully if it's ever plain text. */
+
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+
+  const title = data.title || 'Daily Docket';
+  const options = {
+    body: data.body || '',
+    icon: './icons/icon-192.png',
+    badge: './icons/icon-192.png',
+    data: { url: data.url || './' },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || './';
+
+  event.waitUntil(
+    (async () => {
+      const clientsList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      for (const client of clientsList) {
+        if (client.url.startsWith(self.location.origin) && 'focus' in client) return client.focus();
+      }
+      return self.clients.openWindow(url);
+    })(),
+  );
 });

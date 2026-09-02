@@ -6,6 +6,7 @@ import { applyFilters, forDay, splitByNow } from './filters.js';
 import { pickSpotlight, pickFocus } from './importance.js';
 import { addCountdown, clearCountdowns } from './countdown.js';
 import { clearFeeds, hasAnyFeed, saveView, loadView } from './store.js';
+import { pushStatus, subscribe as pushSubscribe, unsubscribe as pushUnsubscribe, sendTestPush } from './push.js';
 import {
   configureFormatting, startOfDay, addDays, fmtDayLabel, fmtTime,
   greeting, motivation, relTime,
@@ -243,7 +244,66 @@ function openSettings() {
     })
     .join('');
 
+  refreshPushUI();
   dlg.showModal();
+}
+
+/* ---------- push notifications --------------------------------------------- */
+
+async function refreshPushUI() {
+  const toggle = $('#push-toggle');
+  const test = $('#push-test');
+  const status = $('#push-status');
+
+  const pushState = await pushStatus();
+  test.hidden = pushState !== 'subscribed';
+
+  switch (pushState) {
+    case 'unsupported':
+      toggle.hidden = true;
+      status.textContent = 'Not supported here — on iPhone, add this app to your Home Screen first (Share → Add to Home Screen), then open it from there.';
+      break;
+    case 'denied':
+      toggle.hidden = true;
+      status.textContent = 'Notifications are blocked for this app. Re-enable them in your device/browser settings.';
+      break;
+    case 'subscribed':
+      toggle.hidden = false;
+      toggle.textContent = 'Turn off notifications';
+      status.textContent = 'On — this device gets push notifications.';
+      break;
+    default:
+      toggle.hidden = false;
+      toggle.textContent = 'Enable notifications';
+      status.textContent = 'Off.';
+  }
+}
+
+async function togglePush() {
+  const status = $('#push-status');
+  try {
+    if ((await pushStatus()) === 'subscribed') {
+      await pushUnsubscribe();
+    } else {
+      status.textContent = 'Requesting permission…';
+      await pushSubscribe(state.cfg.vapidPublicKey);
+    }
+  } catch (err) {
+    status.textContent = err.message || String(err);
+    return;
+  }
+  await refreshPushUI();
+}
+
+async function testPush() {
+  const status = $('#push-status');
+  status.textContent = 'Sending…';
+  try {
+    await sendTestPush();
+    status.textContent = 'Sent — check your notifications.';
+  } catch (err) {
+    status.textContent = err.message || String(err);
+  }
 }
 
 async function saveSettings(event) {
@@ -287,6 +347,8 @@ function wire() {
   $('#open-settings').addEventListener('click', openSettings);
   $('#settings-form').addEventListener('submit', saveSettings);
   $('#set-close').addEventListener('click', () => $('#settings').close());
+  $('#push-toggle').addEventListener('click', togglePush);
+  $('#push-test').addEventListener('click', testPush);
 
   $('#set-reset').addEventListener('click', async () => {
     clearOverrides();
