@@ -23,6 +23,8 @@ draft to open in Xcode and fix forward from, not a finished, tested app.
   file — same "a secret URL is a password" rule as the web app's README.
 - A **Home Screen widget** (small + medium) showing today's spotlight with a
   live countdown — see [Widget](#widget) below.
+- An **Apple Watch complication** mirroring the same spotlight — see [Apple
+  Watch complication](#apple-watch-complication), including its risk flag.
 
 ## What's genuinely different from the web app
 
@@ -146,6 +148,56 @@ the current non-deprecated widget background API) even though the app
 itself targets iOS 16 — a widget extension is allowed a higher minimum than
 its host app; it just won't be offered on older devices.
 
+## Apple Watch complication
+
+⚠️ **This is the least-verified part of the whole project.** Everything
+else here reuses one Xcode project and one set of conventions I'd already
+exercised once (the app target, then the widget target following the same
+pattern). This is a second *physical device* with its own pairing state,
+its own App Group registration, and a project-structure convention (a
+single-target watchOS 10 app hosting a WidgetKit complication) I have not
+built or even seen built in this environment. Budget real time for this one
+specifically, and don't be surprised if the watch-side project.yml targets
+need more correction than everything before them combined.
+
+**What it is:** `DailyDocketWatch` (a minimal companion app — see its
+`WatchContentView.swift` doc comment for why it barely does anything on its
+own) plus `DailyDocketWatchWidgetExtension` (the actual complication:
+circular/rectangular/inline faces showing today's spotlight with a live
+countdown, same `Text(date, style: .timer)` trick as the phone widget).
+
+**Why it's a second data path, not a reused one:** an App Group is
+per-device storage — it does NOT sync between an iPhone and its paired
+Watch, only between an app and its own extensions on the *same* device. So
+getting the spotlight from the phone to the watch needs an actual transport:
+`Services/WatchConnectivityBridge.swift` (iOS) pushes the same
+`WidgetSnapshot` via `WCSession.updateApplicationContext` — WatchConnectivity's
+"only the latest state matters, no backlog" transfer, which matches a
+spotlight snapshot exactly — and `DailyDocketWatch/WatchSessionDelegate.swift`
+receives it on the watch side and writes it into the watch's own copy of
+the App Group, which the complication reads from via the same unmodified
+`WidgetBridge.swift`/`WidgetSnapshot.swift` files used everywhere else.
+Delivery is best-effort (only prompt while both devices are reachable); the
+complication's own 30-minute timeline reload is the fallback.
+
+**Setup, in addition to everything in [Widget](#widget) above:**
+1. The App Group needs registering for the **watchOS** app ID too, not just
+   the iOS one (Apple treats them as separate app IDs even though they
+   share a group identifier string).
+2. `DailyDocketWatch/Info.plist` sets `WKCompanionAppBundleIdentifier` to
+   `com.aryanprasad.dailydocket` — if you change the iOS bundle ID (step 2
+   under Building it), update this too or the watch app won't link to its
+   companion.
+3. `Assets.xcassets/AppIcon.appiconset` under `DailyDocketWatch/` is a
+   placeholder like the iOS one — needs a real 1024×1024 icon before it'll
+   install cleanly on a device.
+4. Realistically needs a paired physical Apple Watch to test end-to-end.
+   The `#Preview` in `SpotlightComplication.swift` previews the complication
+   in isolation against `WidgetSnapshot.placeholder`, which doesn't exercise
+   WatchConnectivity at all — I'm not confident enough in Simulator's watch
+   pairing support to claim it'll cover the real transport, so treat a
+   physical Watch as the only real test here.
+
 ## Building it
 
 You need a Mac with Xcode. This repo ships **source, not an `.xcodeproj`** —
@@ -210,6 +262,9 @@ Likely trouble spots, ranked by how much I'd bet on them:
    If the widget shows the empty state forever even after opening the app,
    check the App Group identifier matches exactly in both targets'
    entitlements and in `WidgetBridge.appGroupId` first.
+5. **Everything under [Apple Watch complication](#apple-watch-complication)**
+   — see that section's own warning. Two more targets, a second device, and
+   the least-familiar project-structure convention here.
 
 None of the above were run through an actual compiler — "traced by hand" is
 the ceiling of what's verifiable without Xcode. Still budget for the usual
@@ -221,31 +276,32 @@ versions, maybe a regex escaping edge case in `Filters.swift`/`Importance.swift`
 
 ```
 daily-docket-ios/
-├── project.yml                    XcodeGen spec — the source of truth for both targets
-├── DailyDocket/                   App target
-│   ├── DailyDocketApp.swift       App entry, background task registration
+├── project.yml                    XcodeGen spec — the source of truth for all five targets
+├── DailyDocket/                   App target (iOS)
+│   ├── DailyDocketApp.swift       App entry, background task + delegate + WCSession wiring
 │   ├── Info.plist
-│   ├── DailyDocket.entitlements   Generated by xcodegen from project.yml (App Groups)
+│   ├── DailyDocket.entitlements   Generated by xcodegen from project.yml (App Groups, time-sensitive)
 │   ├── Assets.xcassets/           AppIcon (placeholder) + AccentColor
 │   ├── Models/
 │   │   ├── Config.swift           Ported from config.js DEFAULTS
 │   │   ├── CalendarSource.swift
 │   │   ├── EventItem.swift
 │   │   ├── Areas.swift            Ported from js/areas.js (lane colours + rules)
-│   │   └── WidgetSnapshot.swift   Shared with the widget target (see below)
+│   │   └── WidgetSnapshot.swift   Shared with both widget/complication targets (see below)
 │   ├── Services/
 │   │   ├── ICSParser.swift        Hand-rolled ICS parser
 │   │   ├── EventExpander.swift    RRULE occurrence expansion
 │   │   ├── CalendarService.swift  Fetch + on-disk cache per calendar
 │   │   ├── Filters.swift          Ported from js/filters.js
 │   │   ├── Importance.swift       Ported from js/importance.js (spotlight/focus scoring)
-│   │   ├── DocketStore.swift      Refresh orchestration + published state + widget snapshot
+│   │   ├── DocketStore.swift      Refresh orchestration + published state + snapshot fan-out
 │   │   ├── SettingsStore.swift    UserDefaults + Keychain-backed settings
 │   │   ├── KeychainStore.swift    Secret calendar URL storage
 │   │   ├── NotificationScheduler.swift   Local notifications (the "push" story)
 │   │   ├── NotificationDelegate.swift    Handles Snooze/Mark done taps
 │   │   ├── BackgroundRefresh.swift       BGTaskScheduler wiring
-│   │   └── WidgetBridge.swift     Shared with the widget target (see below)
+│   │   ├── WidgetBridge.swift     Shared with both widget/complication targets (see below)
+│   │   └── WatchConnectivityBridge.swift Pushes the snapshot to a paired Watch
 │   ├── Utilities/
 │   │   ├── DateUtils.swift        Time-zone aware formatting/countdown
 │   │   └── Copy.swift             Greeting + motivation lines, ported from js/util.js
@@ -256,9 +312,21 @@ daily-docket-ios/
 │       ├── EventRowView.swift
 │       ├── SettingsView.swift
 │       └── CountdownText.swift
-└── DailyDocketWidget/              Widget extension target
-    ├── DailyDocketWidgetBundle.swift   @main WidgetBundle
-    ├── SpotlightWidget.swift            Provider + views for the small/medium widget
-    ├── Info.plist                       NSExtensionPointIdentifier = widgetkit-extension
-    └── DailyDocketWidget.entitlements   Generated by xcodegen from project.yml (App Groups)
+├── DailyDocketWidget/              iOS Home Screen widget extension target
+│   ├── DailyDocketWidgetBundle.swift   @main WidgetBundle
+│   ├── SpotlightWidget.swift            Provider + views for the small/medium widget
+│   ├── Info.plist                       NSExtensionPointIdentifier = widgetkit-extension
+│   └── DailyDocketWidget.entitlements   Generated by xcodegen from project.yml (App Groups)
+├── DailyDocketWatch/               watchOS companion app target
+│   ├── DailyDocketWatchApp.swift  @main App — activates WatchSessionDelegate
+│   ├── WatchSessionDelegate.swift Receives the snapshot over WatchConnectivity
+│   ├── WatchContentView.swift     Minimal fallback UI; the complication is the real interface
+│   ├── Info.plist                 WKApplication + WKCompanionAppBundleIdentifier
+│   ├── Assets.xcassets/           AppIcon (placeholder, watch-marketing size)
+│   └── DailyDocketWatch.entitlements   Generated by xcodegen from project.yml (App Groups)
+└── DailyDocketWatchWidget/         watchOS complication extension target
+    ├── DailyDocketWatchWidgetBundle.swift   @main WidgetBundle
+    ├── SpotlightComplication.swift            circular/rectangular/inline complication views
+    ├── Info.plist                             NSExtensionPointIdentifier = widgetkit-extension
+    └── DailyDocketWatchWidget.entitlements   Generated by xcodegen from project.yml (App Groups)
 ```

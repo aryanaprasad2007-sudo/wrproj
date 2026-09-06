@@ -17,6 +17,7 @@ struct DailyDocketApp: App {
         // delegate when iOS relaunches it.
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         NotificationScheduler.registerCategories()
+        WatchConnectivityBridge.shared.activate()
 
         // Must be registered before applicationDidFinishLaunching returns.
         // A fresh SettingsStore re-reads UserDefaults/Keychain, so this picks

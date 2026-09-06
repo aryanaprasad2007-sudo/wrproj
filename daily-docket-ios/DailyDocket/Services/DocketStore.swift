@@ -93,6 +93,7 @@ final class DocketStore: ObservableObject {
 
         WidgetBridge.write(snapshot)
         WidgetBridge.reloadWidgets()
+        WatchConnectivityBridge.shared.send(snapshot)
     }
 
     // Named *Snapshot, not *View, so this doesn't collide with the SwiftUI
