@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 @main
 struct DailyDocketApp: App {
@@ -10,6 +11,12 @@ struct DailyDocketApp: App {
         let settingsStore = SettingsStore()
         _settings = StateObject(wrappedValue: settingsStore)
         _store = StateObject(wrappedValue: DocketStore(settings: settingsStore))
+
+        // Must happen before launch finishes, so a Snooze/Mark done tap on a
+        // notification delivered while the app was killed still reaches the
+        // delegate when iOS relaunches it.
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        NotificationScheduler.registerCategories()
 
         // Must be registered before applicationDidFinishLaunching returns.
         // A fresh SettingsStore re-reads UserDefaults/Keychain, so this picks

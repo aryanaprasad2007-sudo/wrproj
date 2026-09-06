@@ -73,6 +73,26 @@ This needs:
   verify one from this environment and Apple has moved these request forms
   before.
 
+**Notification actions.** Every spotlight reminder carries two buttons —
+"Snooze 15 min" and "Mark done" (long-press or swipe on the notification to
+see them) — handled entirely on-device, no app launch required:
+- **Snooze** reschedules the same title/body 15 minutes out. It doesn't
+  recompute anything; the next real refresh replaces it as usual.
+- **Mark done** cancels the rest of today's reminders for that specific
+  occurrence and remembers not to bring them back before the day rolls over
+  — otherwise the very next background refresh would just recompute the
+  same spotlight and re-schedule it. This is deliberately per-occurrence
+  (keyed on `EventItem.key`, which encodes the calendar + UID + start time),
+  so marking today's 9am standup done doesn't suppress tomorrow's.
+
+`Services/NotificationScheduler.registerCategories()` defines the button set
+(called once at launch, before `UNUserNotificationCenter.delegate` is even
+set, in `DailyDocketApp.init()`); `Services/NotificationDelegate.swift`
+receives the tap and does the actual work. The delegate is a `static let
+shared` precisely because `UNUserNotificationCenter.delegate` holds its
+delegate **weakly** — anything else would risk it being deallocated and
+silently stopping receiving actions.
+
 If you later want real push-while-force-quit (local notifications still fire
 even if the app was force-quit, for what it's worth, since iOS owns the
 schedule — the gap is *accuracy* after a long idle stretch, not delivery),
@@ -223,6 +243,7 @@ daily-docket-ios/
 │   │   ├── SettingsStore.swift    UserDefaults + Keychain-backed settings
 │   │   ├── KeychainStore.swift    Secret calendar URL storage
 │   │   ├── NotificationScheduler.swift   Local notifications (the "push" story)
+│   │   ├── NotificationDelegate.swift    Handles Snooze/Mark done taps
 │   │   ├── BackgroundRefresh.swift       BGTaskScheduler wiring
 │   │   └── WidgetBridge.swift     Shared with the widget target (see below)
 │   ├── Utilities/
