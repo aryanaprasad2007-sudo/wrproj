@@ -399,14 +399,8 @@ def arbitrate(local_place, claude_place, seconds_since_look):
     """
     Whose call goes in TODAY's log when the two disagree.
 
-    >>> YOURS TO WRITE. <<<
-
-    This is a values decision, not a technical one, which is why it is a stub
-    like should_intervene() rather than something I picked for you.
-
-    The tension: Claude sees the scene far better but looks rarely (a sheet
-    every few minutes at best), so `claude_place` is high-quality and STALE.
-    `local_place` is mediocre and current. Three defensible policies:
+    Implements the tie-break policy out of the three considered here (see
+    git history for the other two if you want to switch):
 
       trust-claude   Claude's label wins until the next look. Best labels,
                      but a 4-minute-old "at_desk" survives you leaving the room.
@@ -414,10 +408,18 @@ def arbitrate(local_place, claude_place, seconds_since_look):
                      Given the finding above -- present_unclear is 93/293
                      bursts and 80% of them are really at_desk -- this alone
                      would fix most of the damage, and it never overrides a
-                     confident local reading with a stale one.
+                     confident local reading with a stale one. IMPLEMENTED.
       decay          Claude wins while fresh, then hands back. Needs you to
                      decide what "fresh" is, and that number is the whole
                      policy.
+
+    tie-break was picked because it's the only one of the three that can
+    never make things worse than local alone: it only ever fills a gap
+    local already admitted it couldn't call, and only with a look recent
+    enough to still mean something. Nothing calls arbitrate() yet, so this
+    is inert until it's wired into a live resolver -- that wiring is still
+    yours to decide, since it's the point at which a stale look starts
+    actually overriding a current camera reading.
 
     Args:
         local_place:          place() output this tick, e.g. "present_unclear"
@@ -428,7 +430,14 @@ def arbitrate(local_place, claude_place, seconds_since_look):
         (place, source) -- source is "local" or "claude", and goes in the log's
         `why` so any run can be traced to who decided it.
     """
-    # Stub: local always wins, so nothing silently changes until you choose.
+    STALE_AFTER = 300  # seconds; matches "a sheet every few minutes at best"
+
+    if local_place != "present_unclear" or claude_place is None:
+        return local_place, "local"
+
+    if seconds_since_look is not None and seconds_since_look <= STALE_AFTER:
+        return claude_place, "claude"
+
     return local_place, "local"
 
 
