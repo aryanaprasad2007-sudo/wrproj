@@ -12,7 +12,12 @@ enum NotificationScheduler {
 
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
-        return (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+        // .timeSensitive here is what lets a hard-deadline reminder ask the
+        // system to break through Focus/DND — see the interruptionLevel set
+        // below. Without it in the initial request, iOS won't show the
+        // "Time Sensitive" toggle at all, and content.interruptionLevel just
+        // silently degrades to .active.
+        return (try? await center.requestAuthorization(options: [.alert, .sound, .badge, .timeSensitive])) ?? false
     }
 
     static func authorizationStatus() async -> UNAuthorizationStatus {
@@ -44,6 +49,10 @@ enum NotificationScheduler {
             let verb = spotlight.targetVerb.isEmpty ? "is coming up" : spotlight.targetVerb
             content.body = "\(spotlight.item.title) \(verb) \(DateUtils.relTime(spotlight.targetDate, now: fireDate))"
             content.sound = .default
+            // Only a genuine hard deadline earns the right to cut through
+            // Focus/DND — a "next up" soft suggestion shouldn't interrupt.
+            content.interruptionLevel = spotlight.isHardDeadline ? .timeSensitive : .active
+            if spotlight.isHardDeadline { content.relevanceScore = 1.0 }
 
             let interval = fireDate.timeIntervalSince(now)
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, interval), repeats: false)

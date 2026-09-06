@@ -51,6 +51,28 @@ reminder stays accurate even if you haven't opened the app in a while (iOS
 controls the actual cadence — treat "every `refreshMinutes`" as a request,
 not a guarantee).
 
+**Time-sensitive delivery.** The one thing local notifications are
+genuinely worse at than real push is that iOS treats them as easy to
+silence — a Focus/DND session can quietly suppress a reminder that arrives
+right when you needed it. A hard-deadline spotlight reminder now sets
+`content.interruptionLevel = .timeSensitive`, which asks the system to
+break through Focus/DND the same way a phone call or a Calendar alert does
+(a "next up" soft suggestion stays at `.active` — it hasn't earned that).
+This needs:
+- The **Time Sensitive Notifications** entitlement
+  (`com.apple.developer.usernotifications.time-sensitive`), already added
+  to `project.yml`'s `DailyDocket` entitlements.
+- `.timeSensitive` included in the `requestAuthorization(options:)` call
+  (already done) — without it in the *initial* permission prompt, iOS never
+  shows you the "Time Sensitive" toggle at all.
+- For **App Store distribution** specifically (not needed to build and run
+  on your own device), Apple requires a one-time capability request —
+  search the Apple Developer site for "Time Sensitive Notifications
+  entitlement request" — before this entitlement is honored in a released
+  build. I'm intentionally not linking a specific URL here since I can't
+  verify one from this environment and Apple has moved these request forms
+  before.
+
 If you later want real push-while-force-quit (local notifications still fire
 even if the app was force-quit, for what it's worth, since iOS owns the
 schedule — the gap is *accuracy* after a long idle stretch, not delivery),

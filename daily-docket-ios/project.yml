@@ -21,6 +21,12 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.aryanprasad.dailydocket
+        # Lets a hard-deadline reminder (NotificationScheduler.swift) mark
+        # itself .timeSensitive so it can break through Focus/DND. Works
+        # for development builds on your own device as-is; App Store
+        # distribution requires a separate one-time capability request to
+        # Apple — see the README's Notifications section.
+        com.apple.developer.usernotifications.time-sensitive: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.aryanprasad.dailydocket
