@@ -101,25 +101,6 @@ class LocalDetector:
             "person_box": person_box,
         }
 
-    def classify(self, frame_bgr):
-        """
-        Return (verdict, confidence, reason).
-
-        Legacy shape, kept for the old main.py loop. New code should call
-        observe() -- this collapses facts into a judgment too early, and the
-        judgment vocabulary ("productive"/"lazy") predates the shift to
-        lifestyle tracking.
-        """
-        o = self.observe(frame_bgr)
-
-        if o["phone"]:
-            return "lazy", o["phone_conf"], "phone detected in frame"
-        if not o["present"]:
-            return "away", 0.9, "no person detected"
-        if o["head_up"]:
-            return "productive", 0.75, f"head up at desk (facing={o['facing']})"
-        return "unsure", 0.4, "person present but head not located"
-
     def _yolo_scan(self, frame_bgr):
         """Return (person_box | None, person_conf, phone_present, phone_conf)."""
         if self.yolo is None:

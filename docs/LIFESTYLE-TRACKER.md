@@ -214,13 +214,16 @@ Labelling one session permanently converts it into a regression test: any
 threshold change can be re-scored against it without labelling anything again.
 Current scores are in `CLAUDE.md`.
 
-### Superseded
+### Superseded (removed)
 
-`src/main.py` and `src/reinforcement.py` are from the original binary
-productive/lazy + screen-flash design, before this became a tracker. They are
-not used by `mode_log.py`.
+`src/main.py`, `src/reinforcement.py`, and `src/calibrate.py` were from the
+original binary productive/lazy + screen-flash design, before this became a
+tracker. None were used by `mode_log.py`, and they were deleted along with
+`LocalDetector.classify()` — the judgment-collapsing method that existed only
+to serve `main.py`'s loop; `observe()` is what everything else calls.
 
-`src/claude_judge.py` joins them. It sent one frame to the API for one word
-("productive"/"lazy") — both the punisher vocabulary and the most expensive
-possible way to use a vision model. `claude_eyes.py` replaces it: Claude labels
-sessions in bulk from contact sheets instead of judging frames one at a time.
+`src/claude_judge.py` joined them and was deleted too. It sent one frame to
+the API for one word ("productive"/"lazy") — both the punisher vocabulary and
+the most expensive possible way to use a vision model. `claude_eyes.py`
+replaced it: Claude labels sessions in bulk from contact sheets instead of
+judging frames one at a time.
